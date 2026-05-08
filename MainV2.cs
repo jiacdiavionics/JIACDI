@@ -54,6 +54,12 @@ namespace MissionPlanner
         private static readonly ILog log =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        // Counter for unlocking hidden menus (Setup, Config, Simulation, Help)
+        private static int _dataClickCount = 0;
+        private static DateTime _lastDataClick = DateTime.MinValue;
+        private const int CLICK_THRESHOLD = 5;
+        private static bool _hiddenMenusUnlocked = false;
+
         public static menuicons displayicons; //do not initialize to allow update of custom icons
         public static string running_directory = Settings.GetRunningDirectory();
 
@@ -596,8 +602,12 @@ namespace MissionPlanner
 
         public void updateLayout(object sender, EventArgs e)
         {
-            MenuSimulation.Visible = DisplayConfiguration.displaySimulation;
-            MenuHelp.Visible = DisplayConfiguration.displayHelp;
+            // Only show Setup, Config, Simulation, Help menus when unlocked via 5 clicks on Flight Data
+            var showHiddenMenus = _hiddenMenusUnlocked;
+            MenuInitConfig.Visible = showHiddenMenus;
+            MenuConfigTune.Visible = showHiddenMenus;
+            MenuSimulation.Visible = showHiddenMenus;
+            MenuHelp.Visible = showHiddenMenus;
             MissionPlanner.Controls.BackstageView.BackstageView.Advanced = DisplayConfiguration.isAdvancedMode;
 
             // force autohide on
@@ -1308,6 +1318,28 @@ namespace MissionPlanner
 
         private void MenuFlightData_Click(object sender, EventArgs e)
         {
+            // Handle click counter for unlocking hidden menus
+            var now = DateTime.Now;
+            if ((now - _lastDataClick).TotalSeconds < 1000)
+            {
+                // Clicks must be within 1 second window to count
+                _dataClickCount++;
+            }
+            else
+            {
+                _dataClickCount = 1;
+            }
+            _lastDataClick = now;
+
+            // Check if threshold reached
+            if (_dataClickCount >= CLICK_THRESHOLD)
+            {
+                _hiddenMenusUnlocked = true;
+                _dataClickCount = 0;
+                // Refresh menu visibility
+                instance.updateLayout(null, null);
+            }
+
             MyView.ShowScreen("FlightData");
 
             // save config
