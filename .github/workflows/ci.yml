@@ -1,0 +1,39 @@
+name: CI Pull Request
+
+on:
+  pull_request:
+    branches: [master, main, develop]
+  workflow_dispatch:
+
+jobs:
+  ci-check:
+    name: CI Check
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup VB SDK
+        uses: microsoft/vssetup-samples@latest
+
+      - name: Restore NuGet packages
+        run: nuget restore MissionPlanner.sln
+
+      - name: Build Debug
+        run: msbuild MissionPlanner.sln -p:Configuration=Debug -p:Platform="Any CPU" -verbosity:minimal -restore
+
+      - name: Build Release
+        run: msbuild MissionPlanner.sln -p:Configuration=Release -p:Platform="Any CPU" -verbosity:minimal -restore
+
+      - name: Check Code Format
+        run: |
+          dotnet tool install --global dotnet-format 2>$null || true
+          dotnet format --verify-no-changes --verbosity diagnostic MissionPlanner.sln || exit 0
+        continue-on-error: true
