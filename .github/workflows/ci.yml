@@ -23,8 +23,8 @@ jobs:
       - name: Setup VB SDK
         uses: microsoft/vssetup-samples@latest
 
-      - name: Restore NuGet packages
-        run: nuget restore MissionPlanner.sln
+      - name: Restore
+        run: dotnet restore MissionPlanner.sln
 
       - name: Build Debug
         run: msbuild MissionPlanner.sln -p:Configuration=Debug -p:Platform=AnyCPU -verbosity:minimal -restore
