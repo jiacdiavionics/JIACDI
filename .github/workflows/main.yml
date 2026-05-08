@@ -21,28 +21,34 @@ jobs:
           submodules: recursive
           fetch-depth: 1
 
-      - name: Setup MSBuild
+      - name: Setup Visual Studio
         uses: microsoft/setup-msbuild@v2
 
-      - name: Setup VB SDK
-        uses: microsoft/vssetup-samples@latest
-
-      - name: Restore
-        run: dotnet restore MissionPlanner.sln
+      - name: Restore NuGet packages
+        run: |
+          nuget restore MissionPlanner.sln
 
       - name: Build Release
-        run: msbuild MissionPlanner.sln -p:Configuration=Release -p:Platform=AnyCPU -verbosity:minimal -restore
+        run: |
+          msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform=AnyCPU /verbosity:minimal /restore
 
       - name: Run Tests
         run: |
-          msbuild MissionPlannerTests -p:Configuration=Release -p:Platform=AnyCPU -verbosity:minimal -restore
+          msbuild MissionPlannerTests /p:Configuration=Release /p:Platform=AnyCPU /verbosity:minimal /restore
         continue-on-error: true
+
+      - name: Package Release
+        run: |
+          Compress-Archive -Path "bin\Release\net472\*" -DestinationPath "MissionPlanner.zip" -Force
+        shell: pwsh
 
       - name: Upload Release Artifact
         uses: actions/upload-artifact@v4
         with:
           name: MissionPlanner-Release
-          path: ./bin/Release
+          path: |
+            ./bin/Release
+            ./MissionPlanner.zip
           retention-days: 30
 
   build-debug:
@@ -56,25 +62,16 @@ jobs:
           submodules: recursive
           fetch-depth: 1
 
-      - name: Setup MSBuild
+      - name: Setup Visual Studio
         uses: microsoft/setup-msbuild@v2
 
-      - name: Setup VB SDK
-        uses: microsoft/vssetup-samples@latest
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Restore
-        run: dotnet restore MissionPlanner.sln
+      - name: Restore NuGet packages
+        run: |
+          nuget restore MissionPlanner.sln
 
       - name: Build Debug
-        run: msbuild MissionPlanner.sln -p:Configuration=Debug -p:Platform=AnyCPU -verbosity:minimal -restore
+        run: |
+          msbuild MissionPlanner.sln /p:Configuration=Debug /p:Platform=AnyCPU /verbosity:minimal /restore
 
       - name: Upload Debug Artifact
         uses: actions/upload-artifact@v4
