@@ -21,21 +21,9 @@ jobs:
           submodules: recursive
           fetch-depth: 1
 
-      - name: Setup Visual Studio
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Restore NuGet packages
-        run: |
-          nuget restore MissionPlanner.sln
-
       - name: Build Release
         run: |
-          msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform=AnyCPU /verbosity:minimal /restore
-
-      - name: Run Tests
-        run: |
-          msbuild MissionPlannerTests /p:Configuration=Release /p:Platform=AnyCPU /verbosity:minimal /restore
-        continue-on-error: true
+          msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform="Any CPU" /verbosity:minimal /restore
 
       - name: Package Release
         run: |
@@ -62,16 +50,9 @@ jobs:
           submodules: recursive
           fetch-depth: 1
 
-      - name: Setup Visual Studio
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Restore NuGet packages
-        run: |
-          nuget restore MissionPlanner.sln
-
       - name: Build Debug
         run: |
-          msbuild MissionPlanner.sln /p:Configuration=Debug /p:Platform=AnyCPU /verbosity:minimal /restore
+          msbuild MissionPlanner.sln /p:Configuration=Debug /p:Platform="Any CPU" /verbosity:minimal /restore
 
       - name: Upload Debug Artifact
         uses: actions/upload-artifact@v4

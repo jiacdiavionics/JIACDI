@@ -17,17 +17,7 @@ jobs:
           submodules: recursive
           fetch-depth: 1
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Setup VB SDK
-        uses: microsoft/vssetup-samples@latest
-
-      - name: Restore
-        run: dotnet restore MissionPlanner.sln
-
-      - name: Build Debug
-        run: msbuild MissionPlanner.sln -p:Configuration=Debug -p:Platform=AnyCPU -verbosity:minimal -restore
-
-      - name: Build Release
-        run: msbuild MissionPlanner.sln -p:Configuration=Release -p:Platform=AnyCPU -verbosity:minimal -restore
+      - name: Build
+        run: |
+          msbuild MissionPlanner.sln /p:Configuration=Debug /p:Platform="Any CPU" /verbosity:minimal /restore
+          msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform="Any CPU" /verbosity:minimal /restore
