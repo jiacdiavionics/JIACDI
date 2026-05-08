@@ -17,13 +17,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          fetch-depth: 1
+
+      - name: Install MSBuild
+        uses: nuget/setup-nuget-cli@v1
+
+      - name: Install Visual Studio Build Tools
+        uses: WarFly/visualstudio-build-tools@v1
 
       - name: Build Release
-        run: powershell -Command "msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform='Any CPU' /verbosity:minimal"
-        shell: powershell
+        run: msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform="Any CPU" /verbosity:minimal
 
       - name: Package Release
         run: |
