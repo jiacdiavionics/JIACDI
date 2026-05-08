@@ -724,7 +724,7 @@ namespace MissionPlanner
                 if (File.Exists($"{running_directory}custom.mpsystheme"))
                     Settings.Instance["theme"] = "custom.mpsystheme";
                 else
-                    Settings.Instance["theme"] = "BurntKermit.mpsystheme";
+                    Settings.Instance["theme"] = "Windows11.mpsystheme";
             }
 
             ThemeManager.LoadTheme(Settings.Instance["theme"]);

@@ -63,23 +63,23 @@ namespace MissionPlanner.Utilities
         {
             iconSet = IconSet.BurnKermitIconSet;
             terminalTheming = true;
-            strThemeName = "BurntKermit.mpsystheme";
+            strThemeName = "Windows11.mpsystheme";
 
-            colors.Add("Background", Color.FromArgb(0x26, 0x27, 0x28), "BGColor");						// This changes the colour of the main menu background
-            colors.Add("Control Background", Color.FromArgb(0x43, 0x44, 0x45), "ControlBGColor");		// This changes the colour of the sub menu backgrounds
+            colors.Add("Background", Color.FromArgb(0x20, 0x20, 0x20), "BGColor");						// This changes the colour of the main menu background
+            colors.Add("Control Background", Color.FromArgb(0x2D, 0x2D, 0x2D), "ControlBGColor");		// This changes the colour of the sub menu backgrounds
             colors.Add("Text", Color.White, "TextColor");										// This changes the colour of text
-            colors.Add("TextBox Background", Color.FromArgb(0x43, 0x44, 0x45), "BGColorTextBox");		// This changes the colour of the background of textboxes
-            colors.Add("Button Text", Color.FromArgb(64, 87, 4), "ButtonTextColor");				// This changes the colour of button text
-            colors.Add("Button Background top", Color.FromArgb(148, 193, 31), "ButBG");								// This changes the colour of button backgrounds (Top)
-            colors.Add("Button Background bottom", Color.FromArgb(205, 226, 150), "ButBGBot");						// This changes the colour of button backgrounds (Bot)
-            colors.Add("ProgressBar Top", Color.FromArgb(102, 139, 26), "ProgressBarColorTop");	// These three variables change the colours of progress bars
-            colors.Add("ProgressBar Bottom", Color.FromArgb(124, 164, 40), "ProgressBarColorBot");
-            colors.Add("ProgressBar Outline", Color.FromArgb(150, 174, 112), "ProgressBarOutlineColor");
-            colors.Add("BannerColor1", Color.FromArgb(0x40, 0x57, 0x04), "BannerColor1");			// These two variables change the colours of banners such as "planner" umder configuration
-            colors.Add("BannerColor2", Color.FromArgb(0x94, 0xC1, 0x1F), "BannerColor2");
-            colors.Add("Disabled Button", Color.FromArgb(150, 43, 58, 3), "ColorNotEnabled");		// This changes the background color of buttons when not enabled
-            colors.Add("Button Mouseover", Color.FromArgb(73, 43, 58, 3), "ColorMouseOver");			// This changes the background color of buttons when the mouse is hovering over a button
-            colors.Add("Button Mousedown", Color.FromArgb(73, 43, 58, 3), "ColorMouseDown");			// This changes the background color of buttons when the mouse is clicked down on a button
+            colors.Add("TextBox Background", Color.FromArgb(0x2D, 0x2D, 0x2D), "BGColorTextBox");		// This changes the colour of the background of textboxes
+            colors.Add("Button Text", Color.White, "ButtonTextColor");				// This changes the colour of button text
+            colors.Add("Button Background top", Color.FromArgb(0x00, 0xB4, 0xF8), "ButBG");								// This changes the colour of button backgrounds (Top)
+            colors.Add("Button Background bottom", Color.FromArgb(0x00, 0xA0, 0xE0), "ButBGBot");						// This changes the colour of button backgrounds (Bot)
+            colors.Add("ProgressBar Top", Color.FromArgb(0x00, 0xB4, 0xF8), "ProgressBarColorTop");	// These three variables change the colours of progress bars
+            colors.Add("ProgressBar Bottom", Color.FromArgb(0x00, 0x90, 0xC0), "ProgressBarColorBot");
+            colors.Add("ProgressBar Outline", Color.FromArgb(0x00, 0x80, 0xC0), "ProgressBarOutlineColor");
+            colors.Add("BannerColor1", Color.FromArgb(0x00, 0xB4, 0xF8), "BannerColor1");			// These two variables change the colours of banners such as "planner" umder configuration
+            colors.Add("BannerColor2", Color.FromArgb(0x00, 0x90, 0xC0), "BannerColor2");
+            colors.Add("Disabled Button", Color.FromArgb(0x60, 0x60, 0x60), "ColorNotEnabled");		// This changes the background color of buttons when not enabled
+            colors.Add("Button Mouseover", Color.FromArgb(0x70, 0x80, 0x90), "ColorMouseOver");			// This changes the background color of buttons when the mouse is hovering over a button
+            colors.Add("Button Mousedown", Color.FromArgb(0x70, 0x80, 0x90), "ColorMouseDown");			// This changes the background color of buttons when the mouse is clicked down on a button
             colors.Add("CurrentPPM Background", Color.Green, "CurrentPPMBackground");					// This changes the background colour of the current PPM setting in the flight modes tab
             colors.Add("Graph Chart Fill", Color.FromArgb(0x1F, 0x1F, 0x20), "ZedGraphChartFill"); 	// These three variables change the fill colours of Zed Graphs
             colors.Add("Graph Pane Fill", Color.FromArgb(0x37, 0x37, 0x38), "ZedGraphPaneFill");
@@ -87,7 +87,7 @@ namespace MissionPlanner.Utilities
             colors.Add("Rich Text Box text", Color.WhiteSmoke, "RTBForeColor");							// This changes the colour of text in rich text boxes
             colors.Add("BackStageView Button Area", Color.Black, "BSVButtonAreaBGColor");					// This changes the colour of a backstageview button area
             colors.Add("BSV Unselected Text", Color.WhiteSmoke, "UnselectedTextColour");			// This changes the colour of unselected text in a BSV button
-            colors.Add("Horizontal ProgressBar", Color.FromArgb(148, 193, 31), "HorizontalPBValueColor"); // This changes the colour of the horizontal progressbar
+            colors.Add("Horizontal ProgressBar", Color.FromArgb(0x00, 0xB4, 0xF8), "HorizontalPBValueColor"); // This changes the colour of the horizontal progressbar
             colors.Add("HUD text and drawings", Color.LightGray, "HudText");                       
             colors.Add("HUD Ground top", Color.FromArgb(0x9b, 0xb8, 0x24), "HudGroundTop");
             colors.Add("HUD Ground bottom", Color.FromArgb(0x41, 0x4f, 0x07), "HudGroundBot");
@@ -162,8 +162,8 @@ namespace MissionPlanner.Utilities
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // Initialize to the default theme (BurntKermit)
-        public static Color BGColor = Color.FromArgb(0x26, 0x27, 0x28);
-        public static Color ControlBGColor = Color.FromArgb(0x43, 0x44, 0x45);
+        public static Color BGColor = Color.FromArgb(0x20, 0x20, 0x20);
+        public static Color ControlBGColor = Color.FromArgb(0x2D, 0x2D, 0x2D);
         public static Color TextColor = Color.White;
         public static Color BGColorTextBox;
         public static Color ButBG;
@@ -1035,7 +1035,7 @@ mc:Ignorable=""d""
                     bsv.BackColor = BGColor;
                     bsv.ButtonsAreaBgColor = ControlBGColor;
                     bsv.HighlightColor2 = Color.FromArgb(0x94, 0xc1, 0x1f);
-                    bsv.HighlightColor1 = Color.FromArgb(0x40, 0x57, 0x04);
+                    bsv.HighlightColor1 = Color.FromArgb(0x00, 0xB4, 0xF8);
                     bsv.SelectedTextColor = Color.White;
                     bsv.UnSelectedTextColor = Color.Gray;
                     bsv.ButtonsAreaPencilColor = Color.DarkGray;
@@ -1044,7 +1044,7 @@ mc:Ignorable=""d""
                          ctl.GetType() == typeof(VerticalProgressBar2))
                 {
                     ((HorizontalProgressBar2)ctl).BackgroundColor = ControlBGColor;
-                    ((HorizontalProgressBar2)ctl).ValueColor = Color.FromArgb(148, 193, 31);
+                    ((HorizontalProgressBar2)ctl).ValueColor = Color.FromArgb(0x00, 0xB4, 0xF8);
                 }
                 else if (ctl.GetType() == typeof(MyProgressBar))
                 {
