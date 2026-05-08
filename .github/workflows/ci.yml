@@ -27,7 +27,7 @@ jobs:
         run: nuget restore MissionPlanner.sln
 
       - name: Build Debug
-        run: msbuild MissionPlanner.sln -p:Configuration=Debug -p:Platform="Any CPU" -verbosity:minimal -restore
+        run: msbuild MissionPlanner.sln -p:Configuration=Debug -p:Platform=AnyCPU -verbosity:minimal -restore
 
       - name: Build Release
-        run: msbuild MissionPlanner.sln -p:Configuration=Release -p:Platform="Any CPU" -verbosity:minimal -restore
+        run: msbuild MissionPlanner.sln -p:Configuration=Release -p:Platform=AnyCPU -verbosity:minimal -restore
