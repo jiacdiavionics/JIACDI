@@ -22,7 +22,8 @@ jobs:
           fetch-depth: 1
 
       - name: Build Release
-        run: cmd /c "msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform=\"Any CPU\" /verbosity:minimal"
+        run: powershell -Command "msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform='Any CPU' /verbosity:minimal"
+        shell: powershell
 
       - name: Package Release
         run: |
@@ -50,7 +51,8 @@ jobs:
           fetch-depth: 1
 
       - name: Build Debug
-        run: cmd /c "msbuild MissionPlanner.sln /p:Configuration=Debug /p:Platform=\"Any CPU\" /verbosity:minimal"
+        run: powershell -Command "msbuild MissionPlanner.sln /p:Configuration=Debug /p:Platform='Any CPU' /verbosity:minimal"
+        shell: powershell
 
       - name: Upload Debug Artifact
         uses: actions/upload-artifact@v4
