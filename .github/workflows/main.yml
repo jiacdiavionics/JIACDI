@@ -12,53 +12,53 @@ on:
 jobs:
   build-release:
     name: Build Release
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 10
 
-      - name: Install MSBuild
-        uses: nuget/setup-nuget-cli@v1
-
-      - name: Install Visual Studio Build Tools
-        uses: WarFly/visualstudio-build-tools@v1
-
-      - name: Build Release
-        run: msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform="Any CPU" /verbosity:minimal
-
-      - name: Package Release
-        run: |
-          Compress-Archive -Path "bin\Release\net472\*" -DestinationPath "MissionPlanner.zip" -Force
+      - name: Build
         shell: pwsh
+        run: |
+          $msbuildPath = Split-Path (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\Current\Bin\amd64\MSBuild.exe | Select-Object -First 1) -Parent
+          $env:PATH = $msbuildPath + ';' + $env:PATH
+          nuget locals all -clear
+          msbuild -v:m -restore -t:Build -p:Configuration=Release MissionPlanner.sln
 
-      - name: Upload Release Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: MissionPlanner-Release
-          path: |
-            ./bin/Release
-            ./MissionPlanner.zip
-          retention-days: 30
+          path: bin/Release/net461
 
   build-debug:
     name: Build Debug
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          submodules: recursive
-          fetch-depth: 1
+          submodules: true
+          fetch-depth: 10
 
-      - name: Build Debug
-        run: powershell -Command "msbuild MissionPlanner.sln /p:Configuration=Debug /p:Platform='Any CPU' /verbosity:minimal"
-        shell: powershell
+      - name: Cache multiple paths
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/obj/**
+          key: ${{ runner.os }}-buildDebug
 
-      - name: Upload Debug Artifact
-        uses: actions/upload-artifact@v4
+      - name: Build
+        shell: pwsh
+        run: |
+          $msbuildPath = Split-Path (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\Current\Bin\amd64\MSBuild.exe | Select-Object -First 1) -Parent
+          $env:PATH = $msbuildPath + ';' + $env:PATH
+          nuget locals all -clear
+          msbuild -v:m -restore -t:Build -p:Configuration=Debug MissionPlanner.sln
+
+      - uses: actions/upload-artifact@v4
         with:
           name: MissionPlanner-Debug
-          path: ./bin/Debug
-          retention-days: 7
+          path: bin/Debug/net461

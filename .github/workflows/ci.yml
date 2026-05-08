@@ -8,17 +8,19 @@ on:
 jobs:
   ci-check:
     name: CI Check
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          submodules: recursive
-          fetch-depth: 1
+          submodules: true
+          fetch-depth: 10
 
       - name: Build
+        shell: pwsh
         run: |
-          powershell -Command "msbuild MissionPlanner.sln /p:Configuration=Debug /p:Platform='Any CPU' /verbosity:minimal"
-          powershell -Command "msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform='Any CPU' /verbosity:minimal"
-        shell: powershell
+          $msbuildPath = Split-Path (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\Current\Bin\amd64\MSBuild.exe | Select-Object -First 1) -Parent
+          $env:PATH = $msbuildPath + ';' + $env:PATH
+          nuget locals all -clear
+          msbuild -v:m -restore -t:Build -p:Configuration=Debug MissionPlanner.sln
+          msbuild -v:m -restore -t:Build -p:Configuration=Release MissionPlanner.sln
