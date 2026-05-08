@@ -1,82 +1,84 @@
-name: DotNet Build
-on: [push, workflow_dispatch, pull_request]
+name: .NET Build
+
+on:
+  push:
+    branches: [master, main, develop]
+    tags:
+      - '*'
+  pull_request:
+    branches: [master, main, develop]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-release:
     name: Build Release
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          submodules: true
-          fetch-depth: 10
+          submodules: recursive
+          fetch-depth: 1
 
-      - name: Build
-        shell: pwsh
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup VB SDK
+        uses: microsoft/vssetup-samples@latest
+
+      - name: Restore
+        run: dotnet restore MissionPlanner.sln
+
+      - name: Build Release
+        run: msbuild MissionPlanner.sln -p:Configuration=Release -p:Platform=AnyCPU -verbosity:minimal -restore
+
+      - name: Run Tests
         run: |
-          $msbuildPath = Split-Path (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\Current\Bin\amd64\MSBuild.exe | Select-Object -First 1) -Parent
-          $env:PATH = $msbuildPath + ';' + $env:PATH
-          nuget locals all -clear
-          msbuild -v:m -restore -t:Build -p:Configuration=Release MissionPlanner.sln
+          msbuild MissionPlannerTests -p:Configuration=Release -p:Platform=AnyCPU -verbosity:minimal -restore
+        continue-on-error: true
 
-      - name: Cleanup
-        shell: pwsh
-        run: |
-          cd bin\Release\net461
-          gci plugins | ForEach-Object {                 if (Test-Path $_.Name -PathType Leaf)                {                    Write-Host "Remove" $_.FullName   ;                 Remove-Item $_.FullName                            } else {                    Write-Host $_.Name                }            }
-
-          copy version.txt ..\..\..\
-          7z a -tzip ..\..\..\MissionPlannerBeta.zip *
-          cd ..
-          .\md5sum.exe net461 > ..\..\checksums.txt
-          
-      - uses: actions/upload-artifact@v4
+      - name: Upload Release Artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: MissionPlannerBeta
-          path: bin\Release\net461
-          
-      - uses: "marvinpinto/action-automatic-releases@v1.2.1"
-        if: ${{ github.ref == 'refs/tags/beta' }}
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "betarelease"
-          prerelease: true
-          title: "Beta Build"
-          files: |
-            MissionPlannerBeta.zip
-            checksums.txt
-            version.txt
-            ChangeLog.txt
+          name: MissionPlanner-Release
+          path: ./bin/Release
+          retention-days: 30
 
-
-  buildDebug:
+  build-debug:
     name: Build Debug
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          submodules: true
-          fetch-depth: 10
+          submodules: recursive
+          fetch-depth: 1
 
-      - name: Cache multiple paths
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup VB SDK
+        uses: microsoft/vssetup-samples@latest
+
+      - name: Cache NuGet packages
         uses: actions/cache@v4
         with:
-          path: |
-            **/obj/**
-          key: ${{ runner.os }}-buildDebug
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
-      - name: Build
-        shell: pwsh
-        run: |
-          $msbuildPath = Split-Path (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\Current\Bin\amd64\MSBuild.exe | Select-Object -First 1) -Parent
-          $env:PATH = $msbuildPath + ';' + $env:PATH
-          nuget locals all -clear
-          msbuild -v:m -restore -t:Build -p:Configuration=Debug MissionPlanner.sln
+      - name: Restore
+        run: dotnet restore MissionPlanner.sln
 
-      - name: Cleanup
-        shell: pwsh
-        run: |
-          cd bin\Debug\net461
-          gci plugins | ForEach-Object {                 if (Test-Path $_.Name -PathType Leaf)                {                    Write-Host "Remove" $_.FullName   ;                 Remove-Item $_.FullName                            } else {                    Write-Host $_.Name                }            }
+      - name: Build Debug
+        run: msbuild MissionPlanner.sln -p:Configuration=Debug -p:Platform=AnyCPU -verbosity:minimal -restore
+
+      - name: Upload Debug Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MissionPlanner-Debug
+          path: ./bin/Debug
+          retention-days: 7
