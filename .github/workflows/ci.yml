@@ -17,10 +17,7 @@ jobs:
           submodules: recursive
           fetch-depth: 1
 
-      - name: Setup Visual Studio
-        uses: microsoft/setup-msbuild@v1
-
       - name: Build
         run: |
-          msbuild MissionPlanner.sln /p:Configuration=Debug /p:Platform="Any CPU" /verbosity:minimal
-          msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform="Any CPU" /verbosity:minimal
+          cmd /c "msbuild MissionPlanner.sln /p:Configuration=Debug /p:Platform=\"Any CPU\" /verbosity:minimal"
+          cmd /c "msbuild MissionPlanner.sln /p:Configuration=Release /p:Platform=\"Any CPU\" /verbosity:minimal"
