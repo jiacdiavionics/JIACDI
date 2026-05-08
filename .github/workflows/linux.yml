@@ -22,18 +22,12 @@ jobs:
           fetch-depth: 1
 
       - name: Install Mono
-        uses: actions/cache@v4
-        with:
-          path: ~/mono
-          key: ${{ runner.os }}-mono-6.4
-      
-      - name: Setup Mono
-        uses: microsoft/vssetup-samples@latest
-
-      - name: Build with Mono
         run: |
           sudo apt-get update
           sudo apt-get install -y mono-complete msbuild
+
+      - name: Build with Mono
+        run: |
           msbuild MissionPlanner.sln -p:Configuration=Release -p:Platform="Any CPU" -verbosity:minimal -restore || true
         continue-on-error: true
 
@@ -42,4 +36,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-log
-          path:_MSBuild_Error.log
+          path: MSBuild_Error.log

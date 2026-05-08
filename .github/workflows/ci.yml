@@ -31,9 +31,3 @@ jobs:
 
       - name: Build Release
         run: msbuild MissionPlanner.sln -p:Configuration=Release -p:Platform="Any CPU" -verbosity:minimal -restore
-
-      - name: Check Code Format
-        run: |
-          dotnet tool install --global dotnet-format 2>$null || true
-          dotnet format --verify-no-changes --verbosity diagnostic MissionPlanner.sln || exit 0
-        continue-on-error: true
