@@ -711,21 +711,16 @@ namespace MissionPlanner
 
             InitializeComponent();
 
-            //Init Theme table and load BurntKermit as a default
+            //Init Theme table and load Windows11 as a default
             ThemeManager.thmColor = new ThemeColorTable(); //Init colortable
-            ThemeManager.thmColor.InitColors(); //This fills up the table with BurntKermit defaults.
+            ThemeManager.thmColor.InitColors(); //This fills up the table with Windows11 defaults.
             ThemeManager.thmColor
                 .SetTheme(); //Set the colors, this need to handle the case when not all colors are defined in the theme file
 
 
 
-            if (Settings.Instance["theme"] == null)
-            {
-                if (File.Exists($"{running_directory}custom.mpsystheme"))
-                    Settings.Instance["theme"] = "custom.mpsystheme";
-                else
-                    Settings.Instance["theme"] = "Windows11.mpsystheme";
-            }
+            // Force reset theme to ensure Windows11 theme is always applied
+            Settings.Instance["theme"] = "Windows11.mpsystheme";
 
             ThemeManager.LoadTheme(Settings.Instance["theme"]);
 
@@ -1185,7 +1180,7 @@ namespace MissionPlanner
 
             displayicons = icons;
 
-            MainMenu.BackColor = SystemColors.MenuBar;
+            MainMenu.BackColor = ThemeManager.BGColor;
 
             MainMenu.BackgroundImage = displayicons.bg;
 
