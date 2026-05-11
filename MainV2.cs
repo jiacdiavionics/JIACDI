@@ -58,6 +58,7 @@ namespace MissionPlanner
         private static int _dataClickCount = 0;
         private static DateTime _lastDataClick = DateTime.MinValue;
         private const int CLICK_THRESHOLD = 5;
+        private const string UNLOCK_PASSWORD = "665665";
         private static bool _hiddenMenusUnlocked = false;
 
         public static menuicons displayicons; //do not initialize to allow update of custom icons
@@ -1326,13 +1327,27 @@ namespace MissionPlanner
             }
             _lastDataClick = now;
 
-            // Check if threshold reached
+            // Check if threshold reached - prompt for password
             if (_dataClickCount >= CLICK_THRESHOLD)
             {
-                _hiddenMenusUnlocked = true;
                 _dataClickCount = 0;
-                // Refresh menu visibility
-                instance.updateLayout(null, null);
+                // Ask for password to unlock
+                var pw = "";
+                if (InputBox.Show("Enter Password", "Enter password to unlock advanced menus:", ref pw, true) ==
+                    System.Windows.Forms.DialogResult.OK)
+                {
+                    if (pw == UNLOCK_PASSWORD)
+                    {
+                        _hiddenMenusUnlocked = true;
+                        // Refresh menu visibility
+                        instance.updateLayout(null, null);
+                        CustomMessageBox.Show("Advanced menus unlocked!", "Success");
+                    }
+                    else
+                    {
+                        CustomMessageBox.Show("Wrong password!", "Error");
+                    }
+                }
             }
 
             MyView.ShowScreen("FlightData");
