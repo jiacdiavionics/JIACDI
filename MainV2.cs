@@ -645,7 +645,7 @@ namespace MissionPlanner
         {
             try
             {
-                log.Info("Mainv2 ctor");
+            log.Info("Mainv2 ctor");
 
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
@@ -1114,12 +1114,12 @@ namespace MissionPlanner
             // save config to test we have write access
             SaveConfig();
             }
-            catch (Exception ex)
-            {
-                log.Fatal("Fatal crash in MainV2 constructor", ex);
-                Console.WriteLine("CRASH in MainV2: " + ex.ToString());
-                throw;
-            }
+        catch (Exception ex)
+        {
+            log.Fatal("Fatal crash in MainV2 constructor", ex);
+            Console.WriteLine("CRASH in MainV2: " + ex.ToString());
+            throw;
+        }
         }
 
         void cmb_sysid_Click(object sender, EventArgs e)
