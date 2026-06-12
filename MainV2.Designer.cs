@@ -53,7 +53,6 @@ namespace MissionPlanner
             this.toolStripConnectionControl = new MissionPlanner.Controls.ToolStripConnectionControl();
             this.MenuArduPilot = new System.Windows.Forms.ToolStripButton();
             this.menu = new MissionPlanner.Controls.MyButton();
-            this.menu_AdvanceLock = new System.Windows.Forms.ToolStripButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.status1 = new MissionPlanner.Controls.Status();
             this.MainMenu.SuspendLayout();
@@ -76,8 +75,7 @@ namespace MissionPlanner
             this.MenuHelp,
             this.MenuConnect,
             this.toolStripConnectionControl,
-            this.MenuArduPilot,
-            this.menu_AdvanceLock});
+            this.MenuArduPilot});
             this.MainMenu.Name = "MainMenu";
             this.MainMenu.ShowItemToolTips = true;
             this.MainMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.MainMenu_ItemClicked);
@@ -205,21 +203,6 @@ namespace MissionPlanner
             this.MenuArduPilot.Name = "MenuArduPilot";
             this.MenuArduPilot.Click += new System.EventHandler(this.MenuArduPilot_Click);
             // 
-            // menu_AdvanceLock
-            // 
-            this.menu_AdvanceLock.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            resources.ApplyResources(this.menu_AdvanceLock, "menu_AdvanceLock");
-            this.menu_AdvanceLock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            try {
-                this.menu_AdvanceLock.Image = global::MissionPlanner.Properties.Resources.lock_icon;
-            }
-            catch {
-                // Fallback - no image if resource fails to load
-                this.menu_AdvanceLock.Image = null;
-            }
-            this.menu_AdvanceLock.Name = "menu_AdvanceLock";
-            this.menu_AdvanceLock.ToolTipText = "Lock/Unlock Advanced Menus (Ctrl+L)";
-            // 
             // menu
             // 
             resources.ApplyResources(this.menu, "menu");
@@ -280,7 +263,6 @@ namespace MissionPlanner
         private System.Windows.Forms.ToolStripMenuItem connectionListToolStripMenuItem;
         public System.Windows.Forms.ToolStripButton MenuHelp;
         public System.Windows.Forms.ToolStripButton MenuArduPilot;
-        public System.Windows.Forms.ToolStripButton menu_AdvanceLock;
         public Controls.Status status1;
     }
 }
