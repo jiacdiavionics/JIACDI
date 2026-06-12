@@ -643,29 +643,9 @@ namespace MissionPlanner
 
         public MainV2()
         {
-            // Startup crash diagnosis logging
-            string logFile = "";
-            string altLogFile = "";
-            try {
-                logFile = Settings.GetDataDirectory() + "startup_crash_log.txt";
-                altLogFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "startup_crash_log.txt");
-            } catch (Exception ex) {
-                Console.WriteLine("Failed to get log file path: " + ex.Message);
-            }
-            Action<string> writeLog = (msg) => {
-                string timestamp = "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "] MainV2: " + msg;
-                try {
-                    Console.WriteLine(timestamp);
-                    if (logFile != "") System.IO.File.AppendAllText(logFile, timestamp + "\n");
-                } catch { }
-                try {
-                    if (altLogFile != "") System.IO.File.AppendAllText(altLogFile, timestamp + "\n");
-                } catch { }
-            };
-            
             try
             {
-            log.Info("Mainv2 ctor");
+                log.Info("Mainv2 ctor");
 
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
@@ -734,7 +714,6 @@ namespace MissionPlanner
 
             InitializeComponent();
 
-            writeLog("Before InitializeComponent");
             //Init Theme table and load Windows11 as a default
             ThemeManager.thmColor = new ThemeColorTable(); //Init colortable
             ThemeManager.thmColor.InitColors(); //This fills up the table with Windows11 defaults.
@@ -749,7 +728,6 @@ namespace MissionPlanner
             ThemeManager.LoadTheme(Settings.Instance["theme"]);
 
             Utilities.ThemeManager.ApplyThemeTo(this);
-            writeLog("After ApplyThemeTo");
 
 
             // define default basestream
@@ -1138,8 +1116,8 @@ namespace MissionPlanner
             }
             catch (Exception ex)
             {
-                writeLog("FATAL CRASH in MainV2 constructor: " + ex.GetType().Name + " - " + ex.Message);
-                Console.WriteLine("CRASH in MainV2 constructor: " + ex.ToString());
+                log.Fatal("Fatal crash in MainV2 constructor", ex);
+                Console.WriteLine("CRASH in MainV2: " + ex.ToString());
                 throw;
             }
         }
