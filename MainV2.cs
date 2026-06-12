@@ -4732,10 +4732,11 @@ namespace MissionPlanner
         private void menu_AdvanceLock_Click(object sender, EventArgs e)
         {
             // Toggle advanced menu lock
-            if (MainV2.UserObject != null && MainV2.UserObject.ToString() == "1234566")
+            if (_hiddenMenusUnlocked)
             {
-                MainV2.UserObject = null;
+                _hiddenMenusUnlocked = false;
                 menu_AdvanceLock.Image = MissionPlanner.Properties.Resources.lock_icon;
+                updateLayout(null, null);
                 CustomMessageBox.Show("Advanced menus locked.", "JIAC&DI Mission Planner");
             }
             else
@@ -4743,13 +4744,14 @@ namespace MissionPlanner
                 // Show password dialog
                 string password = "";
                 var result = InputBox.Show("Enter password to unlock advanced menus:", "Unlock Advanced Menus", ref password, true);
-                if (result == DialogResult.OK && password == "1234566")
+                if (result == System.Windows.Forms.DialogResult.OK && password == UNLOCK_PASSWORD)
                 {
-                    MainV2.UserObject = "1234566";
+                    _hiddenMenusUnlocked = true;
                     menu_AdvanceLock.Image = MissionPlanner.Properties.Resources.unlock_icon;
+                    updateLayout(null, null);
                     CustomMessageBox.Show("Advanced menus unlocked.", "JIAC&DI Mission Planner");
                 }
-                else if (result == DialogResult.OK && !string.IsNullOrEmpty(password))
+                else if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrEmpty(password))
                 {
                     CustomMessageBox.Show("Invalid password.", "Error");
                 }
