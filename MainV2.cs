@@ -725,15 +725,31 @@ namespace MissionPlanner
             }
             writeLog("After changelanguage");
 
-            InitializeComponent();
-            writeLog("After InitializeComponent");
+            // InitializeComponent - wrapped in try-catch for crash diagnosis
+            try
+            {
+                InitializeComponent();
+                writeLog("After InitializeComponent");
+            }
+            catch (Exception ex)
+            {
+                writeLog("CRASH in InitializeComponent: " + ex.GetType().Name + " - " + ex.Message);
+                throw;
+            }
 
             //Init Theme table and load Windows11 as a default
-            ThemeManager.thmColor = new ThemeColorTable(); //Init colortable
-            ThemeManager.thmColor.InitColors(); //This fills up the table with Windows11 defaults.
-            ThemeManager.thmColor
-                .SetTheme(); //Set the colors, this need to handle the case when not all colors are defined in the theme file
-            writeLog("After theme init");
+            try
+            {
+                ThemeManager.thmColor = new ThemeColorTable(); //Init colortable
+                ThemeManager.thmColor.InitColors(); //This fills up the table with Windows11 defaults.
+                ThemeManager.thmColor
+                    .SetTheme(); //Set the colors, this need to handle the case when not all colors are defined in the theme file
+                writeLog("After theme init");
+            }
+            catch (Exception ex)
+            {
+                writeLog("WARNING: Theme initialization failed: " + ex.Message);
+            }
 
 
 

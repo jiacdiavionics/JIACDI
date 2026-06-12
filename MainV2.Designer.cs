@@ -210,7 +210,13 @@ namespace MissionPlanner
             this.menu_AdvanceLock.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             resources.ApplyResources(this.menu_AdvanceLock, "menu_AdvanceLock");
             this.menu_AdvanceLock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.menu_AdvanceLock.Image = global::MissionPlanner.Properties.Resources.lock_icon;
+            try {
+                this.menu_AdvanceLock.Image = global::MissionPlanner.Properties.Resources.lock_icon;
+            }
+            catch {
+                // Fallback - no image if resource fails to load
+                this.menu_AdvanceLock.Image = null;
+            }
             this.menu_AdvanceLock.Name = "menu_AdvanceLock";
             this.menu_AdvanceLock.ToolTipText = "Lock/Unlock Advanced Menus (Ctrl+L)";
             this.menu_AdvanceLock.Click += new System.EventHandler(this.menu_AdvanceLock_Click);

@@ -17,16 +17,30 @@ namespace MissionPlanner
             Console.WriteLine(strVersion);
 
             // JIAC&DI branding - show Jordan flag and JIAC&DI logo
-            if (pictureBox_logo != null)
+            try
             {
-                pictureBox_logo.Image = MissionPlanner.Properties.Resources.jiacdi_splash_logo;
-                pictureBox_logo.Visible = true;
+                if (pictureBox_logo != null)
+                {
+                    pictureBox_logo.Image = MissionPlanner.Properties.Resources.jiacdi_splash_logo;
+                    pictureBox_logo.Visible = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to load splash logo: " + ex.Message);
             }
 
-            if (pictureBox1 != null)
+            try
             {
-                pictureBox1.Image = MissionPlanner.Properties.Resources.jordan_flag;
-                pictureBox1.Visible = true;
+                if (pictureBox1 != null)
+                {
+                    pictureBox1.Image = MissionPlanner.Properties.Resources.jordan_flag;
+                    pictureBox1.Visible = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to load Jordan flag: " + ex.Message);
             }
 
             Console.WriteLine("Splash .ctor - JIAC&DI branding loaded");
