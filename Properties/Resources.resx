@@ -419,9 +419,9 @@
     <value>{\rtf1\ansi\ansicpg1252\deff0\deflang3081\deflangfe3081{\fonttbl{\f0\fswiss\fprq2\fcharset0 Calibri;}}
 {\colortbl ;\red0\green0\blue255;}
 {\*\generator Msftedit 5.41.21.2510;}\viewkind4\uc1\pard\nowidctlpar\sa200\sl276\slmult1\f0\fs22\par
-\tab Welcome to the \b JIAC&DI Avionics Team Mission Planner\b0 , mission planning for Unmanned Aerial Vehicles (\b UAV\b0 ).\par
+\tab Welcome to the \b JIAC&amp;DI Avionics Team Mission Planner\b0 , mission planning for Unmanned Aerial Vehicles (\b UAV\b0 ).\par
 \par
-\pard\nowidctlpar\tab\b Company:\b0  JIAC&DI - Jordanian Institute for Aviation and Drones Innovation\par
+\pard\nowidctlpar\tab\b Company:\b0  JIAC&amp;DI - Jordanian Institute for Aviation and Drones Innovation\par
 \tab\b Division:\b0  Avionics Team\par
 \tab\b Version:\b0  1.0.0\par
 \par
@@ -430,9 +430,9 @@
 \pard\nowidctlpar\tab\b Support:\b0  support@jiacdi.com.jo\par
 \tab\b Website:\b0  https://jiacdi.com.jo/\par
 \par
-\pard\nowidctlpar\b Main Developer:\b0  JIAC&DI Avionics Team\par
-\tab\b Design:\b0  JIAC&DI Design Department\par
-\tab\b Contributions from:\b0  JIAC&DI Development Team and {\field{\*\fldinst{HYPERLINK "https://github.com/ArduPilot/MissionPlanner/graphs/contributors"}}{\fldrslt{\ul\cf1 Open Source Community}}}\f0\fs22\par
+\pard\nowidctlpar\b Main Developer:\b0  JIAC&amp;DI Avionics Team\par
+\tab\b Design:\b0  JIAC&amp;DI Design Department\par
+\tab\b Contributions from:\b0  JIAC&amp;DI Development Team and {\field{\*\fldinst{HYPERLINK "https://github.com/ArduPilot/MissionPlanner/graphs/contributors"}}{\fldrslt{\ul\cf1 Open Source Community}}}\f0\fs22\par
 \par
 \b Libraries:\b0  Gmap.net, Sharpkml, SharpZipLib, IronPython, KMLib, OpenTK, ZedGraph, alglib, BouncyCastle, DotSpatial, LibVLC, netDXF\par
 \b Acknowledgment:\b0  Based on Mission Planner, an open source UAV mission planning software.\par
