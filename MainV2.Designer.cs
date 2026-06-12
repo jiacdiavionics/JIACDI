@@ -53,6 +53,7 @@ namespace MissionPlanner
             this.toolStripConnectionControl = new MissionPlanner.Controls.ToolStripConnectionControl();
             this.MenuArduPilot = new System.Windows.Forms.ToolStripButton();
             this.menu = new MissionPlanner.Controls.MyButton();
+            this.menu_AdvanceLock = new System.Windows.Forms.ToolStripButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.status1 = new MissionPlanner.Controls.Status();
             this.MainMenu.SuspendLayout();
@@ -206,7 +207,6 @@ namespace MissionPlanner
             // 
             // menu_AdvanceLock
             // 
-            this.menu_AdvanceLock = new System.Windows.Forms.ToolStripButton();
             this.menu_AdvanceLock.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             resources.ApplyResources(this.menu_AdvanceLock, "menu_AdvanceLock");
             this.menu_AdvanceLock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
