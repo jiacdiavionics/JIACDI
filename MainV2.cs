@@ -4721,11 +4721,38 @@ namespace MissionPlanner
         {
             try
             {
-                System.Diagnostics.Process.Start("https://ardupilot.org/?utm_source=Menu&utm_campaign=MP");
+                System.Diagnostics.Process.Start("https://jiacdi.com.jo/");
             }
             catch
             {
-                CustomMessageBox.Show("Failed to open url https://ardupilot.org");
+                CustomMessageBox.Show("Failed to open url https://jiacdi.com.jo");
+            }
+        }
+
+        private void menu_AdvanceLock_Click(object sender, EventArgs e)
+        {
+            // Toggle advanced menu lock
+            if (MainV2.UserObject != null && MainV2.UserObject.ToString() == "1234566")
+            {
+                MainV2.UserObject = null;
+                menu_AdvanceLock.Image = MissionPlanner.Properties.Resources.lock_icon;
+                CustomMessageBox.Show("Advanced menus locked.", "JIAC&DI Mission Planner");
+            }
+            else
+            {
+                // Show password dialog
+                string password = "";
+                var result = InputBox.Show("Enter password to unlock advanced menus:", "Unlock Advanced Menus", ref password, true);
+                if (result == DialogResult.OK && password == "1234566")
+                {
+                    MainV2.UserObject = "1234566";
+                    menu_AdvanceLock.Image = MissionPlanner.Properties.Resources.unlock_icon;
+                    CustomMessageBox.Show("Advanced menus unlocked.", "JIAC&DI Mission Planner");
+                }
+                else if (result == DialogResult.OK && !string.IsNullOrEmpty(password))
+                {
+                    CustomMessageBox.Show("Invalid password.", "Error");
+                }
             }
         }
 

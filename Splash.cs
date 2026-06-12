@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -12,18 +12,20 @@ namespace MissionPlanner
 
             string strVersion = typeof(Splash).GetType().Assembly.GetName().Version.ToString();
 
-            TXT_version.Text = "Version: " + Application.ProductVersion; // +" Build " + strVersion;
+            TXT_version.Text = "Version: " + Application.ProductVersion;
 
             Console.WriteLine(strVersion);
 
-            if (Program.Logo != null)
+            // JIAC&DI branding - show Jordan flag and JIAC&DI logo
+            if (pictureBox1 != null)
             {
-                pictureBox1.BackgroundImage = MissionPlanner.Properties.Resources.bgdark;
-                pictureBox1.Image = Program.Logo;
+                pictureBox1.BackgroundImage = MissionPlanner.Properties.Resources.jordan_flag;
+                pictureBox1.Image = MissionPlanner.Properties.Resources.jiacdi_splash_logo;
                 pictureBox1.Visible = true;
+                pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             }
 
-            Console.WriteLine("Splash .ctor");
+            Console.WriteLine("Splash .ctor - JIAC&DI branding loaded");
         }
     }
 }
