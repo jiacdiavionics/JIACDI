@@ -23,15 +23,19 @@ namespace MissionPlanner.Controls
             
             if (currentlyLocked)
             {
-                lblStatus.Text = "Advanced menus are currently LOCKED.\nClick 'Unlock' to enter password and unlock, or 'Lock' to keep them locked.";
+                lblStatus.Text = "Advanced menus are currently LOCKED.\nClick 'Unlock' to enter password and unlock, or 'Keep Locked' to keep them locked.";
                 btnLock.Visible = true;
+                btnLock.Text = "Keep Locked";
+                btnUnlock.Visible = true;
                 btnUnlock.Text = "Unlock";
             }
             else
             {
-                lblStatus.Text = "Advanced menus are currently UNLOCKED.\nClick 'Lock' to lock them, or 'Unlock' to keep them unlocked.";
+                lblStatus.Text = "Advanced menus are currently UNLOCKED.\nClick 'Lock' to lock them, or 'Keep Unlocked' to keep them unlocked.";
+                btnLock.Visible = true;
                 btnLock.Text = "Lock";
                 btnUnlock.Visible = true;
+                btnUnlock.Text = "Keep Unlocked";
             }
         }
         
