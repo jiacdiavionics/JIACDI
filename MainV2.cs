@@ -1098,7 +1098,7 @@ namespace MissionPlanner
                 this.Icon = Icon.FromHandle(((Bitmap) Program.IconFile).GetHicon());
             }
 
-            MenuArduPilot.Image = new Bitmap(Properties.Resources._0d92fed790a3a70170e61a86db103f399a595c70,
+            MenuArduPilot.Image = new Bitmap(Properties.Resources.FW_icons_2013_logos_01,
                 (int) (200), 31);
             MenuArduPilot.Width = MenuArduPilot.Image.Width;
 
