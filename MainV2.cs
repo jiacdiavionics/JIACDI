@@ -4201,12 +4201,9 @@ namespace MissionPlanner
                 return true;
             }
 
-            if (keyData == (Keys.Control | Keys.L)) // limits
+            if (keyData == (Keys.Control | Keys.L)) // Advanced lock dialog
             {
-                //new DigitalSkyUI().ShowUserControl();
-
-                new SpectrogramUI().Show();
-
+                ShowAdvancedLockDialog();
                 return true;
             }
 
@@ -4753,33 +4750,46 @@ namespace MissionPlanner
             }
         }
 
+        private void ShowAdvancedLockDialog()
+        {
+            // Show the advanced lock dialog
+            var dialog = new MissionPlanner.Controls.AdvancedLockDialog(!_hiddenMenusUnlocked);
+            var result = dialog.ShowDialog();
+            
+            if (result == DialogResult.OK)
+            {
+                if (_hiddenMenusUnlocked)
+                {
+                    // We are unlocked and user clicked Lock
+                    _hiddenMenusUnlocked = false;
+                    menu_AdvanceLock.Image = MissionPlanner.Properties.Resources.lock_icon;
+                    updateLayout(null, null);
+                    CustomMessageBox.Show("Advanced menus locked.", "JIAC&DI Mission Planner");
+                }
+                else
+                {
+                    // We are locked and user clicked Unlock - show password dialog
+                    string password = "";
+                    var pwdResult = InputBox.Show("Enter password to unlock advanced menus:", "Unlock Advanced Menus", ref password, true);
+                    if (pwdResult == DialogResult.OK && password == UNLOCK_PASSWORD)
+                    {
+                        _hiddenMenusUnlocked = true;
+                        menu_AdvanceLock.Image = MissionPlanner.Properties.Resources.unlock_icon;
+                        updateLayout(null, null);
+                        CustomMessageBox.Show("Advanced menus unlocked.", "JIAC&DI Mission Planner");
+                    }
+                    else if (pwdResult == DialogResult.OK && !string.IsNullOrEmpty(password))
+                    {
+                        CustomMessageBox.Show("Invalid password.", "Error");
+                    }
+                }
+            }
+        }
+
         private void menu_AdvanceLock_Click(object sender, EventArgs e)
         {
-            // Toggle advanced menu lock
-            if (_hiddenMenusUnlocked)
-            {
-                _hiddenMenusUnlocked = false;
-                menu_AdvanceLock.Image = MissionPlanner.Properties.Resources.lock_icon;
-                updateLayout(null, null);
-                CustomMessageBox.Show("Advanced menus locked.", "JIAC&DI Mission Planner");
-            }
-            else
-            {
-                // Show password dialog
-                string password = "";
-                var result = InputBox.Show("Enter password to unlock advanced menus:", "Unlock Advanced Menus", ref password, true);
-                if (result == System.Windows.Forms.DialogResult.OK && password == UNLOCK_PASSWORD)
-                {
-                    _hiddenMenusUnlocked = true;
-                    menu_AdvanceLock.Image = MissionPlanner.Properties.Resources.unlock_icon;
-                    updateLayout(null, null);
-                    CustomMessageBox.Show("Advanced menus unlocked.", "JIAC&DI Mission Planner");
-                }
-                else if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrEmpty(password))
-                {
-                    CustomMessageBox.Show("Invalid password.", "Error");
-                }
-            }
+            // Show the advanced lock dialog
+            ShowAdvancedLockDialog();
         }
 
         private void connectionListToolStripMenuItem_Click(object sender, EventArgs e)
