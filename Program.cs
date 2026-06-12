@@ -268,11 +268,8 @@ namespace MissionPlanner
             }
 
             Splash = new MissionPlanner.Splash();
-            if (SplashBG != null)
-            {
-                Splash.BackgroundImage = SplashBG;
-                Splash.pictureBox1.Visible = false;
-            }
+            // Background image is already set in Splash.Designer.cs
+            // Don't override pictureBox1 visibility as it shows the Jordan flag
 
             Console.WriteLine("IconFile");
             if (IconFile != null)

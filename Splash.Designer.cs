@@ -31,7 +31,9 @@ namespace MissionPlanner
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Splash));
             this.label1 = new System.Windows.Forms.Label();
             this.TXT_version = new System.Windows.Forms.Label();
+            this.pictureBox_logo = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_logo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -41,9 +43,9 @@ namespace MissionPlanner
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(440, 300);
+            this.label1.Location = new System.Drawing.Point(430, 290);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(140, 15);
+            this.label1.Size = new System.Drawing.Size(150, 15);
             this.label1.TabIndex = 0;
             this.label1.Tag = "custom";
             this.label1.Text = "JIAC&DI Avionics Team";
@@ -53,30 +55,39 @@ namespace MissionPlanner
             // 
             this.TXT_version.BackColor = System.Drawing.Color.Transparent;
             this.TXT_version.ForeColor = System.Drawing.Color.White;
-            this.TXT_version.Location = new System.Drawing.Point(420, 275);
+            this.TXT_version.Location = new System.Drawing.Point(430, 265);
             this.TXT_version.Name = "TXT_version";
-            this.TXT_version.Size = new System.Drawing.Size(160, 25);
+            this.TXT_version.Size = new System.Drawing.Size(155, 25);
             this.TXT_version.TabIndex = 1;
             this.TXT_version.Text = "Version: ";
             this.TXT_version.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // pictureBox_logo
+            // 
+            this.pictureBox_logo.Location = new System.Drawing.Point(125, 80);
+            this.pictureBox_logo.Name = "pictureBox_logo";
+            this.pictureBox_logo.Size = new System.Drawing.Size(350, 100);
+            this.pictureBox_logo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox_logo.TabIndex = 2;
+            this.pictureBox_logo.TabStop = false;
+            // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(150, 40);
+            this.pictureBox1.Location = new System.Drawing.Point(200, 200);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(300, 180);
+            this.pictureBox1.Size = new System.Drawing.Size(200, 120);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 2;
+            this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.Visible = false;
             // 
             // Splash
             // 
-            // Background will be set by Program.cs using SplashBG
+            this.BackgroundImage = global::MissionPlanner.Properties.Resources.jiacdi_splashbg;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(600, 375);
             this.ControlBox = false;
             this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.pictureBox_logo);
             this.Controls.Add(this.TXT_version);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -89,6 +100,7 @@ namespace MissionPlanner
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "JIAC&DI Mission Planner";
             this.TopMost = true;
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_logo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -99,6 +111,7 @@ namespace MissionPlanner
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label TXT_version;
+        public System.Windows.Forms.PictureBox pictureBox_logo;
         public System.Windows.Forms.PictureBox pictureBox1;
     }
 }
