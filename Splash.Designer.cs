@@ -72,7 +72,7 @@ namespace MissionPlanner
             // 
             // Splash
             // 
-            this.BackgroundImage = global::MissionPlanner.Properties.Resources.jiacdi_splashbg;
+            // Background will be set by Program.cs using SplashBG
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(600, 375);
             this.ControlBox = false;

@@ -235,6 +235,8 @@ namespace MissionPlanner
 
             if (File.Exists(Settings.GetRunningDirectory() + "splashbg.png")) // 600*375
                 SplashBG = new Bitmap(Settings.GetRunningDirectory() + "splashbg.png");
+            else
+                SplashBG = new Bitmap(MissionPlanner.Properties.Resources.jiacdi_splashbg);
 
             try
             {

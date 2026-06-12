@@ -1876,5 +1876,16 @@ namespace MissionPlanner.Properties {
             }
         }
 
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap splashbg {
+            get {
+                object obj = ResourceManager.GetObject("splashbg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+
             }
 }
