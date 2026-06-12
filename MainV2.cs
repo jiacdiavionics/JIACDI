@@ -644,11 +644,21 @@ namespace MissionPlanner
         public MainV2()
         {
             log.Info("Mainv2 ctor");
-
+            
+            // Startup crash diagnosis logging
+            string logFile = "";
+            try { logFile = Settings.GetDataDirectory() + "startup_crash_log.txt"; } catch { }
+            Action<string> writeLog = (msg) => {
+                try { if (logFile != "") System.IO.File.AppendAllText(logFile, "[" + DateTime.Now + "] MainV2: " + msg + "\n"); } catch { }
+            };
+            writeLog("Starting constructor");
+            
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            writeLog("After SetStyle");
 
             // create one here - but override on load
             Settings.Instance["guid"] = Guid.NewGuid().ToString();
+            writeLog("After guid");
 
             //Check for -config argument, and if it is an xml extension filename then use that for config
             if (Program.args.Length > 0 && Program.args.Contains("-config"))
@@ -665,11 +675,13 @@ namespace MissionPlanner
 
             // load config
             LoadConfig();
+            writeLog("After LoadConfig");
 
             speech_armed_only = Settings.Instance.GetBoolean("speech_armed_only", false);
 
             // force language to be loaded
             L10N.GetConfigLang();
+            writeLog("After L10N.GetConfigLang");
 
             ShowAirports = true;
 
@@ -700,8 +712,10 @@ namespace MissionPlanner
             Application.DoEvents();
 
             instance = this;
+            writeLog("After instance = this");
 
             MyView = new MainSwitcher(this);
+            writeLog("After MyView = new MainSwitcher");
 
             View = MyView;
 
@@ -709,35 +723,45 @@ namespace MissionPlanner
             {
                 changelanguage(CultureInfoEx.GetCultureInfo(Settings.Instance["language"]));
             }
+            writeLog("After changelanguage");
 
             InitializeComponent();
+            writeLog("After InitializeComponent");
 
             //Init Theme table and load Windows11 as a default
             ThemeManager.thmColor = new ThemeColorTable(); //Init colortable
             ThemeManager.thmColor.InitColors(); //This fills up the table with Windows11 defaults.
             ThemeManager.thmColor
                 .SetTheme(); //Set the colors, this need to handle the case when not all colors are defined in the theme file
+            writeLog("After theme init");
 
 
 
             // Force reset theme to ensure Windows11 theme is always applied
             Settings.Instance["theme"] = "Windows11.mpsystheme";
+            writeLog("Before LoadTheme");
 
             ThemeManager.LoadTheme(Settings.Instance["theme"]);
+            writeLog("After LoadTheme");
 
             Utilities.ThemeManager.ApplyThemeTo(this);
+            writeLog("After ApplyThemeTo(this)");
 
 
             // define default basestream
             comPort.BaseStream = new SerialPort();
+            writeLog("After SerialPort");
+
+            _connectionControl = toolStripConnectionControl.ConnectionControl;
+            writeLog("After _connectionControl");
             comPort.BaseStream.BaudRate = 57600;
             ((SerialPort)comPort.BaseStream).espFix = Settings.Instance.GetBoolean("CHK_rtsresetesp32", false);
 
-            _connectionControl = toolStripConnectionControl.ConnectionControl;
             _connectionControl.CMB_baudrate.TextChanged += this.CMB_baudrate_TextChanged;
             _connectionControl.CMB_serialport.SelectedIndexChanged += this.CMB_serialport_SelectedIndexChanged;
             _connectionControl.CMB_serialport.Click += this.CMB_serialport_Click;
             _connectionControl.cmb_sysid.Click += cmb_sysid_Click;
+            writeLog("After event handlers");
 
             _connectionControl.ShowLinkStats += (sender, e) => ShowConnectionStatsForm();
             srtm.datadirectory = $"{Settings.GetDataDirectory()}srtm";
@@ -1096,12 +1120,12 @@ namespace MissionPlanner
                 this.Icon = Icon.FromHandle(((Bitmap) Program.IconFile).GetHicon());
             }
 
-            MenuArduPilot.Image = new Bitmap(Properties.Resources._0d92fed790a3a70170e61a86db103f399a595c70,
-                (int) (200), 31);
-            MenuArduPilot.Width = MenuArduPilot.Image.Width;
-
-            if (Program.Logo2 != null)
-                MenuArduPilot.Image = Program.Logo2;
+            // Use JIAC&DI logo - already set in InitializeComponent/Designer
+            // Just ensure proper sizing
+            if (MenuArduPilot.Image != null)
+            {
+                MenuArduPilot.Width = Math.Min(MenuArduPilot.Image.Width, 200);
+            }
 
             Application.DoEvents();
 

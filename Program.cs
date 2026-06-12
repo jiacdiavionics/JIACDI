@@ -474,6 +474,15 @@ namespace MissionPlanner
             {
                 Thread.CurrentThread.Name = "Base Thread";
                 Console.WriteLine("Application.Run(new MainV2())");
+                
+                // Add detailed logging for crash diagnosis
+                string logFile = Path.Combine(Settings.GetDataDirectory(), "startup_crash_log.txt");
+                try
+                {
+                    File.AppendAllText(logFile, "\n[" + DateTime.Now + "] Starting MainV2 constructor\n");
+                }
+                catch { }
+
                 Application.Run(new MainV2());
             }
             catch (Exception ex)
@@ -481,6 +490,25 @@ namespace MissionPlanner
                 log.Fatal("Fatal app exception", ex);
                 Console.WriteLine(ex.ToString());
                 Console.WriteLine("Application encountered a fatal error. Please check the log file for details.");
+                
+                // Add crash logging
+                try
+                {
+                    string logFile = Path.Combine(Settings.GetDataDirectory(), "startup_crash_log.txt");
+                    string crashLog = "\n[" + DateTime.Now + "] CRASH in Application.Run:\n" +
+                        "Exception: " + ex.GetType().Name + "\n" +
+                        "Message: " + ex.Message + "\n" +
+                        "StackTrace: " + ex.StackTrace + "\n";
+                    if (ex.InnerException != null)
+                    {
+                        crashLog += "Inner Exception: " + ex.InnerException.GetType().Name + "\n" +
+                            "Inner Message: " + ex.InnerException.Message + "\n" +
+                            "Inner StackTrace: " + ex.InnerException.StackTrace + "\n";
+                    }
+                    File.AppendAllText(logFile, crashLog);
+                    Console.WriteLine("Crash log written to: " + logFile);
+                }
+                catch { }
             }
 
             try
