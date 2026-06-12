@@ -483,9 +483,7 @@ namespace MissionPlanner
             {
                 log.Fatal("Fatal app exception", ex);
                 Console.WriteLine(ex.ToString());
-
-                Console.WriteLine("\nPress any key to exit!");
-                Console.ReadLine();
+                Console.WriteLine("Application encountered a fatal error. Please check the log file for details.");
             }
 
             try

@@ -799,11 +799,16 @@ mc:Ignorable=""d""
         {
             if (level == 0)
             {
-                temp.BackColor = BGColor;
-                temp.ForeColor = TextColor;
+                try { temp.BackColor = BGColor; } catch { }
+                try { temp.ForeColor = TextColor; } catch { }
             }
 
-            foreach (Control ctl in temp.Controls)
+            try
+            {
+                // Create a snapshot of controls to avoid collection modified exception
+                var controls = temp.Controls.OfType<Control>().ToList();
+                foreach (Control ctl in controls)
+                {
             {
                 if (ctl.GetType() == typeof(Panel))
                 {
@@ -1052,20 +1057,25 @@ mc:Ignorable=""d""
                     ((MyProgressBar)ctl).BGGradTop = BGColor;
                 }
 
-                if (ctl.Controls.Count > 0)
-                    ApplyCustomTheme(ctl, 1);
+                    try { if (ctl.Controls.Count > 0) ApplyCustomTheme(ctl, 1); } catch { }
+                }
             }
+            catch (Exception ex) { log.Error("ApplyCustomTheme error", ex); }
         }
 
         private static void ApplyTheme(Control temp, int level)
         {
             if (level == 0)
             {
-                temp.BackColor = BGColor;
-                temp.ForeColor = TextColor;
+                try { temp.BackColor = BGColor; } catch { }
+                try { temp.ForeColor = TextColor; } catch { }
             }
 
-            foreach (Control ctl in temp.Controls)
+            try
+            {
+                // Create a snapshot of controls to avoid collection modified exception
+                var controls = temp.Controls.OfType<Control>().ToList();
+                foreach (Control ctl in controls)
             {
                 if (ctl.GetType() == typeof(Label))
                 {
@@ -1357,10 +1367,15 @@ mc:Ignorable=""d""
                     ((MyProgressBar)ctl).BGGradBot = ProgressBarColorBot;
                     ((MyProgressBar)ctl).Outline = ProgressBarOutlineColor;        //sets the colour of the progress bar box
                 }
-                if ((ctl.Controls.Count > 0) && (ctl.GetType() != typeof(QuickView)))      //Do not iterate into quickView type leave labels as they are
-                    ApplyTheme(ctl, 1);
-
+                try
+                {
+                    if ((ctl.Controls.Count > 0) && (ctl.GetType() != typeof(QuickView)))      //Do not iterate into quickView type leave labels as they are
+                        ApplyTheme(ctl, 1);
+                }
+                catch { }
             }
+            }
+            catch (Exception ex) { log.Error("ApplyTheme error", ex); }
         }
 
         public static void Init()
