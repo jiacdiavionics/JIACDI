@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  ci-check:
-    name: CI Check
+  build-release:
+    name: Build Release
     runs-on: windows-latest
 
     steps:
@@ -22,27 +22,39 @@ jobs:
           $msbuildPath = Split-Path (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\Current\Bin\amd64\MSBuild.exe | Select-Object -First 1) -Parent
           $env:PATH = $msbuildPath + ';' + $env:PATH
           nuget locals all -clear
-          msbuild -v:m -restore -t:Build -p:Configuration=Debug MissionPlanner.sln
           msbuild -v:m -restore -t:Build -p:Configuration=Release MissionPlanner.sln
 
-      - name: List Build Outputs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DIMP-Release
+          path: bin/Release/net461
+
+  build-debug:
+    name: Build Debug
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 10
+
+      - name: Cache multiple paths
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/obj/**
+          key: ${{ runner.os }}-buildDebug
+
+      - name: Build
         shell: pwsh
         run: |
-          Write-Host "=== Release Build ==="
-          Get-ChildItem -Path "bin/Release" -Recurse -Include *.exe,*.dll | Select-Object FullName
-          Write-Host "=== Debug Build ==="
-          Get-ChildItem -Path "bin/Debug" -Recurse -Include *.exe,*.dll | Select-Object FullName
+          $msbuildPath = Split-Path (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\Current\Bin\amd64\MSBuild.exe | Select-Object -First 1) -Parent
+          $env:PATH = $msbuildPath + ';' + $env:PATH
+          nuget locals all -clear
+          msbuild -v:m -restore -t:Build -p:Configuration=Debug MissionPlanner.sln
 
-      - name: Upload Release Build Artifacts
-        if: success()
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: DIMP-Release-Build
-          path: bin/Release/
-
-      - name: Upload Debug Build Artifacts
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: DIMP-Debug-Build
-          path: bin/Debug/
+          name: DIMP-Debug
+          path: bin/Debug/net461
