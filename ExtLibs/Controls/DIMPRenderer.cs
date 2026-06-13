@@ -94,8 +94,8 @@ namespace MissionPlanner.Controls
 
         protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
         {
-            // Custom checkbox rendering
-            if (e.Item.Checked)
+            // Custom checkbox rendering - only for ToolStripMenuItem which has Checked property
+            if (e.Item is ToolStripMenuItem menuItem && menuItem.Checked)
             {
                 Rectangle bounds = e.ImageRectangle;
                 using (SolidBrush brush = new SolidBrush(AccentColor))
