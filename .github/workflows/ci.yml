@@ -31,17 +31,6 @@ jobs:
           Write-Host "=== .sln File Check ==="
           Get-ChildItem -Path . -Filter "*.sln" -Recurse | Select-Object FullName
 
-      - name: NuGet Restore
-        shell: pwsh
-        run: |
-          Write-Host "=== NuGet Restore ==="
-          nuget locals all -clear
-          nuget restore MissionPlanner.sln
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "NuGet restore failed with exit code $LASTEXITCODE"
-            exit 1
-          }
-
       - name: Build Debug
         shell: pwsh
         run: |
@@ -49,11 +38,8 @@ jobs:
           $msbuildPath = Split-Path (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\Current\Bin\amd64\MSBuild.exe | Select-Object -First 1) -Parent
           $env:PATH = $msbuildPath + ';' + $env:PATH
           Write-Host "MSBuild path: $msbuildPath"
-          msbuild -v:m -t:Build -p:Configuration=Debug MissionPlanner.sln
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "Debug build failed with exit code $LASTEXITCODE"
-            exit 1
-          }
+          nuget locals all -clear
+          msbuild -v:m -restore -t:Build -p:Configuration=Debug MissionPlanner.sln
 
       - name: Build Release
         shell: pwsh
@@ -61,11 +47,7 @@ jobs:
           Write-Host "=== Build Release ==="
           $msbuildPath = Split-Path (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\Current\Bin\amd64\MSBuild.exe | Select-Object -First 1) -Parent
           $env:PATH = $msbuildPath + ';' + $env:PATH
-          msbuild -v:m -t:Build -p:Configuration=Release MissionPlanner.sln
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "Release build failed with exit code $LASTEXITCODE"
-            exit 1
-          }
+          msbuild -v:m -restore -t:Build -p:Configuration=Release MissionPlanner.sln
 
       - name: List Build Outputs
         shell: pwsh
@@ -81,7 +63,6 @@ jobs:
         with:
           name: DIMP-Release-Build
           path: bin/Release/
-          retention-days: 7
 
       - name: Upload Debug Build Artifacts
         if: success()
@@ -89,4 +70,3 @@ jobs:
         with:
           name: DIMP-Debug-Build
           path: bin/Debug/
-          retention-days: 7
