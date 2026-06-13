@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 
 namespace MissionPlanner.Controls
