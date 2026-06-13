@@ -12,7 +12,6 @@ namespace MissionPlanner.Controls
     {
         // DIMP Professional Aviation Color Palette
         private static readonly Color BackgroundColor = Color.FromArgb(30, 30, 46);
-        private static readonly Color ControlBackgroundColor = Color.FromArgb(26, 26, 42);
         private static readonly Color AccentColor = Color.FromArgb(0, 122, 204);
         private static readonly Color AccentHoverColor = Color.FromArgb(0, 142, 232);
         private static readonly Color TextColor = Color.FromArgb(220, 220, 230);
@@ -35,15 +34,6 @@ namespace MissionPlanner.Controls
             }
         }
 
-        protected override void OnRenderMenuStripBackground(ToolStripRenderEventArgs e)
-        {
-            // Use solid background color
-            using (SolidBrush brush = new SolidBrush(BackgroundColor))
-            {
-                e.Graphics.FillRectangle(brush, e.ToolStrip.ClientRectangle);
-            }
-        }
-
         protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
         {
             ToolStripButton button = e.Item as ToolStripButton;
@@ -58,15 +48,10 @@ namespace MissionPlanner.Controls
             // Determine button state
             bool isSelected = button.Selected || button.Checked;
             bool isPressed = button.Pressed;
-            bool isConnected = button.Name == "MenuConnect" && IsConnectedState(button);
 
             // Choose colors based on state
             Color backColor;
-            if (isConnected)
-            {
-                backColor = Color.FromArgb(220, 80, 80); // Red for disconnect
-            }
-            else if (isPressed)
+            if (isPressed)
             {
                 backColor = AccentHoverColor;
             }
@@ -98,7 +83,7 @@ namespace MissionPlanner.Controls
             }
 
             // Draw underline for active tab
-            if (button.Selected || (button.Name == "MenuFlightData" && !_anyTabSelected))
+            if (button.Selected)
             {
                 using (Pen pen = new Pen(AccentColor, 2))
                 {
@@ -106,8 +91,6 @@ namespace MissionPlanner.Controls
                 }
             }
         }
-
-        private bool _anyTabSelected = false;
 
         protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
         {
@@ -141,7 +124,6 @@ namespace MissionPlanner.Controls
 
         protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
         {
-            // Remove default border, use custom styling
             // Draw subtle bottom border for menu strip
             if (e.ToolStrip is MenuStrip)
             {
@@ -171,16 +153,6 @@ namespace MissionPlanner.Controls
                     e.Graphics.FillRectangle(brush, bounds);
                 }
             }
-        }
-
-        protected override void OnRenderStatusStripSizingGrip(ToolStripStatusPanelSizingGripRenderEventArgs e)
-        {
-            // Custom sizing grip - hide it for modern look
-        }
-
-        protected override void OnRenderImageMargin(ToolStripRenderEventArgs e)
-        {
-            // Remove image margin background
         }
 
         protected override void OnRenderToolStripPanelBackground(ToolStripPanelRenderEventArgs e)
@@ -215,34 +187,5 @@ namespace MissionPlanner.Controls
             TextRenderer.DrawText(e.Graphics, e.Item.Text, e.Item.Font, 
                 e.TextRectangle, textColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
         }
-
-        private bool IsConnectedState(ToolStripButton button)
-        {
-            // Check if this is a connected state button
-            // This would need to be connected to actual connection state
-            return false; // Default to disconnected style
-        }
-    }
-
-    /// <summary>
-    /// DIMP Professional Button Style
-    /// Modern flat button with hover effects
-    /// </summary>
-    public class DIMPButtonRenderer : ToolStripButton
-    {
-        public DIMPButtonRenderer()
-        {
-            this.FlatStyle = FlatStyle.Flat;
-            this.FlatAppearance.BorderSize = 0;
-            this.FlatAppearance.MouseOverBackColor = AccentHoverColor;
-            this.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 90, 160);
-            this.BackColor = BackgroundColor;
-            this.ForeColor = TextColor;
-            this.Font = new Font("Segoe UI", 9F);
-        }
-
-        private static readonly Color BackgroundColor = Color.FromArgb(30, 30, 46);
-        private static readonly Color AccentHoverColor = Color.FromArgb(0, 142, 232);
-        private static readonly Color TextColor = Color.FromArgb(220, 220, 230);
     }
 }
