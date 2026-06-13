@@ -24,22 +24,21 @@ jobs:
           nuget locals all -clear
           msbuild -v:m -restore -t:Build -p:Configuration=Debug MissionPlanner.sln
           msbuild -v:m -restore -t:Build -p:Configuration=Release MissionPlanner.sln
-          Get-ChildItem -Recurse -Directory bin | Select-Object FullName
 
       - name: List Build Outputs
         shell: pwsh
         run: |
           Write-Host "=== Release Build ==="
-          Get-ChildItem -Path "MissionPlanner/bin/Release" -Recurse -Include *.exe,*.dll | Select-Object FullName
+          Get-ChildItem -Path "bin/Release" -Recurse -Include *.exe,*.dll | Select-Object FullName
           Write-Host "=== Debug Build ==="
-          Get-ChildItem -Path "MissionPlanner/bin/Debug" -Recurse -Include *.exe,*.dll | Select-Object FullName
+          Get-ChildItem -Path "bin/Debug" -Recurse -Include *.exe,*.dll | Select-Object FullName
 
       - name: Upload Release Build Artifacts
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: DIMP-Release-Build
-          path: MissionPlanner/bin/Release/
+          path: bin/Release/
           retention-days: 7
 
       - name: Upload Debug Build Artifacts
@@ -47,5 +46,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: DIMP-Debug-Build
-          path: MissionPlanner/bin/Debug/
+          path: bin/Debug/
           retention-days: 7
