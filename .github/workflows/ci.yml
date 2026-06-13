@@ -24,3 +24,25 @@ jobs:
           nuget locals all -clear
           msbuild -v:m -restore -t:Build -p:Configuration=Debug MissionPlanner.sln
           msbuild -v:m -restore -t:Build -p:Configuration=Release MissionPlanner.sln
+
+      - name: Upload Release Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: DIMP-Release-Build
+          path: |
+            MissionPlanner/bin/Release/**/*.exe
+            MissionPlanner/bin/Release/**/*.dll
+            MissionPlanner/bin/Release/**/*.pdb
+            MissionPlanner/bin/Release/**/*.config
+          retention-days: 7
+
+      - name: Upload Debug Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: DIMP-Debug-Build
+          path: |
+            MissionPlanner/bin/Debug/**/*.exe
+            MissionPlanner/bin/Debug/**/*.dll
+            MissionPlanner/bin/Debug/**/*.pdb
+            MissionPlanner/bin/Debug/**/*.config
+          retention-days: 7
