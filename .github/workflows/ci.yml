@@ -30,10 +30,10 @@ jobs:
         with:
           name: DIMP-Release-Build
           path: |
-            MissionPlanner/bin/Release/**/*.exe
-            MissionPlanner/bin/Release/**/*.dll
-            MissionPlanner/bin/Release/**/*.pdb
-            MissionPlanner/bin/Release/**/*.config
+            MissionPlanner/bin/Release/net461/**/*.exe
+            MissionPlanner/bin/Release/net461/**/*.dll
+            MissionPlanner/bin/Release/net461/**/*.pdb
+            MissionPlanner/bin/Release/net461/**/*.config
           retention-days: 7
 
       - name: Upload Debug Build Artifacts
@@ -41,8 +41,8 @@ jobs:
         with:
           name: DIMP-Debug-Build
           path: |
-            MissionPlanner/bin/Debug/**/*.exe
-            MissionPlanner/bin/Debug/**/*.dll
-            MissionPlanner/bin/Debug/**/*.pdb
-            MissionPlanner/bin/Debug/**/*.config
+            MissionPlanner/bin/Debug/net461/**/*.exe
+            MissionPlanner/bin/Debug/net461/**/*.dll
+            MissionPlanner/bin/Debug/net461/**/*.pdb
+            MissionPlanner/bin/Debug/net461/**/*.config
           retention-days: 7
