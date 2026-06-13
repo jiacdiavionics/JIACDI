@@ -1098,12 +1098,28 @@ namespace MissionPlanner
                 this.Icon = Icon.FromHandle(((Bitmap) Program.IconFile).GetHicon());
             }
 
-            MenuArduPilot.Image = new Bitmap(Properties.Resources.FW_icons_2013_logos_01,
-                (int) (200), 31);
-            MenuArduPilot.Width = MenuArduPilot.Image.Width;
-
-            if (Program.Logo2 != null)
-                MenuArduPilot.Image = Program.Logo2;
+            // Draw red "JIAC&DI" text on MenuArduPilot button
+            using (Bitmap bmp = new Bitmap(120, 30))
+            {
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    g.Clear(System.Drawing.Color.Transparent);
+                    using (Font font = new Font("Segoe UI", 14, System.Drawing.FontStyle.Bold))
+                    {
+                        using (Brush brush = new SolidBrush(System.Drawing.Color.Red))
+                        {
+                            StringFormat sf = new StringFormat();
+                            sf.Alignment = StringAlignment.Center;
+                            sf.LineAlignment = StringAlignment.Center;
+                            g.DrawString("JIAC&DI", font, brush, new RectangleF(0, 0, 120, 30), sf);
+                        }
+                    }
+                }
+                MenuArduPilot.Image = bmp;
+            }
+            MenuArduPilot.Width = 120;
+            MenuArduPilot.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 
             Application.DoEvents();
 
