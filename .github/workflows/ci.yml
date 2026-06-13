@@ -16,21 +16,6 @@ jobs:
           submodules: true
           fetch-depth: 10
 
-      - name: Diagnostic Info
-        shell: pwsh
-        run: |
-          Write-Host "=== Environment ==="
-          Write-Host "GITHUB_REF: $env:GITHUB_REF"
-          Write-Host "GITHUB_HEAD_REF: $env:GITHUB_HEAD_REF"
-          Write-Host "GITHUB_BASE_REF: $env:GITHUB_BASE_REF"
-          Write-Host "GITHUB_EVENT_NAME: $env:GITHUB_EVENT_NAME"
-          Write-Host ""
-          Write-Host "=== Repository Files ==="
-          Get-ChildItem -Path . -Name | Select-Object -First 20
-          Write-Host ""
-          Write-Host "=== .sln File Check ==="
-          Get-ChildItem -Path . -Filter "*.sln" -Recurse | Select-Object FullName
-
       - name: Build
         shell: pwsh
         run: |
