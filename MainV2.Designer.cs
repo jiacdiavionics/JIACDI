@@ -168,7 +168,7 @@ namespace MissionPlanner
             this.MenuInitConfig.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.MenuInitConfig.Name = "MenuInitConfig";
             this.MenuInitConfig.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
-            this.MenuInitConfig.Click += new System.EventHandler(this.MenuInitConfig_Click);
+            this.MenuInitConfig.Click += new System.EventHandler(this.MenuSetup_Click);
             // 
             // MenuConfigTune - Modern Tab Button
             // 
