@@ -16,14 +16,56 @@ jobs:
           submodules: true
           fetch-depth: 10
 
-      - name: Build
+      - name: Diagnostic Info
         shell: pwsh
         run: |
+          Write-Host "=== Environment ==="
+          Write-Host "GITHUB_REF: $env:GITHUB_REF"
+          Write-Host "GITHUB_HEAD_REF: $env:GITHUB_HEAD_REF"
+          Write-Host "GITHUB_BASE_REF: $env:GITHUB_BASE_REF"
+          Write-Host "GITHUB_EVENT_NAME: $env:GITHUB_EVENT_NAME"
+          Write-Host ""
+          Write-Host "=== Repository Files ==="
+          Get-ChildItem -Path . -Name | Select-Object -First 20
+          Write-Host ""
+          Write-Host "=== .sln File Check ==="
+          Get-ChildItem -Path . -Filter "*.sln" -Recurse | Select-Object FullName
+
+      - name: NuGet Restore
+        shell: pwsh
+        run: |
+          Write-Host "=== NuGet Restore ==="
+          nuget locals all -clear
+          nuget restore MissionPlanner.sln
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "NuGet restore failed with exit code $LASTEXITCODE"
+            exit 1
+          }
+
+      - name: Build Debug
+        shell: pwsh
+        run: |
+          Write-Host "=== Build Debug ==="
           $msbuildPath = Split-Path (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\Current\Bin\amd64\MSBuild.exe | Select-Object -First 1) -Parent
           $env:PATH = $msbuildPath + ';' + $env:PATH
-          nuget locals all -clear
-          msbuild -v:m -restore -t:Build -p:Configuration=Debug MissionPlanner.sln
-          msbuild -v:m -restore -t:Build -p:Configuration=Release MissionPlanner.sln
+          Write-Host "MSBuild path: $msbuildPath"
+          msbuild -v:m -t:Build -p:Configuration=Debug MissionPlanner.sln
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Debug build failed with exit code $LASTEXITCODE"
+            exit 1
+          }
+
+      - name: Build Release
+        shell: pwsh
+        run: |
+          Write-Host "=== Build Release ==="
+          $msbuildPath = Split-Path (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\Current\Bin\amd64\MSBuild.exe | Select-Object -First 1) -Parent
+          $env:PATH = $msbuildPath + ';' + $env:PATH
+          msbuild -v:m -t:Build -p:Configuration=Release MissionPlanner.sln
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Release build failed with exit code $LASTEXITCODE"
+            exit 1
+          }
 
       - name: List Build Outputs
         shell: pwsh
