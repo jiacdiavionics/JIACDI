@@ -137,88 +137,76 @@ namespace MissionPlanner
             resources.ApplyResources(this.connectionListToolStripMenuItem, "connectionListToolStripMenuItem");
             this.connectionListToolStripMenuItem.Click += new System.EventHandler(this.connectionListToolStripMenuItem_Click);
             // 
-            // MenuFlightData - Modern Tab Button
+            // MenuFlightData - Text Only Tab
             // 
             this.MenuFlightData.BackColor = System.Drawing.Color.Transparent;
             this.MenuFlightData.ForeColor = System.Drawing.Color.FromArgb(220, 220, 230);
             this.MenuFlightData.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MenuFlightData.Image = global::MissionPlanner.Properties.Resources.dark_flightdata_icon;
-            this.MenuFlightData.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.MenuFlightData.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.MenuFlightData.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             resources.ApplyResources(this.MenuFlightData, "MenuFlightData");
-            this.MenuFlightData.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
+            this.MenuFlightData.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MenuFlightData.Name = "MenuFlightData";
-            this.MenuFlightData.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
+            this.MenuFlightData.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
             this.MenuFlightData.Click += new System.EventHandler(this.MenuFlightData_Click);
             // 
-            // MenuFlightPlanner - Modern Tab Button
+            // MenuFlightPlanner - Text Only Tab
             // 
             this.MenuFlightPlanner.BackColor = System.Drawing.Color.Transparent;
             this.MenuFlightPlanner.ForeColor = System.Drawing.Color.FromArgb(220, 220, 230);
             this.MenuFlightPlanner.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MenuFlightPlanner.Image = global::MissionPlanner.Properties.Resources.dark_flightplan_icon;
-            this.MenuFlightPlanner.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.MenuFlightPlanner.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.MenuFlightPlanner.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             resources.ApplyResources(this.MenuFlightPlanner, "MenuFlightPlanner");
-            this.MenuFlightPlanner.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
+            this.MenuFlightPlanner.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MenuFlightPlanner.Name = "MenuFlightPlanner";
-            this.MenuFlightPlanner.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
+            this.MenuFlightPlanner.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
             this.MenuFlightPlanner.Click += new System.EventHandler(this.MenuFlightPlanner_Click);
             // 
-            // MenuInitConfig - Modern Tab Button
+            // MenuInitConfig - Text Only Tab
             // 
             this.MenuInitConfig.BackColor = System.Drawing.Color.Transparent;
             this.MenuInitConfig.ForeColor = System.Drawing.Color.FromArgb(220, 220, 230);
             this.MenuInitConfig.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MenuInitConfig.Image = global::MissionPlanner.Properties.Resources.dark_initialsetup_icon;
-            this.MenuInitConfig.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.MenuInitConfig.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.MenuInitConfig.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             resources.ApplyResources(this.MenuInitConfig, "MenuInitConfig");
-            this.MenuInitConfig.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
+            this.MenuInitConfig.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MenuInitConfig.Name = "MenuInitConfig";
-            this.MenuInitConfig.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
+            this.MenuInitConfig.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
             this.MenuInitConfig.Click += new System.EventHandler(this.MenuSetup_Click);
             // 
-            // MenuConfigTune - Modern Tab Button
+            // MenuConfigTune - Text Only Tab
             // 
             this.MenuConfigTune.BackColor = System.Drawing.Color.Transparent;
             this.MenuConfigTune.ForeColor = System.Drawing.Color.FromArgb(220, 220, 230);
             this.MenuConfigTune.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MenuConfigTune.Image = global::MissionPlanner.Properties.Resources.dark_tuningconfig_icon;
-            this.MenuConfigTune.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.MenuConfigTune.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.MenuConfigTune.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             resources.ApplyResources(this.MenuConfigTune, "MenuConfigTune");
-            this.MenuConfigTune.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
+            this.MenuConfigTune.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MenuConfigTune.Name = "MenuConfigTune";
-            this.MenuConfigTune.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
+            this.MenuConfigTune.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
             this.MenuConfigTune.Click += new System.EventHandler(this.MenuTuning_Click);
             // 
-            // MenuSimulation - Modern Tab Button
+            // MenuSimulation - Text Only Tab
             // 
             this.MenuSimulation.BackColor = System.Drawing.Color.Transparent;
             this.MenuSimulation.ForeColor = System.Drawing.Color.FromArgb(220, 220, 230);
             this.MenuSimulation.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MenuSimulation.Image = global::MissionPlanner.Properties.Resources.dark_simulation_icon;
-            this.MenuSimulation.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.MenuSimulation.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.MenuSimulation.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             resources.ApplyResources(this.MenuSimulation, "MenuSimulation");
-            this.MenuSimulation.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
+            this.MenuSimulation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MenuSimulation.Name = "MenuSimulation";
-            this.MenuSimulation.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
+            this.MenuSimulation.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
             this.MenuSimulation.Click += new System.EventHandler(this.MenuSimulation_Click);
             // 
-            // MenuHelp - Modern Tab Button
+            // MenuHelp - Text Only Tab
             // 
             this.MenuHelp.BackColor = System.Drawing.Color.Transparent;
             this.MenuHelp.ForeColor = System.Drawing.Color.FromArgb(220, 220, 230);
             this.MenuHelp.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MenuHelp.Image = global::MissionPlanner.Properties.Resources.dark_help_icon;
-            this.MenuHelp.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.MenuHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.MenuHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             resources.ApplyResources(this.MenuHelp, "MenuHelp");
-            this.MenuHelp.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
+            this.MenuHelp.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MenuHelp.Name = "MenuHelp";
-            this.MenuHelp.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
+            this.MenuHelp.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
             this.MenuHelp.Click += new System.EventHandler(this.MenuHelp_Click);
             // 
             // MenuConnect - Modern Connect Button

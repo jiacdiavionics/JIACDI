@@ -601,6 +601,8 @@ namespace MissionPlanner.GCSViews
             this.tabControlactions.BackColor = System.Drawing.Color.FromArgb(0x1A, 0x1A, 0x2E);
             this.tabControlactions.ForeColor = System.Drawing.Color.FromArgb(0xDC, 0xDC, 0xE6);
             this.tabControlactions.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.tabControlactions.ItemSize = new System.Drawing.Size(90, 28);
+            this.tabControlactions.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControlactions.Controls.Add(this.tabQuick);
             this.tabControlactions.Controls.Add(this.tabActions);
             this.tabControlactions.Controls.Add(this.tabPagemessages);
