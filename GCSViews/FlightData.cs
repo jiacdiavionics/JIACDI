@@ -5158,7 +5158,7 @@ namespace MissionPlanner.GCSViews
             Color bgColor = Color.FromArgb(0x1A, 0x1A, 0x2E);      // Dark navy background
             Color selectedBg = Color.FromArgb(0x00, 0x7A, 0xCC);  // Blue selected tab
             Color borderColor = Color.FromArgb(0x3A, 0x3A, 0x56);  // Subtle border
-            Color textColor = Color.FromArgb(0xB0, 0xB0, 0xC0);    // Muted text
+            Color textColor = Color.FromArgb(0xE0, 0xE0, 0xE8);    // Brighter text for readability
             Color selectedText = Color.White;                       // White text on selected
             
             // Draw tab background
@@ -5170,7 +5170,7 @@ namespace MissionPlanner.GCSViews
             // Draw top accent line for selected tab
             if (isSelected)
             {
-                using (Pen accentPen = new Pen(Color.FromArgb(0x00, 0xB4, 0xF8), 2))
+                using (Pen accentPen = new Pen(Color.FromArgb(0x00, 0xB4, 0xF8), 3))
                 {
                     e.Graphics.DrawLine(accentPen, e.Bounds.Left, 0, e.Bounds.Right, 0);
                 }
@@ -5183,14 +5183,23 @@ namespace MissionPlanner.GCSViews
             }
             
             // Draw tab text
-            using (Font tabFont = new Font("Segoe UI", 9F, isSelected ? FontStyle.Bold : FontStyle.Regular))
+            using (Font tabFont = new Font("Segoe UI", 10F, isSelected ? FontStyle.Bold : FontStyle.Regular, GraphicsUnit.Pixel))
             {
                 using (Brush textBrush = new SolidBrush(isSelected ? selectedText : textColor))
                 {
                     StringFormat sf = new StringFormat();
                     sf.Alignment = StringAlignment.Center;
                     sf.LineAlignment = StringAlignment.Center;
-                    RectangleF textRect = new RectangleF(e.Bounds.X, e.Bounds.Y, e.Bounds.Width, e.Bounds.Height);
+                    sf.FormatFlags = StringFormatFlags.NoWrap; // Prevent word wrapping
+                    
+                    // Add padding to text bounds
+                    RectangleF textRect = new RectangleF(
+                        e.Bounds.X + 4, 
+                        e.Bounds.Y + 2, 
+                        e.Bounds.Width - 8, 
+                        e.Bounds.Height - 4);
+                    
+                    e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
                     e.Graphics.DrawString(tabPage.Text, tabFont, textBrush, textRect, sf);
                 }
             }
