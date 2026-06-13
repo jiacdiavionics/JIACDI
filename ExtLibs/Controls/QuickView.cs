@@ -146,7 +146,7 @@ namespace MissionPlanner.Controls
                     numPaint.Color = new SKColor(numberColor.R, numberColor.G, numberColor.B, numberColor.A);
                     numPaint.TextSize = newSize;
                     numPaint.IsAntialias = true;
-                    numPaint.Typeface = SKTypeface.FromFamilyName(this.Font.FontFamily, SKFontStyle.Bold);
+                    numPaint.Typeface = SKTypeface.FromFamilyName(this.Font.FontFamily.Name, SKTypefaceStyle.Bold);
                     
                     float x = (w - extent.Width) / 2;
                     float yPos = y + ((h - y) / 2 + extent.Height / 2);
