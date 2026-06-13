@@ -43,7 +43,7 @@ namespace MissionPlanner
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(430, 290);
+            this.label1.Location = new System.Drawing.Point(440, 290);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(150, 15);
             this.label1.TabIndex = 0;
@@ -55,27 +55,27 @@ namespace MissionPlanner
             // 
             this.TXT_version.BackColor = System.Drawing.Color.Transparent;
             this.TXT_version.ForeColor = System.Drawing.Color.White;
-            this.TXT_version.Location = new System.Drawing.Point(430, 265);
+            this.TXT_version.Location = new System.Drawing.Point(440, 265);
             this.TXT_version.Name = "TXT_version";
-            this.TXT_version.Size = new System.Drawing.Size(155, 25);
+            this.TXT_version.Size = new System.Drawing.Size(145, 25);
             this.TXT_version.TabIndex = 1;
             this.TXT_version.Text = "Version: ";
             this.TXT_version.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // pictureBox_logo
             // 
-            this.pictureBox_logo.Location = new System.Drawing.Point(125, 80);
+            this.pictureBox_logo.Location = new System.Drawing.Point(140, 60);
             this.pictureBox_logo.Name = "pictureBox_logo";
-            this.pictureBox_logo.Size = new System.Drawing.Size(350, 100);
+            this.pictureBox_logo.Size = new System.Drawing.Size(320, 140);
             this.pictureBox_logo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox_logo.TabIndex = 2;
             this.pictureBox_logo.TabStop = false;
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(200, 200);
+            this.pictureBox1.Location = new System.Drawing.Point(190, 210);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(200, 120);
+            this.pictureBox1.Size = new System.Drawing.Size(220, 132);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
