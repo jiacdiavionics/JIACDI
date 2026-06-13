@@ -27,8 +27,15 @@ jobs:
           nuget locals all -clear
           Write-Host "=== Starting Build ==="
           msbuild -v:m -restore -t:Build -p:Configuration=Release MissionPlanner.sln 2>&1 | tee build.log
-          Write-Host "=== Build Output ==="
-          Select-String -Path build.log -Pattern "error|warning|Build FAILED|Build succeeded" | Select-Object -First 20
+          Write-Host "=== Build Exit Code ==="
+          $LASTEXITCODE
+
+      - name: Upload Build Log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
 
       - uses: actions/upload-artifact@v4
         with:
@@ -55,12 +62,19 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
+          Write-Host "=== Environment Check ==="
           $msbuildPath = Split-Path (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\Current\Bin\amd64\MSBuild.exe | Select-Object -First 1) -Parent
+          Write-Host "MSBuild Path: $msbuildPath"
           $env:PATH = $msbuildPath + ';' + $env:PATH
           nuget locals all -clear
-          msbuild -v:m -restore -t:Build -p:Configuration=Debug MissionPlanner.sln
+          Write-Host "=== Starting Debug Build ==="
+          msbuild -v:m -restore -t:Build -p:Configuration=Debug MissionPlanner.sln 2>&1 | tee build_debug.log
+          Write-Host "=== Build Exit Code ==="
+          $LASTEXITCODE
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Debug Build Log
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: DIMP-Debug
-          path: bin/Debug/net461
+          name: build-debug-log
+          path: build_debug.log
