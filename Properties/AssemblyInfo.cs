@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("DIMP")]
 [assembly: AssemblyDescription("DIMP ground control station for UAV")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("JIAC&DI")]
+[assembly: AssemblyCompany("Mohammed Shdifat")]
 [assembly: AssemblyProduct("DIMP")]
-[assembly: AssemblyCopyright("Copyright ©  2024-2025 JIAC&DI")]
+[assembly: AssemblyCopyright("Copyright ©  2024-2025 Mohammed Shdifat")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
