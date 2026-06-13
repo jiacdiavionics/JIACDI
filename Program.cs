@@ -202,7 +202,7 @@ namespace MissionPlanner
                 return;
             }
 
-            name = "Mission Planner";
+            name = "DIMP";
 
             try
             {

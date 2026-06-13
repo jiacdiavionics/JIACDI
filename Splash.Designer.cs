@@ -98,7 +98,7 @@ namespace MissionPlanner
             this.MinimumSize = new System.Drawing.Size(600, 375);
             this.Name = "Splash";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "JIAC&DI Mission Planner";
+            this.Text = "DIMP - Ground Control Station";
             this.TopMost = true;
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_logo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
