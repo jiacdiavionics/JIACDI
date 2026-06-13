@@ -161,37 +161,37 @@ namespace MissionPlanner.Utilities
         private static readonly ILog log =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        // Initialize to the default theme (BurntKermit)
-        public static Color BGColor = Color.FromArgb(0x20, 0x20, 0x20);
-        public static Color ControlBGColor = Color.FromArgb(0x2D, 0x2D, 0x2D);
-        public static Color TextColor = Color.White;
-        public static Color BGColorTextBox;
-        public static Color ButBG;
-        public static Color ButBGBot;
-        public static Color ButBorder;
-        public static Color ProgressBarColorTop;
-        public static Color ProgressBarColorBot;
-        public static Color ProgressBarOutlineColor;
-        public static Color ColorNotEnabled;
-        public static Color ColorMouseOver;
-        public static Color ColorMouseDown;
-        public static Color BannerColor1;
-        public static Color BannerColor2;
-        public static Color ButtonTextColor;
-        public static Color ButtonTextColorNotEnabled;
-        public static Color CurrentPPMBackground;
-        public static Color ZedGraphChartFill;
-        public static Color ZedGraphPaneFill;
-        public static Color ZedGraphLegendFill;
-        public static Color RTBForeColor;
-        public static Color BSVButtonAreaBGColor;
-        public static Color UnselectedTextColour;
-        public static Color HorizontalPBValueColor;
-        public static Color HudText;
-        public static Color HudGroundTop;
-        public static Color HudGroundBot;
-        public static Color HudSkyTop;
-        public static Color HudSkyBot;
+        // DIMP Professional Aviation Theme - JIAC&DI Default Colors
+        public static Color BGColor = Color.FromArgb(0x1A, 0x1A, 0x2E);           // Deep navy background
+        public static Color ControlBGColor = Color.FromArgb(0x16, 0x16, 0x28);    // Slightly darker panels
+        public static Color TextColor = Color.FromArgb(0xDC, 0xDC, 0xE6);         // Light gray text
+        public static Color BGColorTextBox = Color.FromArgb(0x2D, 0x2D, 0x42);    // Text box background
+        public static Color ButBG = Color.FromArgb(0x00, 0x7A, 0xCC);             // Primary blue buttons
+        public static Color ButBGBot = Color.FromArgb(0x00, 0x5C, 0x99);          // Button gradient bottom
+        public static Color ButBorder = Color.FromArgb(0x00, 0x60, 0x90);         // Button border
+        public static Color ProgressBarColorTop = Color.FromArgb(0x00, 0xB4, 0xF8);
+        public static Color ProgressBarColorBot = Color.FromArgb(0x00, 0x90, 0xC0);
+        public static Color ProgressBarOutlineColor = Color.FromArgb(0x00, 0x80, 0xC0);
+        public static Color ColorNotEnabled = Color.FromArgb(0x50, 0x50, 0x60);
+        public static Color ColorMouseOver = Color.FromArgb(0x00, 0x8E, 0xE8);
+        public static Color ColorMouseDown = Color.FromArgb(0x00, 0x6A, 0xB0);
+        public static Color BannerColor1 = Color.FromArgb(0x00, 0x7A, 0xCC);
+        public static Color BannerColor2 = Color.FromArgb(0x00, 0x5C, 0x99);
+        public static Color ButtonTextColor = Color.White;
+        public static Color ButtonTextColorNotEnabled = Color.FromArgb(0xA0, 0xA0, 0xA0);
+        public static Color CurrentPPMBackground = Color.LimeGreen;
+        public static Color ZedGraphChartFill = Color.FromArgb(0x1A, 0x1A, 0x2E);
+        public static Color ZedGraphPaneFill = Color.FromArgb(0x12, 0x12, 0x22);
+        public static Color ZedGraphLegendFill = Color.FromArgb(0x22, 0x22, 0x36);
+        public static Color RTBForeColor = Color.FromArgb(0xDC, 0xDC, 0xE6);
+        public static Color BSVButtonAreaBGColor = Color.FromArgb(0x1A, 0x1A, 0x2E);
+        public static Color UnselectedTextColour = Color.FromArgb(0xB0, 0xB0, 0xC0);
+        public static Color HorizontalPBValueColor = Color.FromArgb(0x00, 0xB4, 0xF8);
+        public static Color HudText = Color.LimeGreen;
+        public static Color HudGroundTop = Color.FromArgb(0x5D, 0x4E, 0x37);
+        public static Color HudGroundBot = Color.FromArgb(0x3D, 0x32, 0x25);
+        public static Color HudSkyTop = Color.FromArgb(0x00, 0x2B, 0x5E);
+        public static Color HudSkyBot = Color.FromArgb(0x00, 0x4A, 0x8C);
 
         public static ThemeColorTable thmColor;
 
