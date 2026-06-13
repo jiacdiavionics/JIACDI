@@ -54,6 +54,10 @@ namespace MissionPlanner
         private static readonly ILog log =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        // Advanced menu lock state
+        private static bool _advancedMenusLocked = true;
+        private const string ADVANCED_UNLOCK_PASSWORD = "123456";
+
         public static menuicons displayicons; //do not initialize to allow update of custom icons
         public static string running_directory = Settings.GetRunningDirectory();
 
@@ -596,9 +600,10 @@ namespace MissionPlanner
 
         public void updateLayout(object sender, EventArgs e)
         {
-            // All menus are always visible
-            MenuInitConfig.Visible = true;
-            MenuConfigTune.Visible = true;
+            // Setup and Config require unlock - Simulation and Help are always visible
+            bool menusUnlocked = !_advancedMenusLocked;
+            MenuInitConfig.Visible = menusUnlocked;
+            MenuConfigTune.Visible = menusUnlocked;
             MenuSimulation.Visible = true;
             MenuHelp.Visible = true;
             MissionPlanner.Controls.BackstageView.BackstageView.Advanced = DisplayConfiguration.isAdvancedMode;
@@ -705,6 +710,9 @@ namespace MissionPlanner
             }
 
             InitializeComponent();
+
+            // Ensure Setup and Config are hidden on startup (they require unlock)
+            updateLayout(null, null);
 
             //Init Theme table and load Windows11 as a default
             ThemeManager.thmColor = new ThemeColorTable(); //Init colortable
@@ -1319,6 +1327,38 @@ namespace MissionPlanner
 
             // save config
             SaveConfig();
+        }
+
+        private void menu_AdvanceLock_Click(object sender, EventArgs e)
+        {
+            if (_advancedMenusLocked)
+            {
+                // Show unlock dialog
+                string pw = "";
+                if (InputBox.Show("Enter Password", "Enter password to unlock Setup and Config menus:", ref pw, true) ==
+                    System.Windows.Forms.DialogResult.OK)
+                {
+                    if (pw == ADVANCED_UNLOCK_PASSWORD)
+                    {
+                        _advancedMenusLocked = false;
+                        menu_AdvanceLock.Image = MissionPlanner.Properties.Resources.unlock_icon;
+                        updateLayout(null, null);
+                        CustomMessageBox.Show("Setup and Config menus unlocked!", "Success");
+                    }
+                    else
+                    {
+                        CustomMessageBox.Show("Wrong password!", "Error");
+                    }
+                }
+            }
+            else
+            {
+                // Lock menus
+                _advancedMenusLocked = true;
+                menu_AdvanceLock.Image = MissionPlanner.Properties.Resources.lock_icon;
+                updateLayout(null, null);
+                CustomMessageBox.Show("Setup and Config menus locked.", "Success");
+            }
         }
 
         private void MenuFlightPlanner_Click(object sender, EventArgs e)
@@ -4114,6 +4154,12 @@ namespace MissionPlanner
                 Form frm = new temp();
                 ThemeManager.ApplyThemeTo(frm);
                 frm.Show();
+                return true;
+            }
+
+            if (keyData == (Keys.Control | Keys.L)) // lock/unlock advanced menus
+            {
+                menu_AdvanceLock_Click(null, null);
                 return true;
             }
 
