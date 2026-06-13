@@ -203,6 +203,7 @@ namespace MissionPlanner
             this.MenuArduPilot.Image = global::MissionPlanner.Properties.Resources.jiacdi_logo_toolbar;
             this.MenuArduPilot.Margin = new System.Windows.Forms.Padding(0);
             this.MenuArduPilot.Name = "MenuArduPilot";
+            this.MenuArduPilot.ToolTipText = "Visit JIAC&DI Website";
             this.MenuArduPilot.Click += new System.EventHandler(this.MenuArduPilot_Click);
             // 
             // menu_AdvanceLock
