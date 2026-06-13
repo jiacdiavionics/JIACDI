@@ -1202,4 +1202,4 @@
   <ItemGroup>
     <EmbeddedResource Include="plugins\example23-switch.resx" />
   </ItemGroup>
-</Project>
+</Project>
