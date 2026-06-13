@@ -146,7 +146,7 @@ namespace MissionPlanner
             this.MenuFlightData.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.MenuFlightData.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
             resources.ApplyResources(this.MenuFlightData, "MenuFlightData");
-            this.MenuFlightData.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.MenuFlightData.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
             this.MenuFlightData.Name = "MenuFlightData";
             this.MenuFlightData.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
             this.MenuFlightData.Click += new System.EventHandler(this.MenuFlightData_Click);
@@ -160,7 +160,7 @@ namespace MissionPlanner
             this.MenuFlightPlanner.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.MenuFlightPlanner.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
             resources.ApplyResources(this.MenuFlightPlanner, "MenuFlightPlanner");
-            this.MenuFlightPlanner.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.MenuFlightPlanner.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
             this.MenuFlightPlanner.Name = "MenuFlightPlanner";
             this.MenuFlightPlanner.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
             this.MenuFlightPlanner.Click += new System.EventHandler(this.MenuFlightPlanner_Click);
@@ -174,7 +174,7 @@ namespace MissionPlanner
             this.MenuInitConfig.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.MenuInitConfig.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
             resources.ApplyResources(this.MenuInitConfig, "MenuInitConfig");
-            this.MenuInitConfig.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.MenuInitConfig.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
             this.MenuInitConfig.Name = "MenuInitConfig";
             this.MenuInitConfig.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
             this.MenuInitConfig.Click += new System.EventHandler(this.MenuSetup_Click);
@@ -188,7 +188,7 @@ namespace MissionPlanner
             this.MenuConfigTune.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.MenuConfigTune.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
             resources.ApplyResources(this.MenuConfigTune, "MenuConfigTune");
-            this.MenuConfigTune.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.MenuConfigTune.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
             this.MenuConfigTune.Name = "MenuConfigTune";
             this.MenuConfigTune.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
             this.MenuConfigTune.Click += new System.EventHandler(this.MenuTuning_Click);
@@ -202,7 +202,7 @@ namespace MissionPlanner
             this.MenuSimulation.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.MenuSimulation.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
             resources.ApplyResources(this.MenuSimulation, "MenuSimulation");
-            this.MenuSimulation.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.MenuSimulation.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
             this.MenuSimulation.Name = "MenuSimulation";
             this.MenuSimulation.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
             this.MenuSimulation.Click += new System.EventHandler(this.MenuSimulation_Click);
@@ -216,7 +216,7 @@ namespace MissionPlanner
             this.MenuHelp.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.MenuHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
             resources.ApplyResources(this.MenuHelp, "MenuHelp");
-            this.MenuHelp.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.MenuHelp.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
             this.MenuHelp.Name = "MenuHelp";
             this.MenuHelp.Padding = new System.Windows.Forms.Padding(12, 6, 12, 6);
             this.MenuHelp.Click += new System.EventHandler(this.MenuHelp_Click);
