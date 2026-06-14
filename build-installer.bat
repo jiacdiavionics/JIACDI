@@ -1,5 +1,5 @@
 @echo off
-REM Mission Planner EXE Installer Build Script
+REM DIMP EXE Installer Build Script
 REM Requires Inno Setup to be installed
 REM Download from: https://jrsoftware.org/isinfo.php
 
@@ -30,7 +30,7 @@ REM Get version from project file
 for /f "tokens=2 delims=<>" %%a in ('findstr /i "Version" MissionPlanner.csproj ^| findstr /i "1.3"') do (
     set "VERSION=%%a"
 )
-echo Building Mission Planner v%VERSION% installer...
+echo Building DIMP v%VERSION% installer...
 
 REM Create output directory
 if not exist "bin\installer" mkdir "bin\installer"
@@ -46,7 +46,7 @@ if %ERRORLEVEL% EQU 0 (
     echo.
     echo ================================================
     echo Build successful!
-    echo Installer location: bin\installer\MissionPlanner-%VERSION%-Setup.exe
+    echo Installer location: bin\installer\DIMP-%VERSION%-Setup.exe
     echo ================================================
 ) else (
     echo.

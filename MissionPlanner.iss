@@ -1,15 +1,15 @@
-; Mission Planner Inno Setup Script
-; Creates an EXE installer for Mission Planner
+; DIMP (Drone Industrial Mission Planner) Inno Setup Script
+; Creates an EXE installer for DIMP
 
-#define MyAppName "Mission Planner"
+#define MyAppName "DIMP"
 #define MyAppVersion "1.3.83"
-#define MyAppPublisher "Michael Oborne"
-#define MyAppURL "https://ardupilot.org/planner/"
-#define MyAppExeName "MissionPlanner.exe"
+#define MyAppPublisher "Mohammed Shdifat"
+#define MyAppURL "https://github.com/jiacdiavionics/JIACDI"
+#define MyAppExeName "DIMP.exe"
 
 [Setup]
 ; Basic installer info
-AppId={{625389D7-EB3C-4d77-A5F6-A285CF99437D}
+AppId={{8A9F3D5E-4B2C-4E8A-9F1D-7C6B3A5E8D9F}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
@@ -21,7 +21,7 @@ DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=Msi\licence.rtf
 OutputDir=bin\installer
-OutputBaseFilename=MissionPlanner-{#MyAppVersion}-Setup
+OutputBaseFilename=DIMP-{#MyAppVersion}-Setup
 SetupIconFile=mpdesktop.ico
 Compression=lzma2/ultra64
 SolidCompression=yes
@@ -54,17 +54,17 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 
 [Registry]
 ; File associations for telemetry logs
-Root: HKCR; Subkey: ".tlog"; ValueType: string; ValueName: ""; ValueData: "MissionPlanner.tlog"; Flags: uninsdeletevalue
-Root: HKCR; Subkey: "MissionPlanner.tlog"; ValueType: string; ValueName: ""; ValueData: "Telemetry Log"; Flags: uninsdeletekey
-Root: HKCR; Subkey: "MissionPlanner.tlog\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+Root: HKCR; Subkey: ".tlog"; ValueType: string; ValueName: ""; ValueData: "DIMP.tlog"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "DIMP.tlog"; ValueType: string; ValueName: ""; ValueData: "Telemetry Log"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "DIMP.tlog\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
 
-Root: HKCR; Subkey: ".dfbin"; ValueType: string; ValueName: ""; ValueData: "MissionPlanner.dfbin"; Flags: uninsdeletevalue
-Root: HKCR; Subkey: "MissionPlanner.dfbin"; ValueType: string; ValueName: ""; ValueData: "Binary Log"; Flags: uninsdeletekey
-Root: HKCR; Subkey: "MissionPlanner.dfbin\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+Root: HKCR; Subkey: ".dfbin"; ValueType: string; ValueName: ""; ValueData: "DIMP.dfbin"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "DIMP.dfbin"; ValueType: string; ValueName: ""; ValueData: "Binary Log"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "DIMP.dfbin\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
 
-Root: HKCR; Subkey: ".log"; ValueType: string; ValueName: ""; ValueData: "MissionPlanner.log"; Flags: uninsdeletevalue
-Root: HKCR; Subkey: "MissionPlanner.log"; ValueType: string; ValueName: ""; ValueData: "DF Log"; Flags: uninsdeletekey
-Root: HKCR; Subkey: "MissionPlanner.log\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+Root: HKCR; Subkey: ".log"; ValueType: string; ValueName: ""; ValueData: "DIMP.log"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "DIMP.log"; ValueType: string; ValueName: ""; ValueData: "DF Log"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "DIMP.log\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
 
 [Code]
 // Check for .NET Framework 4.7.2 or higher
@@ -90,7 +90,7 @@ begin
   Result := True;
   if not IsDotNet472Installed then
   begin
-    MsgBox('Mission Planner requires Microsoft .NET Framework 4.7.2 or later.' + #13#10 + #13#10 +
+    MsgBox('DIMP requires Microsoft .NET Framework 4.7.2 or later.' + #13#10 + #13#10 +
            'Please install .NET Framework 4.7.2 from:' + #13#10 +
            'https://dotnet.microsoft.com/download/dotnet-framework/net472' + #13#10 + #13#10 +
            'Then run this installer again.', mbError, MB_OK);
