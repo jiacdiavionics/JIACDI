@@ -70,17 +70,19 @@ Root: HKCR; Subkey: "MissionPlanner.log\shell\open\command"; ValueType: string; 
 // Check for .NET Framework 4.7.2 or higher
 function IsDotNet472Installed: Boolean;
 var
-  ResultCode: Integer;
+  ResultCode: Cardinal;
 begin
-  Result := RegKeyExists(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full');
-  if Result then
+  Result := True;
+  if RegKeyExists(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full') then
   begin
     if not RegQueryDWordValue(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full', 'Release', ResultCode) then
       Result := False
     else
       // 461808 = .NET Framework 4.7.2
       Result := (ResultCode >= 461808);
-  end;
+  end
+  else
+    Result := False;
 end;
 
 function InitializeSetup: Boolean;
