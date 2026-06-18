@@ -47,6 +47,7 @@ namespace MissionPlanner
             this.MenuInitConfig = new System.Windows.Forms.ToolStripButton();
             this.MenuConfigTune = new System.Windows.Forms.ToolStripButton();
             this.MenuSimulation = new System.Windows.Forms.ToolStripButton();
+            this.MenuMap = new System.Windows.Forms.ToolStripButton();
             this.MenuHelp = new System.Windows.Forms.ToolStripButton();
             this.MenuConnect = new System.Windows.Forms.ToolStripButton();
             this.toolStripConnectionControl = new MissionPlanner.Controls.ToolStripConnectionControl();
@@ -75,6 +76,7 @@ namespace MissionPlanner
             this.MenuInitConfig,
             this.MenuConfigTune,
             this.MenuSimulation,
+            this.MenuMap,
             this.MenuHelp,
             this.MenuConnect,
             this.toolStripConnectionControl,
@@ -197,6 +199,18 @@ namespace MissionPlanner
             this.MenuSimulation.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
             this.MenuSimulation.Click += new System.EventHandler(this.MenuSimulation_Click);
             // 
+            // MenuMap - Real-time Map Button
+            // 
+            this.MenuMap.BackColor = System.Drawing.Color.Transparent;
+            this.MenuMap.ForeColor = System.Drawing.Color.FromArgb(220, 220, 230);
+            this.MenuMap.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MenuMap.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            resources.ApplyResources(this.MenuMap, "MenuMap");
+            this.MenuMap.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MenuMap.Name = "MenuMap";
+            this.MenuMap.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
+            this.MenuMap.Click += new System.EventHandler(this.MenuMap_Click);
+            // 
             // MenuHelp - Text Only Tab
             // 
             this.MenuHelp.BackColor = System.Drawing.Color.Transparent;
@@ -313,6 +327,7 @@ namespace MissionPlanner
         public System.Windows.Forms.ToolStripButton MenuFlightPlanner;
         public System.Windows.Forms.ToolStripButton MenuInitConfig;
         public System.Windows.Forms.ToolStripButton MenuSimulation;
+        public System.Windows.Forms.ToolStripButton MenuMap;
         public System.Windows.Forms.ToolStripButton MenuConfigTune;
         public System.Windows.Forms.ToolStripButton MenuConnect;
         private Controls.ToolStripConnectionControl toolStripConnectionControl;

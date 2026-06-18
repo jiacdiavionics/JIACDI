@@ -1415,6 +1415,14 @@ namespace MissionPlanner
             MyView.ShowScreen("Simulation");
         }
 
+        private void MenuMap_Click(object sender, EventArgs e)
+        {
+            MyView.ShowScreen("MapScreen");
+
+            // save config
+            SaveConfig();
+        }
+
         private void MenuTuning_Click(object sender, EventArgs e)
         {
             if (Settings.Instance.GetBoolean("password_protect") == false)
@@ -3240,6 +3248,7 @@ namespace MissionPlanner
             MyView.AddScreen(new MainSwitcher.Screen("HWConfig", typeof(GCSViews.InitialSetup), false));
             MyView.AddScreen(new MainSwitcher.Screen("SWConfig", typeof(GCSViews.SoftwareConfig), false));
             MyView.AddScreen(new MainSwitcher.Screen("Simulation", Simulation, true));
+            MyView.AddScreen(new MainSwitcher.Screen("MapScreen", typeof(GCSViews.MapScreen), false));
             MyView.AddScreen(new MainSwitcher.Screen("Help", typeof(GCSViews.Help), false));
 
             try
