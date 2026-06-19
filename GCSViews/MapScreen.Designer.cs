@@ -158,7 +158,7 @@ namespace MissionPlanner.GCSViews
 
         private System.Windows.Forms.Panel mapPanel;
         private MissionPlanner.Controls.myGMAP mapControl;
-        private MissionPlanner.Controls.GMapOverlay mapOverlay;
+        private GMap.NET.WindowsForms.GMapOverlay mapOverlay;
         private System.Windows.Forms.Panel statusPanel;
         private System.Windows.Forms.Label lblLat;
         private System.Windows.Forms.Label lblLng;
