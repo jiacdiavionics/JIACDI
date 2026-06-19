@@ -713,6 +713,8 @@ namespace MissionPlanner
 
             // Set Map button text (it's a standalone window)
             MenuMap.Text = "Map";
+            // Set Tablet Mirror button text
+            MenuTabletMirror.Text = "Tablet Mirror";
 
             // Ensure Setup and Config are hidden on startup (they require unlock)
             updateLayout(null, null);
@@ -1422,6 +1424,22 @@ namespace MissionPlanner
         {
             // Show standalone map window (can be moved to second monitor)
             GCSViews.MapScreen.ShowMap();
+
+            // save config
+            SaveConfig();
+        }
+
+        private void MenuTabletMirror_Click(object sender, EventArgs e)
+        {
+            GCSViews.TabletMirrorForm.ShowTabletMirror();
+
+            // save config
+            SaveConfig();
+        }
+
+        private void MenuTabletMirror_Click(object sender, EventArgs e)
+        {
+            GCSViews.TabletMirrorForm.ShowTabletMirror();
 
             // save config
             SaveConfig();
