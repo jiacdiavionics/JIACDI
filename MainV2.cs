@@ -711,6 +711,9 @@ namespace MissionPlanner
 
             InitializeComponent();
 
+            // Set Tablet Mirror button text
+            MenuTabletMirror.Text = "Tablet Mirror";
+
             // Ensure Setup and Config are hidden on startup (they require unlock)
             updateLayout(null, null);
 
@@ -1418,6 +1421,14 @@ namespace MissionPlanner
         private void MenuMap_Click(object sender, EventArgs e)
         {
             MyView.ShowScreen("MapScreen");
+
+            // save config
+            SaveConfig();
+        }
+
+        private void MenuTabletMirror_Click(object sender, EventArgs e)
+        {
+            GCSViews.TabletMirrorForm.ShowTabletMirror();
 
             // save config
             SaveConfig();

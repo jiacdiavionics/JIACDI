@@ -48,6 +48,7 @@ namespace MissionPlanner
             this.MenuConfigTune = new System.Windows.Forms.ToolStripButton();
             this.MenuSimulation = new System.Windows.Forms.ToolStripButton();
             this.MenuMap = new System.Windows.Forms.ToolStripButton();
+            this.MenuTabletMirror = new System.Windows.Forms.ToolStripButton();
             this.MenuHelp = new System.Windows.Forms.ToolStripButton();
             this.MenuConnect = new System.Windows.Forms.ToolStripButton();
             this.toolStripConnectionControl = new MissionPlanner.Controls.ToolStripConnectionControl();
@@ -77,6 +78,7 @@ namespace MissionPlanner
             this.MenuConfigTune,
             this.MenuSimulation,
             this.MenuMap,
+            this.MenuTabletMirror,
             this.MenuHelp,
             this.MenuConnect,
             this.toolStripConnectionControl,
@@ -210,6 +212,18 @@ namespace MissionPlanner
             this.MenuMap.Name = "MenuMap";
             this.MenuMap.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
             this.MenuMap.Click += new System.EventHandler(this.MenuMap_Click);
+            // 
+            // MenuTabletMirror - Android Tablet Mirror Button
+            // 
+            this.MenuTabletMirror.BackColor = System.Drawing.Color.Transparent;
+            this.MenuTabletMirror.ForeColor = System.Drawing.Color.FromArgb(220, 220, 230);
+            this.MenuTabletMirror.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MenuTabletMirror.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            resources.ApplyResources(this.MenuTabletMirror, "MenuTabletMirror");
+            this.MenuTabletMirror.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MenuTabletMirror.Name = "MenuTabletMirror";
+            this.MenuTabletMirror.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
+            this.MenuTabletMirror.Click += new System.EventHandler(this.MenuTabletMirror_Click);
             // 
             // MenuHelp - Text Only Tab
             // 
