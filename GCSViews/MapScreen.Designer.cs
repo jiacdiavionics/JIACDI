@@ -31,7 +31,7 @@ namespace MissionPlanner.GCSViews
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapScreen));
             this.mapPanel = new System.Windows.Forms.Panel();
-            this.mapOverlay = new MissionPlanner.Controls.GMapOverlay("mapoverlay");
+            this.mapOverlay = new GMap.NET.WindowsForms.GMapOverlay("mapoverlay");
             this.mapControl = new MissionPlanner.Controls.myGMAP();
             this.statusPanel = new System.Windows.Forms.Panel();
             this.lblLat = new System.Windows.Forms.Label();
