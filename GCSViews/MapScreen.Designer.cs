@@ -54,30 +54,24 @@ namespace MissionPlanner.GCSViews
             // 
             // mapControl - GMap Control
             // 
-            this.mapControl.Bearing = 0F;
             this.mapControl.CanDragMap = true;
-            this.mapControl.EmptyMapColor = System.Drawing.Color.FromArgb(26, 26, 46);
             this.mapControl.GrayScaleMode = false;
-            this.mapControl.LevelsKeepOverlap = false;
             this.mapControl.Location = new System.Drawing.Point(0, 0);
             this.mapControl.MarkersEnabled = true;
             this.mapControl.MaxZoom = 18;
             this.mapControl.MinZoom = 2;
-            this.mapControl.MouseWheelZoomEnabled = true;
             this.mapControl.MouseWheelZoomType = GMap.NET.MouseWheelZoomType.MousePositionAndCenter;
             this.mapControl.Name = "mapControl";
             this.mapControl.NegativeMode = false;
             this.mapControl.PolygonsEnabled = true;
             this.mapControl.RetryLoadTile = 0;
             this.mapControl.RoutesEnabled = true;
-            this.mapControl.ScaleMode = GMap.NET.ScaleModes.Integer;
             this.mapControl.SelectedAreaFillColor = System.Drawing.Color.FromArgb(33, 65, 105, 225);
             this.mapControl.ShowTileGridLines = false;
             this.mapControl.Size = new System.Drawing.Size(1200, 700);
             this.mapControl.TabIndex = 0;
             this.mapControl.Zoom = 10D;
             this.mapControl.OnPositionChanged += new GMap.NET.PositionChanged(this.mapControl_OnPositionChanged);
-            this.mapControl.OnZoomChanged += new GMap.NET.ZoomChanged(this.mapControl_OnZoomChanged);
             // 
             // statusPanel - Status Bar Panel
             // 

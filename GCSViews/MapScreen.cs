@@ -235,7 +235,6 @@ namespace MissionPlanner.GCSViews
                     // Update drone marker position
                     PointLatLng newPos = new PointLatLng(lat, lng);
                     droneMarker.Position = newPos;
-                    droneMarker.Bearing = (float)yaw;
                     
                     // Update track
                     if (trackRoute.Points.Count == 0 ||
@@ -250,9 +249,9 @@ namespace MissionPlanner.GCSViews
                     }
                     
                     // Update home marker if we have home position
-                    if (MainV2.comPort.MAV.cs.HomeLat != 0)
+                    if (MainV2.comPort.MAV.cs.HomeLocation != PointLatLngAlt.Zero)
                     {
-                        homeMarker.Position = new PointLatLng(MainV2.comPort.MAV.cs.HomeLat, MainV2.comPort.MAV.cs.HomeLng);
+                        homeMarker.Position = new PointLatLng(MainV2.comPort.MAV.cs.HomeLocation.Lat, MainV2.comPort.MAV.cs.HomeLocation.Lng);
                         homeMarker.IsVisible = true;
                     }
                     

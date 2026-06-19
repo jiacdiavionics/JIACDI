@@ -363,9 +363,9 @@ namespace MissionPlanner.GCSViews
                     string output = proc.StandardOutput.ReadToEnd();
                     proc.WaitForExit(5000);
 
-                    foreach (string line in output.Split('\n'))
+                    foreach (string rawLine in output.Split('\n'))
                     {
-                        line = line.Trim();
+                        string line = rawLine.Trim();
                         if (string.IsNullOrEmpty(line) || line.StartsWith("List") || line.StartsWith("*"))
                             continue;
 
