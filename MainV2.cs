@@ -1105,7 +1105,7 @@ namespace MissionPlanner
 
             // Use JIAC&DI logo image instead of drawing text
             MenuArduPilot.Image = MissionPlanner.Properties.Resources.jiacdi_logo_toolbar;
-            MenuArduPilot.Width = 62;
+            MenuArduPilot.Width = 25;
             MenuArduPilot.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 
             Application.DoEvents();
