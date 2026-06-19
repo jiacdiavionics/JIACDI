@@ -711,6 +711,9 @@ namespace MissionPlanner
 
             InitializeComponent();
 
+            // Set Map button text (it's a standalone window)
+            MenuMap.Text = "Map";
+
             // Ensure Setup and Config are hidden on startup (they require unlock)
             updateLayout(null, null);
 
@@ -1417,7 +1420,8 @@ namespace MissionPlanner
 
         private void MenuMap_Click(object sender, EventArgs e)
         {
-            MyView.ShowScreen("MapScreen");
+            // Show standalone map window (can be moved to second monitor)
+            GCSViews.MapScreen.ShowMap();
 
             // save config
             SaveConfig();
