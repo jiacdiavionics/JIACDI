@@ -272,7 +272,7 @@ namespace MissionPlanner
             this.MenuArduPilot.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
             this.MenuArduPilot.Name = "MenuArduPilot";
             this.MenuArduPilot.Padding = new System.Windows.Forms.Padding(2);
-            this.MenuArduPilot.Size = new System.Drawing.Size(29, 39);
+            this.MenuArduPilot.Size = new System.Drawing.Size(28, 39);
             this.MenuArduPilot.ToolTipText = "Visit JIAC&DI Website";
             this.MenuArduPilot.Click += new System.EventHandler(this.MenuArduPilot_Click);
             // 
