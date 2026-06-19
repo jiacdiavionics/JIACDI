@@ -1437,14 +1437,6 @@ namespace MissionPlanner
             SaveConfig();
         }
 
-        private void MenuTabletMirror_Click(object sender, EventArgs e)
-        {
-            GCSViews.TabletMirrorForm.ShowTabletMirror();
-
-            // save config
-            SaveConfig();
-        }
-
         private void MenuTuning_Click(object sender, EventArgs e)
         {
             if (Settings.Instance.GetBoolean("password_protect") == false)
