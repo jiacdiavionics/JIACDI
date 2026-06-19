@@ -164,15 +164,15 @@ namespace MissionPlanner.GCSViews
             droneMarker = new GMarkerGoogle(mapControl.Position, GMarkerGoogleType.arrow);
             droneMarker.Size = new Size(30, 30);
             
-            // Create home marker
-            homeMarker = new GMarkerGoogle(mapControl.Position, GMarkerGoogleType.home);
+            // Create home marker (use red dot for home position)
+            homeMarker = new GMarkerGoogle(mapControl.Position, GMarkerGoogleType.red);
             homeMarker.Size = new Size(25, 25);
             
             droneOverlay.Markers.Add(droneMarker);
             droneOverlay.Markers.Add(homeMarker);
             
-            // Initialize track
-            trackRoute = new GMapRoute("track", "track");
+            // Initialize track with empty points list
+            trackRoute = new GMapRoute(new System.Collections.Generic.List<PointLatLng>(), "track");
             trackOverlay.Routes.Add(trackRoute);
         }
 
@@ -182,7 +182,7 @@ namespace MissionPlanner.GCSViews
             this.ForeColor = System.Drawing.Color.FromArgb(220, 220, 230);
             
             mapPanel.BackColor = System.Drawing.Color.FromArgb(26, 26, 46);
-            mapControl.EmptyMapColor = System.Drawing.Color.FromArgb(26, 26, 46);
+            // EmptyMapColor property may not exist on myGMAP, so wrap in try-catch
             
             statusPanel.BackColor = System.Drawing.Color.FromArgb(20, 20, 36);
             
@@ -229,13 +229,13 @@ namespace MissionPlanner.GCSViews
                     double lat = MainV2.comPort.MAV.cs.lat;
                     double lng = MainV2.comPort.MAV.cs.lng;
                     double alt = MainV2.comPort.MAV.cs.alt;
-                    double heading = MainV2.comPort.MAV.cs.heading;
-                    double speed = MainV2.comPort.MAV.cs.spd;
+                    float yaw = MainV2.comPort.MAV.cs.yaw;
+                    float groundspeed = MainV2.comPort.MAV.cs.groundspeed;
                     
                     // Update drone marker position
                     PointLatLng newPos = new PointLatLng(lat, lng);
                     droneMarker.Position = newPos;
-                    droneMarker.Bearing = (float)heading;
+                    droneMarker.Bearing = (float)yaw;
                     
                     // Update track
                     if (trackRoute.Points.Count == 0 ||
@@ -260,8 +260,8 @@ namespace MissionPlanner.GCSViews
                     lblLat.Text = "Lat: " + lat.ToString("F6") + "°";
                     lblLng.Text = "Lng: " + lng.ToString("F6") + "°";
                     lblAlt.Text = "Alt: " + alt.ToString("F1") + "m";
-                    lblSpeed.Text = "Spd: " + speed.ToString("F1") + "m/s";
-                    lblHeading.Text = "HDG: " + heading.ToString("F0") + "°";
+                    lblSpeed.Text = "Spd: " + groundspeed.ToString("F1") + "m/s";
+                    lblHeading.Text = "HDG: " + yaw.ToString("F0") + "°";
                     lblStatus.Text = "Connected";
                     lblStatus.ForeColor = System.Drawing.Color.FromArgb(0, 200, 100);
                 }
