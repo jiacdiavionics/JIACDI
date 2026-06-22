@@ -600,11 +600,12 @@ namespace MissionPlanner
 
         public void updateLayout(object sender, EventArgs e)
         {
-            // Setup and Config require unlock - Simulation and Help are always visible
+            // Setup and Config require unlock - Simulation, Help, and Map3D are always visible
             bool menusUnlocked = !_advancedMenusLocked;
             MenuInitConfig.Visible = menusUnlocked;
             MenuConfigTune.Visible = menusUnlocked;
             MenuSimulation.Visible = true;
+            MenuMap3D.Visible = true;
             MenuHelp.Visible = true;
             MissionPlanner.Controls.BackstageView.BackstageView.Advanced = DisplayConfiguration.isAdvancedMode;
 
@@ -1201,6 +1202,7 @@ namespace MissionPlanner
             MenuFlightPlanner.Image = displayicons.fp;
             MenuInitConfig.Image = displayicons.initsetup;
             MenuSimulation.Image = displayicons.sim;
+            MenuMap3D.ForeColor = ThemeManager.TextColor;
             MenuConfigTune.Image = displayicons.config_tuning;
             MenuConnect.Image = displayicons.connect;
             MenuHelp.Image = displayicons.help;
@@ -1210,6 +1212,7 @@ namespace MissionPlanner
             MenuFlightPlanner.ForeColor = ThemeManager.TextColor;
             MenuInitConfig.ForeColor = ThemeManager.TextColor;
             MenuSimulation.ForeColor = ThemeManager.TextColor;
+            MenuMap3D.ForeColor = ThemeManager.TextColor;
             MenuConfigTune.ForeColor = ThemeManager.TextColor;
             MenuConnect.ForeColor = ThemeManager.TextColor;
             MenuHelp.ForeColor = ThemeManager.TextColor;
@@ -1408,6 +1411,15 @@ namespace MissionPlanner
         {
             // Show standalone map window (can be moved to second monitor)
             GCSViews.MapScreen.ShowMap();
+
+            // save config
+            SaveConfig();
+        }
+
+        private void MenuMap3D_Click(object sender, EventArgs e)
+        {
+            // Show 3D map window
+            GCSViews.Map3D.Instance.ShowMap();
 
             // save config
             SaveConfig();
