@@ -14,7 +14,7 @@ namespace MissionPlanner.GCSViews
     /// Standalone map window that can be moved to a second monitor.
     /// This is a separate window from the main DIMP GUI.
     /// </summary>
-    public class MapScreen : Form
+    public partial class MapScreen : Form
     {
         private GMapMarker droneMarker;
         private GMapOverlay markersOverlay;
