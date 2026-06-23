@@ -119,13 +119,9 @@ namespace MissionPlanner.GCSViews
             mapControl.MarkersEnabled = true;
             mapControl.MaxZoom = 19;
             mapControl.MinZoom = 3;
-            mapControl.MouseWheelZoomEnabled = true;
-            mapControl.MouseWheelZoomType = MouseWheelZoomType.MousePositionAndCenter;
             mapControl.NegativeMode = false;
             mapControl.PolygonsEnabled = true;
-            mapControl.RequestMemoryCache = 50;
             mapControl.RoutesEnabled = true;
-            mapControl.ScaleMode = ScaleMode.Fractional;
             mapControl.ShowTileGridLines = false;
             mapControl.Zoom = 15;
 
@@ -199,8 +195,6 @@ namespace MissionPlanner.GCSViews
             cmbMapType.Items.AddRange(new object[] {
                 "Bing Satellite",
                 "Google Satellite",
-                "ArcGIS Imagery",
-                "Mapbox Satellite",
                 "Bing Hybrid",
                 "Google Hybrid"
             });
@@ -288,19 +282,11 @@ namespace MissionPlanner.GCSViews
                         mapControl.MapProvider = GMapProviders.GoogleSatelliteMap;
                         lblProvider.Text = "Provider: Google Satellite";
                         break;
-                    case 2: // ArcGIS Imagery
-                        mapControl.MapProvider = GMapProviders.ArcGISImagery;
-                        lblProvider.Text = "Provider: ArcGIS Imagery";
-                        break;
-                    case 3: // Mapbox Satellite
-                        mapControl.MapProvider = GMapProviders.MapboxSatellite;
-                        lblProvider.Text = "Provider: Mapbox Satellite";
-                        break;
-                    case 4: // Bing Hybrid
+                    case 2: // Bing Hybrid
                         mapControl.MapProvider = GMapProviders.BingHybridMap;
                         lblProvider.Text = "Provider: Bing Hybrid";
                         break;
-                    case 5: // Google Hybrid
+                    case 3: // Google Hybrid
                         mapControl.MapProvider = GMapProviders.GoogleHybridMap;
                         lblProvider.Text = "Provider: Google Hybrid";
                         break;
@@ -350,9 +336,6 @@ namespace MissionPlanner.GCSViews
                     lblHeading.Text = "HDG: " + yaw.ToString("F0") + "°";
                     lblStatus.Text = "Connected";
                     lblStatus.ForeColor = Color.FromArgb(0, 200, 100);
-
-                    // Force marker to redraw
-                    droneMarker.Invalidate();
                 }
                 else
                 {
