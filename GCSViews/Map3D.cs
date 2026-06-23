@@ -4,7 +4,6 @@ using MissionPlanner.ArduPilot;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -21,7 +20,7 @@ namespace MissionPlanner.GCSViews
         private double cameraDistance = 50.0;
         private double cameraPitch = 0.5;
         private double cameraYaw = 0.0;
-        private Vector3 dronePosition = new Vector3(0, 0, 0);
+        private OpenTK.Vector3 dronePosition = new OpenTK.Vector3(0, 0, 0);
         private float droneHeading = 0;
         private bool isDragging = false;
         private int lastMouseX, lastMouseY;
@@ -551,7 +550,7 @@ namespace MissionPlanner.GCSViews
                     double alt = MainV2.comPort.MAV.cs.alt;
                     float yaw = MainV2.comPort.MAV.cs.yaw;
 
-                    dronePosition = new Vector3((float)(lng * 100), (float)(alt / 10.0), (float)(lat * 100));
+                    dronePosition = new OpenTK.Vector3((float)(lng * 100), (float)(alt / 10.0), (float)(lat * 100));
                     droneHeading = yaw;
 
                     lblLat.Text = "Lat: " + lat.ToString("F6") + "°";
@@ -573,9 +572,9 @@ namespace MissionPlanner.GCSViews
             }
         }
 
-        private void GlPanel_MouseDown(object sender, MouseEventArgs e)
+        private void GlPanel_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
                 isDragging = true;
                 lastMouseX = e.X;
@@ -583,12 +582,12 @@ namespace MissionPlanner.GCSViews
             }
         }
 
-        private void GlPanel_MouseUp(object sender, MouseEventArgs e)
+        private void GlPanel_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             isDragging = false;
         }
 
-        private void GlPanel_MouseMove(object sender, MouseEventArgs e)
+        private void GlPanel_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (isDragging)
             {
@@ -606,7 +605,7 @@ namespace MissionPlanner.GCSViews
             }
         }
 
-        private void GlPanel_MouseWheel(object sender, MouseEventArgs e)
+        private void GlPanel_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             cameraDistance -= e.Delta * 0.05;
             if (cameraDistance < 5) cameraDistance = 5;
