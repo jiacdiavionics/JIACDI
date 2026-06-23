@@ -1,37 +1,35 @@
 using MissionPlanner.Utilities;
 using MissionPlanner.Controls;
 using MissionPlanner.ArduPilot;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace MissionPlanner.GCSViews
 {
     /// <summary>
-    /// 3D Map Window using OpenTK for rendering terrain and drone visualization.
+    /// 3D Map Window for terrain and drone visualization.
     /// This provides a 3D perspective of the terrain with drone position overlay.
     /// </summary>
     public class Map3D : Form, IActivate
     {
-        private GameWindow gameWindow;
         private double cameraDistance = 50.0;
         private double cameraPitch = 0.5;
         private double cameraYaw = 0.0;
-        private OpenTK.Vector3 dronePosition = new OpenTK.Vector3(0, 0, 0);
+        private Point3D dronePosition = new Point3D(0, 0, 0);
         private float droneHeading = 0;
         private bool isDragging = false;
         private int lastMouseX, lastMouseY;
         private bool terrainGenerated = false;
-        private const int GRID_SIZE = 100;
-        private const float CELL_SIZE = 1.0f;
+        private const int GRID_SIZE = 50;
+        private const float CELL_SIZE = 10.0f;
         private float[,] terrainHeights;
         private float verticalScale = 1.0f;
 
         private System.Windows.Forms.Timer refreshTimer;
         private Panel glPanel;
+        private PictureBox renderBox;
 
         // UI Components
         private Panel controlPanel;
@@ -69,9 +67,9 @@ namespace MissionPlanner.GCSViews
         private Map3D()
         {
             InitializeComponent();
-            InitializeOpenTK();
             GenerateTerrain();
             PositionOnSecondaryMonitor();
+            renderBox.Paint += RenderBox_Paint;
         }
 
         private void PositionOnSecondaryMonitor()
@@ -110,6 +108,7 @@ namespace MissionPlanner.GCSViews
             this.TopMost = false;
 
             glPanel = new Panel();
+            renderBox = new PictureBox();
             controlPanel = new Panel();
             lblTitle = new Label();
             lblLat = new Label();
@@ -122,10 +121,15 @@ namespace MissionPlanner.GCSViews
             lblVerticalScale = new Label();
             refreshTimer = new System.Windows.Forms.Timer();
 
-            // GL Panel (OpenGL rendering surface)
+            // GL Panel (rendering surface)
             glPanel.Dock = DockStyle.Fill;
             glPanel.BackColor = Color.FromArgb(20, 20, 36);
             glPanel.Name = "glPanel";
+
+            // Render Box
+            renderBox.Dock = DockStyle.Fill;
+            renderBox.BackColor = Color.FromArgb(20, 20, 36);
+            renderBox.SizeMode = PictureBoxSizeMode.Normal;
 
             // Control Panel
             controlPanel.BackColor = Color.FromArgb(30, 30, 46);
@@ -227,11 +231,18 @@ namespace MissionPlanner.GCSViews
             controlPanel.Controls.Add(lblTitle);
 
             // Add panels to form
+            glPanel.Controls.Add(renderBox);
             this.Controls.Add(glPanel);
             this.Controls.Add(controlPanel);
 
+            // Mouse events for rendering panel
+            renderBox.MouseDown += GlPanel_MouseDown;
+            renderBox.MouseUp += GlPanel_MouseUp;
+            renderBox.MouseMove += GlPanel_MouseMove;
+            renderBox.MouseWheel += GlPanel_MouseWheel;
+
             // Timer
-            refreshTimer.Interval = 50;
+            refreshTimer.Interval = 100;
             refreshTimer.Tick += RefreshTimer_Tick;
             refreshTimer.Start();
 
@@ -243,79 +254,19 @@ namespace MissionPlanner.GCSViews
             this.ResumeLayout(false);
         }
 
-        private void InitializeOpenTK()
-        {
-            try
-            {
-                // Create GameWindow using the panel's Handle
-                gameWindow = new GameWindow(800, 600, GraphicsMode.Default);
-                gameWindow.Title = "DIMP - 3D Map View";
-                
-                // Set up callbacks
-                gameWindow.Load += GameWindow_Load;
-                gameWindow.RenderFrame += GameWindow_RenderFrame;
-                gameWindow.UpdateFrame += GameWindow_UpdateFrame;
-                
-                // Hook into panel events for input
-                glPanel.MouseDown += GlPanel_MouseDown;
-                glPanel.MouseUp += GlPanel_MouseUp;
-                glPanel.MouseMove += GlPanel_MouseMove;
-                glPanel.MouseWheel += GlPanel_MouseWheel;
-                
-                // Handle resize
-                this.Resize += (s, e) => ResizeGameWindow();
-                ResizeGameWindow();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Map3D InitializeOpenTK Error: " + ex.Message);
-            }
-        }
-
-        private void ResizeGameWindow()
-        {
-            if (gameWindow != null && !gameWindow.IsDisposed)
-            {
-                try
-                {
-                    // Recreate the window with new size
-                    gameWindow.Close();
-                    gameWindow.Dispose();
-                }
-                catch { }
-                
-                try
-                {
-                    gameWindow = new GameWindow(glPanel.Width, glPanel.Height, GraphicsMode.Default);
-                    gameWindow.Load += GameWindow_Load;
-                    gameWindow.RenderFrame += GameWindow_RenderFrame;
-                    gameWindow.UpdateFrame += GameWindow_UpdateFrame;
-                    
-                    // Set panel as parent
-                    SetParent(gameWindow.WindowInfo.Handle, glPanel.Handle);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Map3D ResizeGameWindow Error: " + ex.Message);
-                }
-            }
-        }
-
-        [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-
         private void GenerateTerrain()
         {
-            Random random = new Random();
+            Random random = new Random(42);
             terrainHeights = new float[GRID_SIZE, GRID_SIZE];
 
             for (int x = 0; x < GRID_SIZE; x++)
             {
                 for (int z = 0; z < GRID_SIZE; z++)
                 {
-                    // Generate varying terrain height with some water areas
-                    float height = (float)(Math.Sin(x * 0.1) * Math.Cos(z * 0.1) * 5 + 
-                                            Math.Sin(x * 0.05 + z * 0.05) * 3);
+                    // Generate varying terrain height
+                    float height = (float)(Math.Sin(x * 0.2) * Math.Cos(z * 0.2) * 8 + 
+                                            Math.Sin(x * 0.1 + z * 0.1) * 4 +
+                                            random.NextDouble() * 2);
                     terrainHeights[x, z] = height;
                 }
             }
@@ -323,67 +274,32 @@ namespace MissionPlanner.GCSViews
             terrainGenerated = true;
         }
 
-        private void GameWindow_Load(object sender, EventArgs e)
+        private void RenderBox_Paint(object sender, PaintEventArgs e)
         {
-            GL.ClearColor(0.08f, 0.08f, 0.14f, 1.0f); // Dark blue background
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.ColorMaterial);
-            GL.Enable(EnableCap.Lighting);
-            GL.Enable(EnableCap.Light0);
-            GL.ShadeModel(ShadingModel.Smooth);
+            if (renderBox.Width <= 0 || renderBox.Height <= 0) return;
 
-            float[] lightPos = { 1.0f, 1.0f, 1.0f, 0.0f };
-            float[] lightColor = { 0.8f, 0.8f, 0.8f, 1.0f };
-            GL.Light(LightName.Light0, LightParameter.Position, lightPos);
-            GL.Light(LightName.Light0, LightParameter.Diffuse, lightColor);
-        }
+            Graphics g = e.Graphics;
+            g.Clear(Color.FromArgb(20, 30, 50));
 
-        private void GameWindow_UpdateFrame(object sender, FrameEventArgs e)
-        {
-            UpdateDronePosition();
-        }
+            int centerX = renderBox.Width / 2;
+            int centerY = renderBox.Height / 2;
 
-        private void GameWindow_RenderFrame(object sender, FrameEventArgs e)
-        {
-            if (gameWindow == null || gameWindow.IsDisposed) return;
+            // Draw terrain grid
+            DrawTerrain(g, centerX, centerY);
 
-            GL.Viewport(0, 0, gameWindow.Width, gameWindow.Height);
-            
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            // Set up projection matrix
-            Matrix4 projection = Matrix4.Perspectivepective(45.0f, (float)gameWindow.Width / gameWindow.Height, 0.1f, 1000.0f);
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadMatrix(ref projection);
-
-            // Set up modelview matrix
-            Matrix4 modelview = Matrix4.LookAt(
-                (float)(cameraDistance * Math.Sin(cameraYaw) * Math.Cos(cameraPitch)),
-                (float)(cameraDistance * Math.Sin(cameraPitch) + dronePosition.Y),
-                (float)(cameraDistance * Math.Cos(cameraYaw) * Math.Cos(cameraPitch)),
-                (float)dronePosition.X, (float)dronePosition.Y, (float)dronePosition.Z,
-                0, 1, 0);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref modelview);
-
-            // Draw terrain
-            DrawTerrain();
-
-            // Draw grid
-            DrawGrid();
+            // Draw grid on ground
+            DrawGrid(g, centerX, centerY);
 
             // Draw drone
-            DrawDrone();
-
-            gameWindow.SwapBuffers();
+            DrawDrone(g, centerX, centerY);
         }
 
-        private void DrawTerrain()
+        private void DrawTerrain(Graphics g, int centerX, int centerY)
         {
             if (!terrainGenerated) return;
 
-            GL.Begin(PrimitiveType.Triangles);
+            // Sort triangles by depth (painter's algorithm)
+            var triangles = new System.Collections.Generic.List<Triangle>();
 
             for (int x = 0; x < GRID_SIZE - 1; x++)
             {
@@ -394,29 +310,83 @@ namespace MissionPlanner.GCSViews
                     float h3 = terrainHeights[x, z + 1] * verticalScale;
                     float h4 = terrainHeights[x + 1, z + 1] * verticalScale;
 
+                    // Transform to screen coordinates
+                    var p1 = WorldToScreen(x * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, h1, z * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, centerX, centerY);
+                    var p2 = WorldToScreen((x + 1) * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, h2, z * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, centerX, centerY);
+                    var p3 = WorldToScreen(x * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, h3, (z + 1) * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, centerX, centerY);
+                    var p4 = WorldToScreen((x + 1) * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, h4, (z + 1) * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, centerX, centerY);
+
                     float avgHeight = (h1 + h2 + h3 + h4) / 4;
                     Color terrainCol = GetTerrainColor(avgHeight);
 
-                    // Triangle 1
-                    GL.Color3(terrainCol);
-                    GL.Vertex3(x * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, h1, z * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2);
-                    GL.Vertex3((x + 1) * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, h2, z * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2);
-                    GL.Vertex3(x * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, h3, (z + 1) * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2);
+                    // Calculate depth for sorting
+                    float depth1 = (x + 0.5f) * CELL_SIZE;
+                    float depth2 = ((x + 1) + 0.5f) * CELL_SIZE;
+                    float depth3 = (z + 0.5f) * CELL_SIZE;
+                    float avgDepth = (depth1 + depth2 + depth3) / 3;
 
+                    // Triangle 1
+                    triangles.Add(new Triangle(p1, p2, p3, terrainCol, avgDepth));
                     // Triangle 2
-                    GL.Color3(terrainCol);
-                    GL.Vertex3((x + 1) * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, h2, z * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2);
-                    GL.Vertex3((x + 1) * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, h4, (z + 1) * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2);
-                    GL.Vertex3(x * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2, h3, (z + 1) * CELL_SIZE - GRID_SIZE * CELL_SIZE / 2);
+                    triangles.Add(new Triangle(p2, p4, p3, terrainCol, avgDepth));
                 }
             }
 
-            GL.End();
+            // Sort by depth (far to near)
+            triangles.Sort((a, b) => b.Depth.CompareTo(a.Depth));
+
+            // Draw triangles
+            using (var brush = new SolidBrush(Color.Blue))
+            {
+                foreach (var tri in triangles)
+                {
+                    brush.Color = tri.Color;
+                    var points = new Point[] { tri.P1, tri.P2, tri.P3 };
+                    g.FillPolygon(brush, points);
+                }
+            }
+
+            // Draw edges
+            using (var pen = new Pen(Color.FromArgb(40, 40, 60), 0.5f))
+            {
+                foreach (var tri in triangles)
+                {
+                    g.DrawLine(pen, tri.P1, tri.P2);
+                    g.DrawLine(pen, tri.P2, tri.P3);
+                    g.DrawLine(pen, tri.P3, tri.P1);
+                }
+            }
+        }
+
+        private Point WorldToScreen(float worldX, float worldY, float worldZ, int centerX, int centerY)
+        {
+            // Rotate around Y axis (yaw)
+            float cosYaw = (float)Math.Cos(-cameraYaw);
+            float sinYaw = (float)Math.Sin(-cameraYaw);
+            
+            float rotatedX = worldX * cosYaw - worldZ * sinYaw;
+            float rotatedZ = worldX * sinYaw + worldZ * cosYaw;
+
+            // Rotate around X axis (pitch) - adjust Y based on pitch
+            float cosPitch = (float)Math.Cos(-cameraPitch);
+            float sinPitch = (float)Math.Sin(-cameraPitch);
+            
+            float adjustedY = worldY * cosPitch - rotatedZ * sinPitch;
+            float adjustedZ = worldY * sinPitch + rotatedZ * cosPitch;
+
+            // Perspective projection
+            float scale = (float)(cameraDistance / (cameraDistance + adjustedZ + 100));
+            if (scale < 0.01f) scale = 0.01f;
+
+            int screenX = centerX + (int)(rotatedX * scale);
+            int screenY = centerY - (int)(adjustedY * scale * 2);
+
+            return new Point(screenX, screenY);
         }
 
         private Color GetTerrainColor(float height)
         {
-            if (height < -2)
+            if (height < -4)
             {
                 return Color.FromArgb(20, 60, 120); // Deep water
             }
@@ -424,13 +394,17 @@ namespace MissionPlanner.GCSViews
             {
                 return Color.FromArgb(40, 80, 150); // Shallow water
             }
-            else if (height < 2)
+            else if (height < 3)
             {
                 return Color.FromArgb(194, 178, 128); // Beach/sand
             }
-            else if (height < 5)
+            else if (height < 8)
             {
                 return Color.FromArgb(76, 120, 50); // Grass
+            }
+            else if (height < 12)
+            {
+                return Color.FromArgb(100, 100, 80); // Dirt
             }
             else
             {
@@ -438,105 +412,66 @@ namespace MissionPlanner.GCSViews
             }
         }
 
-        private void DrawGrid()
+        private void DrawGrid(Graphics g, int centerX, int centerY)
         {
-            GL.Color3(0.2f, 0.2f, 0.3f);
-            GL.Begin(PrimitiveType.Lines);
-
-            float gridExtent = GRID_SIZE * CELL_SIZE;
-            float start = -gridExtent / 2;
-
-            for (int i = 0; i <= GRID_SIZE; i += 5)
+            using (var pen = new Pen(Color.FromArgb(60, 60, 80), 1))
             {
-                float pos = start + i * CELL_SIZE;
-                GL.Vertex3(pos, -20, start);
-                GL.Vertex3(pos, -20, start + gridExtent);
-                GL.Vertex3(start, -20, pos);
-                GL.Vertex3(start + gridExtent, -20, pos);
-            }
+                float gridExtent = GRID_SIZE * CELL_SIZE;
+                float start = -gridExtent / 2;
 
-            GL.End();
+                for (int i = 0; i <= GRID_SIZE; i += 5)
+                {
+                    float pos = start + i * CELL_SIZE;
+                    
+                    var p1 = WorldToScreen(pos, -20, start, centerX, centerY);
+                    var p2 = WorldToScreen(pos, -20, start + gridExtent, centerX, centerY);
+                    var p3 = WorldToScreen(start, -20, pos, centerX, centerY);
+                    var p4 = WorldToScreen(start + gridExtent, -20, pos, centerX, centerY);
+
+                    g.DrawLine(pen, p1, p2);
+                    g.DrawLine(pen, p3, p4);
+                }
+            }
         }
 
-        private void DrawDrone()
+        private void DrawDrone(Graphics g, int centerX, int centerY)
         {
-            GL.PushMatrix();
-            GL.Translate(dronePosition.X, dronePosition.Y + 2, dronePosition.Z);
-            GL.Rotate(droneHeading, 0, 1, 0);
+            // Transform drone position
+            var screenPos = WorldToScreen(
+                (float)dronePosition.X, 
+                (float)dronePosition.Y, 
+                (float)dronePosition.Z, 
+                centerX, centerY);
 
-            // Drone body - cyan color
-            GL.Color3(0, 0.8f, 1);
-
-            // Main body (box)
-            GL.Begin(PrimitiveType.Quads);
-            // Top
-            GL.Vertex3(-0.5, 0.3, -0.3);
-            GL.Vertex3(0.5, 0.3, -0.3);
-            GL.Vertex3(0.5, 0.3, 0.3);
-            GL.Vertex3(-0.5, 0.3, 0.3);
-            // Bottom
-            GL.Vertex3(-0.5, -0.3, -0.3);
-            GL.Vertex3(0.5, -0.3, -0.3);
-            GL.Vertex3(0.5, -0.3, 0.3);
-            GL.Vertex3(-0.5, -0.3, 0.3);
-            // Front
-            GL.Vertex3(-0.5, -0.3, 0.3);
-            GL.Vertex3(0.5, -0.3, 0.3);
-            GL.Vertex3(0.5, 0.3, 0.3);
-            GL.Vertex3(-0.5, 0.3, 0.3);
-            // Back
-            GL.Vertex3(-0.5, -0.3, -0.3);
-            GL.Vertex3(0.5, -0.3, -0.3);
-            GL.Vertex3(0.5, 0.3, -0.3);
-            GL.Vertex3(-0.5, 0.3, -0.3);
-            // Left
-            GL.Vertex3(-0.5, -0.3, -0.3);
-            GL.Vertex3(-0.5, 0.3, -0.3);
-            GL.Vertex3(-0.5, 0.3, 0.3);
-            GL.Vertex3(-0.5, -0.3, 0.3);
-            // Right
-            GL.Vertex3(0.5, -0.3, -0.3);
-            GL.Vertex3(0.5, 0.3, -0.3);
-            GL.Vertex3(0.5, 0.3, 0.3);
-            GL.Vertex3(0.5, -0.3, 0.3);
-            GL.End();
-
-            // Arms
-            GL.Color3(0.3f, 0.3f, 0.4f);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(0.3, 0, 0.3); GL.Vertex3(2, 0, 2);
-            GL.Vertex3(-0.3, 0, 0.3); GL.Vertex3(-2, 0, 2);
-            GL.Vertex3(0.3, 0, -0.3); GL.Vertex3(2, 0, -2);
-            GL.Vertex3(-0.3, 0, -0.3); GL.Vertex3(-2, 0, -2);
-            GL.End();
-
-            // Propellers
-            GL.Color3(0.5f, 0.5f, 0.5f);
-            DrawCircle(2, 0, 2, 0.3f);
-            DrawCircle(-2, 0, 2, 0.3f);
-            DrawCircle(2, 0, -2, 0.3f);
-            DrawCircle(-2, 0, -2, 0.3f);
-
-            // Direction indicator (nose)
-            GL.Color3(1, 0, 0);
-            GL.Begin(PrimitiveType.Triangles);
-            GL.Vertex3(0, 0, 0.5);
-            GL.Vertex3(-0.2, 0, 0.8);
-            GL.Vertex3(0.2, 0, 0.8);
-            GL.End();
-
-            GL.PopMatrix();
-        }
-
-        private void DrawCircle(float x, float y, float z, float radius)
-        {
-            GL.Begin(PrimitiveType.LineLoop);
-            for (int i = 0; i < 16; i++)
+            // Draw drone body
+            int size = 20;
+            using (var pen = new Pen(Color.Cyan, 2))
+            using (var brush = new SolidBrush(Color.FromArgb(100, 0, 180, 200)))
             {
-                double angle = 2 * Math.PI * i / 16;
-                GL.Vertex3(x + (float)(radius * Math.Cos(angle)), y, z + (float)(radius * Math.Sin(angle)));
+                // Body (circle)
+                g.FillEllipse(brush, screenPos.X - size/2, screenPos.Y - size/2, size, size);
+                g.DrawEllipse(pen, screenPos.X - size/2, screenPos.Y - size/2, size, size);
+
+                // Direction indicator
+                float dirX = (float)Math.Sin(droneHeading * Math.PI / 180) * size;
+                float dirY = -(float)Math.Cos(droneHeading * Math.PI / 180) * size;
+                
+                using (var dirPen = new Pen(Color.Red, 3))
+                {
+                    g.DrawLine(dirPen, screenPos.X, screenPos.Y, 
+                        screenPos.X + (int)dirX, screenPos.Y + (int)dirY);
+                }
+
+                // Arms
+                float[] armAngles = { 45, 135, 225, 315 };
+                foreach (float angle in armAngles)
+                {
+                    float rad = (angle + droneHeading) * Math.PI / 180;
+                    int endX = screenPos.X + (int)(Math.Sin(rad) * size);
+                    int endY = screenPos.Y - (int)(Math.Cos(rad) * size);
+                    g.DrawLine(pen, screenPos.X, screenPos.Y, endX, endY);
+                }
             }
-            GL.End();
         }
 
         private void UpdateDronePosition()
@@ -550,7 +485,8 @@ namespace MissionPlanner.GCSViews
                     double alt = MainV2.comPort.MAV.cs.alt;
                     float yaw = MainV2.comPort.MAV.cs.yaw;
 
-                    dronePosition = new OpenTK.Vector3((float)(lng * 100), (float)(alt / 10.0), (float)(lat * 100));
+                    // Convert lat/lng to local coordinates
+                    dronePosition = new Point3D(lng * 1000, alt, lat * 1000);
                     droneHeading = yaw;
 
                     lblLat.Text = "Lat: " + lat.ToString("F6") + "°";
@@ -594,22 +530,26 @@ namespace MissionPlanner.GCSViews
                 int deltaX = e.X - lastMouseX;
                 int deltaY = e.Y - lastMouseY;
 
-                cameraYaw -= deltaX * 0.005;
-                cameraPitch += deltaY * 0.005;
+                cameraYaw += deltaX * 0.01;
+                cameraPitch -= deltaY * 0.01;
 
-                if (cameraPitch < 0.1) cameraPitch = 0.1;
-                if (cameraPitch > Math.PI / 2 - 0.1) cameraPitch = Math.PI / 2 - 0.1;
+                // Clamp pitch
+                if (cameraPitch < -Math.PI / 4) cameraPitch = (float)(-Math.PI / 4);
+                if (cameraPitch > Math.PI / 3) cameraPitch = (float)(Math.PI / 3);
 
                 lastMouseX = e.X;
                 lastMouseY = e.Y;
+
+                renderBox.Invalidate();
             }
         }
 
         private void GlPanel_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            cameraDistance -= e.Delta * 0.05;
-            if (cameraDistance < 5) cameraDistance = 5;
+            cameraDistance -= e.Delta * 0.1;
+            if (cameraDistance < 10) cameraDistance = 10;
             if (cameraDistance > 200) cameraDistance = 200;
+            renderBox.Invalidate();
         }
 
         private void BtnResetView_Click(object sender, EventArgs e)
@@ -619,27 +559,23 @@ namespace MissionPlanner.GCSViews
 
         private void ResetView()
         {
-            cameraDistance = 50.0;
-            cameraPitch = 0.5;
+            cameraDistance = 80.0;
+            cameraPitch = 0.3;
             cameraYaw = 0.0;
+            renderBox.Invalidate();
         }
 
         private void VerticalScaleBar_Scroll(object sender, EventArgs e)
         {
             verticalScale = verticalScaleBar.Value / 10.0f;
             lblVerticalScale.Text = "Vertical Scale: " + verticalScale.ToString("F1") + "x";
+            renderBox.Invalidate();
         }
 
         private void RefreshTimer_Tick(object sender, EventArgs e)
         {
-            if (gameWindow != null && !gameWindow.IsDisposed)
-            {
-                try
-                {
-                    gameWindow.ProcessEvents();
-                }
-                catch { }
-            }
+            UpdateDronePosition();
+            renderBox.Invalidate();
         }
 
         private void Map3D_FormClosing(object sender, FormClosingEventArgs e)
@@ -650,15 +586,7 @@ namespace MissionPlanner.GCSViews
 
         private void Map3D_Resize(object sender, EventArgs e)
         {
-            if (glPanel != null && gameWindow != null && !gameWindow.IsDisposed)
-            {
-                try
-                {
-                    gameWindow.Width = glPanel.Width;
-                    gameWindow.Height = glPanel.Height;
-                }
-                catch { }
-            }
+            renderBox.Invalidate();
         }
 
         public void Activate()
@@ -698,12 +626,30 @@ namespace MissionPlanner.GCSViews
                     refreshTimer.Stop();
                     refreshTimer.Dispose();
                 }
-                if (gameWindow != null)
-                {
-                    gameWindow.Dispose();
-                }
             }
             base.Dispose(disposing);
+        }
+
+        // Helper classes
+        private class Point3D
+        {
+            public double X, Y, Z;
+            public Point3D(double x, double y, double z)
+            {
+                X = x; Y = y; Z = z;
+            }
+        }
+
+        private class Triangle
+        {
+            public Point P1, P2, P3;
+            public Color Color;
+            public float Depth;
+
+            public Triangle(Point p1, Point p2, Point p3, Color color, float depth)
+            {
+                P1 = p1; P2 = p2; P3 = p3; Color = color; Depth = depth;
+            }
         }
     }
 }
