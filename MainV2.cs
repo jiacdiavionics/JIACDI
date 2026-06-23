@@ -600,11 +600,12 @@ namespace MissionPlanner
 
         public void updateLayout(object sender, EventArgs e)
         {
-            // Setup and Config require unlock - Simulation and Help are always visible
+            // Setup and Config require unlock - Simulation, Help, and Map3D are always visible
             bool menusUnlocked = !_advancedMenusLocked;
             MenuInitConfig.Visible = menusUnlocked;
             MenuConfigTune.Visible = menusUnlocked;
             MenuSimulation.Visible = true;
+            MenuMap3D.Visible = true;
             MenuHelp.Visible = true;
             MissionPlanner.Controls.BackstageView.BackstageView.Advanced = DisplayConfiguration.isAdvancedMode;
 
@@ -711,6 +712,8 @@ namespace MissionPlanner
 
             InitializeComponent();
 
+            // Set Map button text (it's a standalone window)
+            MenuMap.Text = "Map";
             // Set Tablet Mirror button text
             MenuTabletMirror.Text = "Tablet Mirror";
 
@@ -1101,25 +1104,9 @@ namespace MissionPlanner
                 this.Icon = Icon.FromHandle(((Bitmap) Program.IconFile).GetHicon());
             }
 
-            // Draw red "JIAC&DI" text on MenuArduPilot button
-            Bitmap bmp = new Bitmap(120, 30);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                g.Clear(System.Drawing.Color.Transparent);
-                using (Font font = new Font("Segoe UI", 14, System.Drawing.FontStyle.Bold))
-                {
-                    using (Brush brush = new SolidBrush(System.Drawing.Color.Red))
-                    {
-                        StringFormat sf = new StringFormat();
-                        sf.Alignment = StringAlignment.Center;
-                        sf.LineAlignment = StringAlignment.Center;
-                        g.DrawString("JIAC&DI", font, brush, new RectangleF(0, 0, 120, 30), sf);
-                    }
-                }
-            }
-            MenuArduPilot.Image = bmp;
-            MenuArduPilot.Width = 120;
+            // Use JIAC&DI logo image instead of drawing text
+            MenuArduPilot.Image = MissionPlanner.Properties.Resources.jiacdi_logo_toolbar;
+            MenuArduPilot.Width = 50;
             MenuArduPilot.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 
             Application.DoEvents();
@@ -1215,6 +1202,7 @@ namespace MissionPlanner
             MenuFlightPlanner.Image = displayicons.fp;
             MenuInitConfig.Image = displayicons.initsetup;
             MenuSimulation.Image = displayicons.sim;
+            MenuMap3D.ForeColor = ThemeManager.TextColor;
             MenuConfigTune.Image = displayicons.config_tuning;
             MenuConnect.Image = displayicons.connect;
             MenuHelp.Image = displayicons.help;
@@ -1224,6 +1212,7 @@ namespace MissionPlanner
             MenuFlightPlanner.ForeColor = ThemeManager.TextColor;
             MenuInitConfig.ForeColor = ThemeManager.TextColor;
             MenuSimulation.ForeColor = ThemeManager.TextColor;
+            MenuMap3D.ForeColor = ThemeManager.TextColor;
             MenuConfigTune.ForeColor = ThemeManager.TextColor;
             MenuConnect.ForeColor = ThemeManager.TextColor;
             MenuHelp.ForeColor = ThemeManager.TextColor;
@@ -1420,7 +1409,25 @@ namespace MissionPlanner
 
         private void MenuMap_Click(object sender, EventArgs e)
         {
-            MyView.ShowScreen("MapScreen");
+            // Show standalone map window (can be moved to second monitor)
+            GCSViews.MapScreen.ShowMap();
+
+            // save config
+            SaveConfig();
+        }
+
+        private void MenuMap3D_Click(object sender, EventArgs e)
+        {
+            // Show 3D map window
+            MissionPlanner.GCSViews.Map3D.ShowMap();
+
+            // save config
+            SaveConfig();
+        }
+
+        private void MenuTabletMirror_Click(object sender, EventArgs e)
+        {
+            GCSViews.TabletMirrorForm.ShowTabletMirror();
 
             // save config
             SaveConfig();

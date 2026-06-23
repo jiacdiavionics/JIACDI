@@ -47,6 +47,7 @@ namespace MissionPlanner
             this.MenuInitConfig = new System.Windows.Forms.ToolStripButton();
             this.MenuConfigTune = new System.Windows.Forms.ToolStripButton();
             this.MenuSimulation = new System.Windows.Forms.ToolStripButton();
+            this.MenuMap3D = new System.Windows.Forms.ToolStripButton();
             this.MenuMap = new System.Windows.Forms.ToolStripButton();
             this.MenuTabletMirror = new System.Windows.Forms.ToolStripButton();
             this.MenuHelp = new System.Windows.Forms.ToolStripButton();
@@ -77,6 +78,7 @@ namespace MissionPlanner
             this.MenuInitConfig,
             this.MenuConfigTune,
             this.MenuSimulation,
+            this.MenuMap3D,
             this.MenuMap,
             this.MenuTabletMirror,
             this.MenuHelp,
@@ -201,6 +203,18 @@ namespace MissionPlanner
             this.MenuSimulation.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
             this.MenuSimulation.Click += new System.EventHandler(this.MenuSimulation_Click);
             // 
+            // MenuMap3D - 3D Map Button
+            // 
+            this.MenuMap3D.BackColor = System.Drawing.Color.Transparent;
+            this.MenuMap3D.ForeColor = System.Drawing.Color.FromArgb(220, 220, 230);
+            this.MenuMap3D.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MenuMap3D.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            resources.ApplyResources(this.MenuMap3D, "MenuMap3D");
+            this.MenuMap3D.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MenuMap3D.Name = "MenuMap3D";
+            this.MenuMap3D.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
+            this.MenuMap3D.Click += new System.EventHandler(this.MenuMap3D_Click);
+            // 
             // MenuMap - Real-time Map Button
             // 
             this.MenuMap.BackColor = System.Drawing.Color.Transparent;
@@ -211,6 +225,7 @@ namespace MissionPlanner
             this.MenuMap.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MenuMap.Name = "MenuMap";
             this.MenuMap.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
+            this.MenuMap.Size = new System.Drawing.Size(90, 39);
             this.MenuMap.Click += new System.EventHandler(this.MenuMap_Click);
             // 
             // MenuTabletMirror - Android Tablet Mirror Button
@@ -223,6 +238,7 @@ namespace MissionPlanner
             this.MenuTabletMirror.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MenuTabletMirror.Name = "MenuTabletMirror";
             this.MenuTabletMirror.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
+            this.MenuTabletMirror.Size = new System.Drawing.Size(110, 39);
             this.MenuTabletMirror.Click += new System.EventHandler(this.MenuTabletMirror_Click);
             // 
             // MenuHelp - Text Only Tab
@@ -267,9 +283,10 @@ namespace MissionPlanner
             this.MenuArduPilot.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.MenuArduPilot.ForeColor = System.Drawing.Color.White;
             this.MenuArduPilot.Image = global::MissionPlanner.Properties.Resources.jiacdi_logo_toolbar;
-            this.MenuArduPilot.Margin = new System.Windows.Forms.Padding(4, 2, 8, 2);
+            this.MenuArduPilot.Margin = new System.Windows.Forms.Padding(4, 2, 2, 2);
             this.MenuArduPilot.Name = "MenuArduPilot";
-            this.MenuArduPilot.Padding = new System.Windows.Forms.Padding(4);
+            this.MenuArduPilot.Padding = new System.Windows.Forms.Padding(2);
+            this.MenuArduPilot.Size = new System.Drawing.Size(54, 39);
             this.MenuArduPilot.ToolTipText = "Visit JIAC&DI Website";
             this.MenuArduPilot.Click += new System.EventHandler(this.MenuArduPilot_Click);
             // 
@@ -280,7 +297,8 @@ namespace MissionPlanner
             this.menu_AdvanceLock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.menu_AdvanceLock.Image = global::MissionPlanner.Properties.Resources.lock_icon;
             this.menu_AdvanceLock.Name = "menu_AdvanceLock";
-            this.menu_AdvanceLock.Padding = new System.Windows.Forms.Padding(4);
+            this.menu_AdvanceLock.Padding = new System.Windows.Forms.Padding(2);
+            this.menu_AdvanceLock.Size = new System.Drawing.Size(28, 39);
             this.menu_AdvanceLock.ToolTipText = "Lock/Unlock Setup and Config (Ctrl+L)";
             this.menu_AdvanceLock.Click += new System.EventHandler(this.menu_AdvanceLock_Click);
             // 
@@ -341,6 +359,7 @@ namespace MissionPlanner
         public System.Windows.Forms.ToolStripButton MenuFlightPlanner;
         public System.Windows.Forms.ToolStripButton MenuInitConfig;
         public System.Windows.Forms.ToolStripButton MenuSimulation;
+        public System.Windows.Forms.ToolStripButton MenuMap3D;
         public System.Windows.Forms.ToolStripButton MenuMap;
         public System.Windows.Forms.ToolStripButton MenuConfigTune;
         public System.Windows.Forms.ToolStripButton MenuConnect;
