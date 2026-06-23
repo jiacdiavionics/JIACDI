@@ -1419,7 +1419,7 @@ namespace MissionPlanner
         private void MenuMap3D_Click(object sender, EventArgs e)
         {
             // Show 3D map window
-            GCSViews.Map3D.Instance.ShowMap();
+            MissionPlanner.GCSViews.Map3D.ShowMap();
 
             // save config
             SaveConfig();

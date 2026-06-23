@@ -466,7 +466,7 @@ namespace MissionPlanner.GCSViews
                 float[] armAngles = { 45, 135, 225, 315 };
                 foreach (float angle in armAngles)
                 {
-                    float rad = (angle + droneHeading) * Math.PI / 180;
+                    double rad = (angle + droneHeading) * Math.PI / 180;
                     int endX = screenPos.X + (int)(Math.Sin(rad) * size);
                     int endY = screenPos.Y - (int)(Math.Cos(rad) * size);
                     g.DrawLine(pen, screenPos.X, screenPos.Y, endX, endY);
