@@ -507,29 +507,102 @@ namespace MissionPlanner.GCSViews
     <title>DIMP 3D Map</title>
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body, #cesiumContainer {
-            width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
-            background: #87CEEB;
+        * { margin: 0 !important; padding: 0 !important; box-sizing: border-box; }
+        html, body {
+            width: 100% !important;
+            height: 100% !important;
+            overflow: hidden !important;
+            background: #1a5276 !important;
+        }
+        #cesiumContainer {
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         
         #loading {
-            position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+            position: fixed !important;
+            left: 0 !important; top: 0 !important;
+            right: 0 !important; bottom: 0 !important;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999; color: #fff; font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            z-index: 99999 !important;
+            color: #fff !important;
+            font-family: 'Segoe UI', Arial, sans-serif !important;
         }
-        #loading.hidden { display: none; }
+        #loading.hidden { display: none !important; }
         
-        #loading h2 { margin-bottom: 20px; color: #4a90d9; }
-        #loading p { color: #aaa; font-size: 14px; margin: 5px 0; }
-        #loading .error { color: #ff6b6b; display: none; }
+        #loading h2 { margin-bottom: 20px !important; color: #4a90d9 !important; }
+        #loading p { color: #aaa !important; font-size: 14px !important; margin: 5px 0 !important; }
+        #loading .error { color: #ff6b6b !important; display: none; }
         #loading .spinner {
-            width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.2);
-            border-top: 3px solid #4a90d9; border-radius: 50%;
-            animation: spin 1s linear infinite; margin-bottom: 20px;
+            width: 40px !important; height: 40px !important;
+            border: 3px solid rgba(255,255,255,0.2) !important;
+            border-top: 3px solid #4a90d9 !important;
+            border-radius: 50% !important;
+            animation: spin 1s linear infinite !important;
+            margin-bottom: 20px !important;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Hide ALL Cesium default UI elements */
+        .cesium-widget,
+        .cesium-widget-credits,
+        .cesium-viewer-bottom,
+        .cesium-viewer-toolbar,
+        .cesium-viewer-animationContainer,
+        .cesium-viewer-timelineContainer,
+        .cesium-viewer-fullscreenContainer,
+        .cesium-viewer-geocoderContainer,
+        .cesium-viewer-infoBoxContainer,
+        .cesium-viewer-selectionIndicatorContainer,
+        .cesium-navigationHelpButton,
+        .cesium-navigationHelpButton-wrapper,
+        .cesium-sceneModePicker-wrapper,
+        .cesium-home-button,
+        .cesium-viewer-vrContainer,
+        .cesium-viewer-button,
+        .cesium-creditLogoContainer,
+        .cesium-credit-lightbox-overlay,
+        .cesium-credit-lightbox,
+        .cesium-credit-lightbox-details,
+        .cesium-credit-clearfix,
+        .cesium-credit-textWrapper,
+        .cesium-credit-text,
+        .cesium-credit-textCollapse,
+        .cesium-credit-textExpanded,
+        .cesium-credit-logoContainer,
+        .cesium-credit-genericLogo,
+        .cesium-credit-image,
+        .cesium-widget-credits,
+        .cesium-credit-logoContainer
+        {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        
+        /* Force Cesium canvas to fill container */
+        .cesium-viewer .cesiumWidget {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        .cesium-viewer .cesiumWidget canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block !important;
+        }
     </style>
 </head>
 <body>
@@ -558,27 +631,73 @@ namespace MissionPlanner.GCSViews
         }
         
         function setStatus(s) {
-            document.getElementById('status').textContent = s;
+            var el = document.getElementById('status');
+            if (el) el.textContent = s;
             post('status:' + s);
         }
         
         function showError(msg) {
-            document.getElementById('error').style.display = 'block';
-            document.getElementById('error').textContent = 'Error: ' + msg;
+            var el = document.getElementById('error');
+            if (el) { el.style.display = 'block'; el.textContent = 'Error: ' + msg; }
             post('error:' + msg);
         }
         
         function hideLoading() {
-            document.getElementById('loading').classList.add('hidden');
+            var el = document.getElementById('loading');
+            if (el) el.classList.add('hidden');
+        }
+        
+        // Hide all Cesium UI elements after viewer is created
+        function hideCesiumUI() {
+            // Hide loading overlay
+            hideLoading();
+            
+            // Hide all Cesium default UI elements
+            var elementsToHide = [
+                '.cesium-widget',
+                '.cesium-widget-credits',
+                '.cesium-viewer-bottom',
+                '.cesium-viewer-toolbar',
+                '.cesium-viewer-animationContainer',
+                '.cesium-viewer-timelineContainer',
+                '.cesium-viewer-fullscreenContainer',
+                '.cesium-viewer-geocoderContainer',
+                '.cesium-viewer-infoBoxContainer',
+                '.cesium-viewer-selectionIndicatorContainer',
+                '.cesium-navigationHelpButton',
+                '.cesium-navigationHelpButton-wrapper',
+                '.cesium-sceneModePicker-wrapper',
+                '.cesium-home-button',
+                '.cesium-viewer-vrContainer',
+                '.cesium-creditLogoContainer',
+                '.cesium-credit-lightbox-overlay',
+                '.cesium-credit-lightbox',
+                '.cesium-creditLogoContainer'
+            ];
+            
+            elementsToHide.forEach(function(selector) {
+                var els = document.querySelectorAll(selector);
+                els.forEach(function(el) {
+                    el.style.display = 'none';
+                    el.style.visibility = 'hidden';
+                    el.style.opacity = '0';
+                });
+            });
+            
+            // Force canvas to fill container
+            var canvases = document.querySelectorAll('canvas');
+            canvases.forEach(function(canvas) {
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+            });
         }
         
         // Default view: Amman, Jordan
         var DEFAULT_LNG = 35.9106;
         var DEFAULT_LAT = 31.9539;
-        var DEFAULT_ALT = 3000; // meters above ground
-        var PITCH = -60; // looking down at terrain
+        var DEFAULT_ALT = 3000;
+        var PITCH = -60;
         
-        // Camera position function
         function centerCamera(lat, lng, alt, heading, pitch) {
             if (!window.cesiumViewer) return;
             
@@ -600,7 +719,6 @@ namespace MissionPlanner.GCSViews
             });
         }
         
-        // Catch all errors
         window.onerror = function(msg, url, line) {
             setStatus('JS Error: ' + msg);
             showError(msg + ' (line ' + line + ')');
@@ -614,7 +732,6 @@ namespace MissionPlanner.GCSViews
         
         setStatus('Stage 1: Checking Cesium...');
         
-        // Check if Cesium loaded
         if (typeof Cesium === 'undefined') {
             showError('Cesium.js failed to load. Check internet connection.');
             setStatus('Stage 1 FAILED: Cesium not loaded');
@@ -624,38 +741,14 @@ namespace MissionPlanner.GCSViews
         setStatus('Stage 2: Cesium loaded');
         post('debug:Cesium library loaded');
         
-        // Define tile providers in order of preference
-        var imageryProviders = [
-            {
-                name: 'ESRI World Imagery',
-                provider: new Cesium.UrlTemplateImageryProvider({
-                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                    credit: 'Tiles © Esri'
-                })
-            },
-            {
-                name: 'CARTO Light',
-                provider: new Cesium.UrlTemplateImageryProvider({
-                    url: 'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-                    credit: '© CARTO'
-                })
-            },
-            {
-                name: 'CARTO Voyager',
-                provider: new Cesium.UrlTemplateImageryProvider({
-                    url: 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-                    credit: '© CARTO'
-                })
-            }
-        ];
-        
-        // Create viewer with ESRI World Imagery as default
         setStatus('Stage 3: Trying ESRI World Imagery...');
         
         try {
-            // Use ESRI World Imagery (most reliable for desktop apps)
             window.cesiumViewer = new Cesium.Viewer('cesiumContainer', {
-                imageryProvider: imageryProviders[0].provider,
+                imageryProvider: new Cesium.UrlTemplateImageryProvider({
+                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                    credit: 'Tiles © Esri'
+                }),
                 terrainProvider: new Cesium.EllipsoidTerrainProvider(),
                 baseLayerPicker: false,
                 geocoder: false,
@@ -665,7 +758,11 @@ namespace MissionPlanner.GCSViews
                 animation: false,
                 fullscreenButton: false,
                 navigationHelpButton: false,
-                shouldAnimate: false
+                shouldAnimate: false,
+                infoBox: false,
+                selectionIndicator: false,
+                creditContainer: document.createElement('div'),
+                creditViewport: document.createElement('div')
             });
             
             setStatus('Stage 4: ESRI imagery loaded');
@@ -676,9 +773,11 @@ namespace MissionPlanner.GCSViews
             post('debug:ESRI failed: ' + String(esriError));
             
             try {
-                // Fallback to CARTO Light
                 window.cesiumViewer = new Cesium.Viewer('cesiumContainer', {
-                    imageryProvider: imageryProviders[1].provider,
+                    imageryProvider: new Cesium.UrlTemplateImageryProvider({
+                        url: 'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                        credit: '© CARTO'
+                    }),
                     terrainProvider: new Cesium.EllipsoidTerrainProvider(),
                     baseLayerPicker: false,
                     geocoder: false,
@@ -688,7 +787,11 @@ namespace MissionPlanner.GCSViews
                     animation: false,
                     fullscreenButton: false,
                     navigationHelpButton: false,
-                    shouldAnimate: false
+                    shouldAnimate: false,
+                    infoBox: false,
+                    selectionIndicator: false,
+                    creditContainer: document.createElement('div'),
+                    creditViewport: document.createElement('div')
                 });
                 
                 setStatus('Stage 4: CARTO imagery loaded');
@@ -699,9 +802,11 @@ namespace MissionPlanner.GCSViews
                 post('debug:CARTO failed: ' + String(cartoError));
                 
                 try {
-                    // Last fallback to CARTO Voyager
                     window.cesiumViewer = new Cesium.Viewer('cesiumContainer', {
-                        imageryProvider: imageryProviders[2].provider,
+                        imageryProvider: new Cesium.UrlTemplateImageryProvider({
+                            url: 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+                            credit: '© CARTO'
+                        }),
                         terrainProvider: new Cesium.EllipsoidTerrainProvider(),
                         baseLayerPicker: false,
                         geocoder: false,
@@ -711,14 +816,17 @@ namespace MissionPlanner.GCSViews
                         animation: false,
                         fullscreenButton: false,
                         navigationHelpButton: false,
-                        shouldAnimate: false
+                        shouldAnimate: false,
+                        infoBox: false,
+                        selectionIndicator: false,
+                        creditContainer: document.createElement('div'),
+                        creditViewport: document.createElement('div')
                     });
                     
                     setStatus('Stage 4: CARTO Voyager loaded');
                     post('debug:Viewer created with CARTO Voyager');
                     
                 } catch(finalError) {
-                    // All imagery failed - use blank ellipsoid
                     setStatus('Stage 3: Online imagery unavailable - using fallback');
                     post('debug:All imagery failed: ' + String(finalError));
                     
@@ -733,7 +841,11 @@ namespace MissionPlanner.GCSViews
                         animation: false,
                         fullscreenButton: false,
                         navigationHelpButton: false,
-                        shouldAnimate: false
+                        shouldAnimate: false,
+                        infoBox: false,
+                        selectionIndicator: false,
+                        creditContainer: document.createElement('div'),
+                        creditViewport: document.createElement('div')
                     });
                     
                     showError('Online imagery unavailable - fallback active');
@@ -744,68 +856,45 @@ namespace MissionPlanner.GCSViews
         
         setStatus('Stage 5: Configuring scene...');
         
-        // Configure scene for terrain view (no dark space effect)
         var scene = window.cesiumViewer.scene;
-        
-        // Disable dark lighting effects
         scene.globe.enableLighting = false;
         scene.globe.showGroundAtmosphere = false;
         scene.globe.depthTestAgainstTerrain = false;
         
-        // Disable sky/atmosphere for daytime terrain look
-        if (scene.skyBox) {
-            scene.skyBox.show = false;
-        }
-        if (scene.skyAtmosphere) {
-            scene.skyAtmosphere.show = false;
-        }
+        if (scene.skyBox) scene.skyBox.show = false;
+        if (scene.skyAtmosphere) scene.skyAtmosphere.show = false;
+        if (scene.sun) scene.sun.show = true;
         
-        // Show sun
-        if (scene.sun) {
-            scene.sun.show = true;
-        }
+        // Hide all Cesium UI elements
+        hideCesiumUI();
         
         setStatus('Stage 6: Centering camera...');
         post('debug:Scene configured');
         
-        // Center camera on default location immediately
         centerCamera(DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ALT, 0, PITCH);
         
         setStatus('Stage 7: 3D Map ready');
         post('debug:Camera centered');
-        hideLoading();
         
-        // Expose API
         window.dimpMap = {
             setVehicle: function(lat, lng, alt, heading, speed) {
                 if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-                
                 var cameraAlt = Math.max(Number.isFinite(alt) ? alt : 0, 100) + 500;
                 centerCamera(lat, lng, cameraAlt, heading, PITCH);
                 setStatus('Using vehicle position');
             },
-            centerOnVehicle: function() {
-                setStatus('Centering on vehicle');
-            },
-            enableFollow: function() {
-                setStatus('Follow enabled');
-            },
-            disableFollow: function() {
-                setStatus('Follow disabled');
-            },
+            centerOnVehicle: function() { setStatus('Centering on vehicle'); },
+            enableFollow: function() { setStatus('Follow enabled'); },
+            disableFollow: function() { setStatus('Follow disabled'); },
             resetView: function() {
                 setStatus('Resetting view...');
                 centerCamera(DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ALT, 0, PITCH);
                 setStatus('3D Map ready');
             },
-            clearTrack: function() {
-                setStatus('Track cleared');
-            }
+            clearTrack: function() { setStatus('Track cleared'); }
         };
         
-        setTimeout(function() {
-            post('ready');
-        }, 1000);
+        setTimeout(function() { post('ready'); }, 1000);
         
     })();
     </script>
