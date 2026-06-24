@@ -579,7 +579,7 @@ namespace MissionPlanner.GCSViews
         var PITCH = -60; // looking down at terrain
         
         // Camera position function
-        function centerCamera(lat, lng, alt, heading, pitch, duration) {
+        function centerCamera(lat, lng, alt, heading, pitch) {
             if (!window.cesiumViewer) return;
             
             var cameraAlt = (typeof alt === 'number' && isFinite(alt)) ? alt : DEFAULT_ALT;
@@ -621,24 +621,41 @@ namespace MissionPlanner.GCSViews
             return;
         }
         
-        setStatus('Stage 2: Cesium loaded - creating imagery...');
+        setStatus('Stage 2: Cesium loaded');
         post('debug:Cesium library loaded');
         
+        // Define tile providers in order of preference
+        var imageryProviders = [
+            {
+                name: 'ESRI World Imagery',
+                provider: new Cesium.UrlTemplateImageryProvider({
+                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                    credit: 'Tiles © Esri'
+                })
+            },
+            {
+                name: 'CARTO Light',
+                provider: new Cesium.UrlTemplateImageryProvider({
+                    url: 'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                    credit: '© CARTO'
+                })
+            },
+            {
+                name: 'CARTO Voyager',
+                provider: new Cesium.UrlTemplateImageryProvider({
+                    url: 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+                    credit: '© CARTO'
+                })
+            }
+        ];
+        
+        // Create viewer with ESRI World Imagery as default
+        setStatus('Stage 3: Trying ESRI World Imagery...');
+        
         try {
-            // Use UrlTemplateImageryProvider with OpenStreetMap
-            var imageryProvider = new Cesium.UrlTemplateImageryProvider({
-                url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                credit: '© OpenStreetMap contributors'
-            });
-            
-            setStatus('Stage 3: Imagery provider created');
-            post('debug:Imagery provider created');
-            
-            setStatus('Stage 4: Creating Cesium viewer...');
-            
-            // Create viewer
+            // Use ESRI World Imagery (most reliable for desktop apps)
             window.cesiumViewer = new Cesium.Viewer('cesiumContainer', {
-                imageryProvider: imageryProvider,
+                imageryProvider: imageryProviders[0].provider,
                 terrainProvider: new Cesium.EllipsoidTerrainProvider(),
                 baseLayerPicker: false,
                 geocoder: false,
@@ -651,78 +668,144 @@ namespace MissionPlanner.GCSViews
                 shouldAnimate: false
             });
             
-            setStatus('Stage 5: Viewer created - configuring...');
-            post('debug:Viewer created');
+            setStatus('Stage 4: ESRI imagery loaded');
+            post('debug:Viewer created with ESRI World Imagery');
             
-            // Configure scene for terrain view (no dark space effect)
-            var scene = window.cesiumViewer.scene;
+        } catch(esriError) {
+            setStatus('Stage 3: ESRI failed, trying CARTO...');
+            post('debug:ESRI failed: ' + String(esriError));
             
-            // Disable dark lighting effects
-            scene.globe.enableLighting = false;
-            scene.globe.showGroundAtmosphere = false;
-            scene.globe.depthTestAgainstTerrain = false;
-            
-            // Disable sky/atmosphere for daytime terrain look
-            if (scene.skyBox) {
-                scene.skyBox.show = false;
-            }
-            if (scene.skyAtmosphere) {
-                scene.skyAtmosphere.show = false;
-            }
-            
-            // Show sun
-            if (scene.sun) {
-                scene.sun.show = true;
-            }
-            
-            setStatus('Stage 6: Centering camera...');
-            post('debug:Scene configured');
-            
-            // Center camera on default location immediately
-            centerCamera(DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ALT, 0, PITCH, 0);
-            
-            setStatus('Stage 7: 3D Map ready');
-            post('debug:Camera centered');
-            hideLoading();
-            
-            // Expose API
-            window.dimpMap = {
-                setVehicle: function(lat, lng, alt, heading, speed) {
-                    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+            try {
+                // Fallback to CARTO Light
+                window.cesiumViewer = new Cesium.Viewer('cesiumContainer', {
+                    imageryProvider: imageryProviders[1].provider,
+                    terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+                    baseLayerPicker: false,
+                    geocoder: false,
+                    homeButton: false,
+                    sceneModePicker: false,
+                    timeline: false,
+                    animation: false,
+                    fullscreenButton: false,
+                    navigationHelpButton: false,
+                    shouldAnimate: false
+                });
+                
+                setStatus('Stage 4: CARTO imagery loaded');
+                post('debug:Viewer created with CARTO Light');
+                
+            } catch(cartoError) {
+                setStatus('Stage 3: CARTO failed, trying Voyager...');
+                post('debug:CARTO failed: ' + String(cartoError));
+                
+                try {
+                    // Last fallback to CARTO Voyager
+                    window.cesiumViewer = new Cesium.Viewer('cesiumContainer', {
+                        imageryProvider: imageryProviders[2].provider,
+                        terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+                        baseLayerPicker: false,
+                        geocoder: false,
+                        homeButton: false,
+                        sceneModePicker: false,
+                        timeline: false,
+                        animation: false,
+                        fullscreenButton: false,
+                        navigationHelpButton: false,
+                        shouldAnimate: false
+                    });
                     
-                    var cameraAlt = Math.max(Number.isFinite(alt) ? alt : 0, 100) + 500;
-                    centerCamera(lat, lng, cameraAlt, heading, PITCH, 0.5);
-                    setStatus('Using vehicle position');
-                },
-                centerOnVehicle: function() {
-                    // Will be called with vehicle coords when telemetry is available
-                    setStatus('Centering on vehicle');
-                },
-                enableFollow: function() {
-                    setStatus('Follow enabled');
-                },
-                disableFollow: function() {
-                    setStatus('Follow disabled');
-                },
-                resetView: function() {
-                    setStatus('Resetting view...');
-                    centerCamera(DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ALT, 0, PITCH, 0.5);
-                    setStatus('3D Map ready');
-                },
-                clearTrack: function() {
-                    setStatus('Track cleared');
+                    setStatus('Stage 4: CARTO Voyager loaded');
+                    post('debug:Viewer created with CARTO Voyager');
+                    
+                } catch(finalError) {
+                    // All imagery failed - use blank ellipsoid
+                    setStatus('Stage 3: Online imagery unavailable - using fallback');
+                    post('debug:All imagery failed: ' + String(finalError));
+                    
+                    window.cesiumViewer = new Cesium.Viewer('cesiumContainer', {
+                        imageryProvider: false,
+                        terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+                        baseLayerPicker: false,
+                        geocoder: false,
+                        homeButton: false,
+                        sceneModePicker: false,
+                        timeline: false,
+                        animation: false,
+                        fullscreenButton: false,
+                        navigationHelpButton: false,
+                        shouldAnimate: false
+                    });
+                    
+                    showError('Online imagery unavailable - fallback active');
+                    post('debug:Using ellipsoid fallback (no imagery)');
                 }
-            };
-            
-            setTimeout(function() {
-                post('ready');
-            }, 1000);
-            
-        } catch(e) {
-            showError(e.message || String(e));
-            setStatus('Failed: ' + (e.message || String(e)));
-            post('error:Viewer creation failed: ' + String(e));
+            }
         }
+        
+        setStatus('Stage 5: Configuring scene...');
+        
+        // Configure scene for terrain view (no dark space effect)
+        var scene = window.cesiumViewer.scene;
+        
+        // Disable dark lighting effects
+        scene.globe.enableLighting = false;
+        scene.globe.showGroundAtmosphere = false;
+        scene.globe.depthTestAgainstTerrain = false;
+        
+        // Disable sky/atmosphere for daytime terrain look
+        if (scene.skyBox) {
+            scene.skyBox.show = false;
+        }
+        if (scene.skyAtmosphere) {
+            scene.skyAtmosphere.show = false;
+        }
+        
+        // Show sun
+        if (scene.sun) {
+            scene.sun.show = true;
+        }
+        
+        setStatus('Stage 6: Centering camera...');
+        post('debug:Scene configured');
+        
+        // Center camera on default location immediately
+        centerCamera(DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ALT, 0, PITCH);
+        
+        setStatus('Stage 7: 3D Map ready');
+        post('debug:Camera centered');
+        hideLoading();
+        
+        // Expose API
+        window.dimpMap = {
+            setVehicle: function(lat, lng, alt, heading, speed) {
+                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+                
+                var cameraAlt = Math.max(Number.isFinite(alt) ? alt : 0, 100) + 500;
+                centerCamera(lat, lng, cameraAlt, heading, PITCH);
+                setStatus('Using vehicle position');
+            },
+            centerOnVehicle: function() {
+                setStatus('Centering on vehicle');
+            },
+            enableFollow: function() {
+                setStatus('Follow enabled');
+            },
+            disableFollow: function() {
+                setStatus('Follow disabled');
+            },
+            resetView: function() {
+                setStatus('Resetting view...');
+                centerCamera(DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ALT, 0, PITCH);
+                setStatus('3D Map ready');
+            },
+            clearTrack: function() {
+                setStatus('Track cleared');
+            }
+        };
+        
+        setTimeout(function() {
+            post('ready');
+        }, 1000);
         
     })();
     </script>
