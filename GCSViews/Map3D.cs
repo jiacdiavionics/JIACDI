@@ -429,7 +429,7 @@ namespace MissionPlanner.GCSViews
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: #05070d;
+      background: #0a0e1a;
       font-family: Segoe UI, Arial, sans-serif;
     }
 
@@ -462,9 +462,20 @@ namespace MissionPlanner.GCSViews
       border-radius: 6px;
       display: none;
     }
+    
+    #loading {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: #4a90d9;
+      font-size: 16px;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
+  <div id=""loading"">Loading 3D Map...</div>
   <div id=""cesiumContainer""></div>
   <div id=""message""></div>
   <script>
@@ -487,8 +498,9 @@ namespace MissionPlanner.GCSViews
         return;
       }
 
+      // High-quality ESRI World Imagery satellite tiles
       const satelliteImagery = new Cesium.UrlTemplateImageryProvider({
-        url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         maximumLevel: 19,
         credit: 'Esri World Imagery'
       });
@@ -506,56 +518,111 @@ namespace MissionPlanner.GCSViews
         sceneModePicker: false,
         selectionIndicator: false,
         timeline: false,
-        terrainProvider: new Cesium.EllipsoidTerrainProvider()
+        terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+        skyAtmosphere: new Cesium.SkyAtmosphere()
       });
 
-      viewer.scene.globe.enableLighting = true;
-      viewer.scene.globe.depthTestAgainstTerrain = false;
-      viewer.scene.globe.maximumScreenSpaceError = 1.5;
-      viewer.scene.skyAtmosphere.show = true;
-      viewer.scene.screenSpaceCameraController.minimumZoomDistance = 20;
-      viewer.scene.screenSpaceCameraController.maximumZoomDistance = 20000000;
+      // Hide loading indicator once terrain starts loading
+      document.getElementById('loading').style.display = 'none';
 
+      // Configure scene for best 3D terrain visualization
+      viewer.scene.globe.enableLighting = true;
+      viewer.scene.globe.showGroundAtmosphere = true;
+      viewer.scene.globe.depthTestAgainstTerrain = false;
+      viewer.scene.globe.maximumScreenSpaceError = 1;
+      
+      // Atmosphere settings for realistic sky
+      if (viewer.scene.skyAtmosphere) {
+        viewer.scene.skyAtmosphere.show = true;
+        viewer.scene.skyAtmosphere.brightnessShift = 0.0;
+      }
+      
+      // Sun lighting
+      viewer.scene.sun.show = true;
+
+      // Camera settings
+      viewer.scene.screenSpaceCameraController.minimumZoomDistance = 50;
+      viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000;
+      
+      // Enable anti-aliasing
+      viewer.scene.fxaa = true;
+
+      // Vertical exaggeration for terrain
       if ('verticalExaggeration' in viewer.scene) {
-        viewer.scene.verticalExaggeration = 1.35;
+        viewer.scene.verticalExaggeration = 2.0;
         viewer.scene.verticalExaggerationRelativeHeight = 0;
       }
 
-      Cesium.CesiumTerrainProvider.fromUrl('https://assets.agi.com/stk-terrain/world', {
-        requestVertexNormals: true,
-        requestWaterMask: true
-      }).then((terrainProvider) => {
-        viewer.terrainProvider = terrainProvider;
-      }).catch(() => {
-        Cesium.createWorldTerrainAsync({
-          requestVertexNormals: true,
-          requestWaterMask: true
-        }).then((terrainProvider) => {
-          viewer.terrainProvider = terrainProvider;
-        }).catch(() => {
-          viewer.terrainProvider = new Cesium.EllipsoidTerrainProvider();
-        });
-      });
+      // Load terrain with fallback chain
+      const loadTerrain = async () => {
+        const terrainUrls = [
+          // OpenTopoData terrain
+          { url: 'https://api.open-topo-data.net/v2/terrain', name: 'OpenTopoData' },
+          // STK Terrain from AGI
+          { url: 'https://assets.agi.com/stk-terrain/v1/tileset1.json', name: 'STK Terrain' },
+          // Cesium World Terrain via ion (public default)
+          { url: 'https://assets.cesium.com/1/cesium-terrain-provider', name: 'Cesium Ion' }
+        ];
 
-      const defaultTerrainView = {
+        for (const terrainConfig of terrainUrls) {
+          try {
+            console.log('Trying terrain:', terrainConfig.name);
+            const terrainProvider = await Cesium.CesiumTerrainProvider.fromUrl(
+              terrainConfig.url,
+              {
+                requestVertexNormals: true,
+                requestWaterMask: true
+              }
+            );
+            viewer.terrainProvider = terrainProvider;
+            console.log('Successfully loaded:', terrainConfig.name);
+            post('terrain:' + terrainConfig.name);
+            return;
+          } catch (e) {
+            console.log(terrainConfig.name + ' failed:', e.message);
+          }
+        }
+        
+        // If all terrain sources fail, use ellipsoid (no 3D terrain but map still works)
+        console.log('All terrain sources failed, using flat globe');
+        post('terrain:none');
+      };
+
+      // Start loading terrain
+      loadTerrain();
+
+      // Add labels overlay after a delay
+      setTimeout(() => {
+        try {
+          const labelsImagery = new Cesium.UrlTemplateImageryProvider({
+            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+            maximumLevel: 19
+          });
+          viewer.imageryLayers.addImageryProvider(labelsImagery);
+        } catch (e) {
+          console.log('Could not add labels:', e.message);
+        }
+      }, 3000);
+
+      const defaultView = {
         lng: 35.5860,
         lat: 31.4750,
-        height: 3200,
+        height: 5000,
         heading: 72,
-        pitch: -18
+        pitch: -25
       };
 
       viewer.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(
-          defaultTerrainView.lng,
-          defaultTerrainView.lat,
-          defaultTerrainView.height),
+          defaultView.lng,
+          defaultView.lat,
+          defaultView.height),
         orientation: {
-          heading: Cesium.Math.toRadians(defaultTerrainView.heading),
-          pitch: Cesium.Math.toRadians(defaultTerrainView.pitch),
+          heading: Cesium.Math.toRadians(defaultView.heading),
+          pitch: Cesium.Math.toRadians(defaultView.pitch),
           roll: 0
         },
-        duration: 0.8
+        duration: 1.0
       });
 
       let followVehicle = true;
@@ -563,17 +630,17 @@ namespace MissionPlanner.GCSViews
       let firstVehicleFix = true;
       let lastFollowCameraMove = 0;
 
-      const lookAtTerrain = (position, heading, duration) => {
+      const lookAtVehicle = (position, heading, duration) => {
         const cartographic = Cesium.Cartographic.fromCartesian(position);
         const lng = Cesium.Math.toDegrees(cartographic.longitude);
         const lat = Cesium.Math.toDegrees(cartographic.latitude);
-        const alt = Math.max(cartographic.height + 3000, 2400);
+        const alt = Math.max(cartographic.height + 3000, 3000);
 
         viewer.camera.flyTo({
           destination: Cesium.Cartesian3.fromDegrees(lng, lat, alt),
           orientation: {
             heading: Cesium.Math.toRadians(heading),
-            pitch: Cesium.Math.toRadians(-18),
+            pitch: Cesium.Math.toRadians(-25),
             roll: 0
           },
           duration: duration
@@ -592,22 +659,22 @@ namespace MissionPlanner.GCSViews
 
           if (firstVehicleFix) {
             firstVehicleFix = false;
-            lookAtTerrain(position, heading || 0, 0.6);
+            lookAtVehicle(position, heading || 0, 0.8);
             lastFollowCameraMove = Date.now();
           } else if (followVehicle && Date.now() - lastFollowCameraMove > 4000) {
-            lookAtTerrain(position, heading || 0, 0.35);
+            lookAtVehicle(position, heading || 0, 0.4);
             lastFollowCameraMove = Date.now();
           }
         },
         centerOnVehicle: function () {
           if (lastPosition) {
-            lookAtTerrain(lastPosition, 0, 0.35);
+            lookAtVehicle(lastPosition, 0, 0.5);
           }
         },
         enableFollow: function () {
           followVehicle = true;
           if (lastPosition) {
-            lookAtTerrain(lastPosition, 0, 0.35);
+            lookAtVehicle(lastPosition, 0, 0.5);
             lastFollowCameraMove = Date.now();
           }
         },
@@ -617,15 +684,15 @@ namespace MissionPlanner.GCSViews
         resetView: function () {
           viewer.camera.flyTo({
             destination: Cesium.Cartesian3.fromDegrees(
-              defaultTerrainView.lng,
-              defaultTerrainView.lat,
-              defaultTerrainView.height),
+              defaultView.lng,
+              defaultView.lat,
+              defaultView.height),
             orientation: {
-              heading: Cesium.Math.toRadians(defaultTerrainView.heading),
-              pitch: Cesium.Math.toRadians(defaultTerrainView.pitch),
+              heading: Cesium.Math.toRadians(defaultView.heading),
+              pitch: Cesium.Math.toRadians(defaultView.pitch),
               roll: 0
             },
-            duration: 0.7
+            duration: 0.8
           });
         },
         clearTrack: function () {
