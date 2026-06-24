@@ -40,6 +40,8 @@ jobs:
       - name: Build EXE Installer
         shell: pwsh
         run: |
+          Write-Host "=== Create required directories for Inno Setup ==="
+          New-Item -ItemType Directory -Force -Path "C:\ProgramData\Mission Planner\gmapcache" | Out-Null
           Write-Host "=== EXE Installer Build Debug ==="
           Write-Host "Current directory: $(Get-Location)"
           Write-Host "Files in current dir:"
