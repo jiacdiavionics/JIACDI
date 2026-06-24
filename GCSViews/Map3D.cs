@@ -548,9 +548,6 @@ namespace MissionPlanner.GCSViews
     (function() {
         'use strict';
         
-        var cesiumLoaded = false;
-        var viewerCreated = false;
-        
         function post(msg) {
             console.log('[Map3D]', msg);
             try {
@@ -575,6 +572,34 @@ namespace MissionPlanner.GCSViews
             document.getElementById('loading').classList.add('hidden');
         }
         
+        // Default view: Amman, Jordan
+        var DEFAULT_LNG = 35.9106;
+        var DEFAULT_LAT = 31.9539;
+        var DEFAULT_ALT = 3000; // meters above ground
+        var PITCH = -60; // looking down at terrain
+        
+        // Camera position function
+        function centerCamera(lat, lng, alt, heading, pitch, duration) {
+            if (!window.cesiumViewer) return;
+            
+            var cameraAlt = (typeof alt === 'number' && isFinite(alt)) ? alt : DEFAULT_ALT;
+            var cameraPitch = pitch !== undefined ? pitch : PITCH;
+            var cameraHeading = heading !== undefined ? heading : 0;
+            
+            window.cesiumViewer.camera.setView({
+                destination: Cesium.Cartesian3.fromDegrees(
+                    (typeof lng === 'number' && isFinite(lng)) ? lng : DEFAULT_LNG,
+                    (typeof lat === 'number' && isFinite(lat)) ? lat : DEFAULT_LAT,
+                    cameraAlt
+                ),
+                orientation: {
+                    heading: Cesium.Math.toRadians(cameraHeading),
+                    pitch: Cesium.Math.toRadians(cameraPitch),
+                    roll: 0
+                }
+            });
+        }
+        
         // Catch all errors
         window.onerror = function(msg, url, line) {
             setStatus('JS Error: ' + msg);
@@ -587,80 +612,77 @@ namespace MissionPlanner.GCSViews
             showError(String(e.reason));
         };
         
-        setStatus('Checking Cesium...');
+        setStatus('Stage 1: Checking Cesium...');
         
         // Check if Cesium loaded
         if (typeof Cesium === 'undefined') {
             showError('Cesium.js failed to load. Check internet connection.');
+            setStatus('Stage 1 FAILED: Cesium not loaded');
             return;
         }
         
-        cesiumLoaded = true;
-        setStatus('Cesium loaded - creating map...');
+        setStatus('Stage 2: Cesium loaded - creating imagery...');
         post('debug:Cesium library loaded');
         
-        // Default view: Amman, Jordan
-        var DEFAULT_LNG = 35.9106;
-        var DEFAULT_LAT = 31.9539;
-        var DEFAULT_HEIGHT = 3000; // meters above ground
-        var PITCH = -45; // looking down at terrain
-        
         try {
-            setStatus('Creating Cesium viewer...');
-            
-            // Simple viewer with just imagery
-            var viewer = new Cesium.Viewer('cesiumContainer', {
-                animation: false,
-                baseLayerPicker: false,
-                fullscreenButton: false,
-                geocoder: false,
-                homeButton: false,
-                infoBox: false,
-                navigationHelpButton: false,
-                sceneModePicker: false,
-                selectionIndicator: false,
-                timeline: false,
-                // Use OpenStreetMap as it is most reliable
-                imageryProvider: Cesium.createOpenStreetMapImageryProvider({
-                    url: 'https://tile.openstreetmap.org/'
-                }),
-                terrainProvider: new Cesium.EllipsoidTerrainProvider(),
-                skyBox: false,
-                skyAtmosphere: false,
-                scene3DOnly: true
+            // Use UrlTemplateImageryProvider with OpenStreetMap
+            var imageryProvider = new Cesium.UrlTemplateImageryProvider({
+                url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                credit: '© OpenStreetMap contributors'
             });
             
-            viewerCreated = true;
-            post('debug:Viewer created');
-            setStatus('Configuring scene...');
+            setStatus('Stage 3: Imagery provider created');
+            post('debug:Imagery provider created');
             
-            // Configure scene for terrain view
-            var scene = viewer.scene;
+            setStatus('Stage 4: Creating Cesium viewer...');
+            
+            // Create viewer
+            window.cesiumViewer = new Cesium.Viewer('cesiumContainer', {
+                imageryProvider: imageryProvider,
+                terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+                baseLayerPicker: false,
+                geocoder: false,
+                homeButton: false,
+                sceneModePicker: false,
+                timeline: false,
+                animation: false,
+                fullscreenButton: false,
+                navigationHelpButton: false,
+                shouldAnimate: false
+            });
+            
+            setStatus('Stage 5: Viewer created - configuring...');
+            post('debug:Viewer created');
+            
+            // Configure scene for terrain view (no dark space effect)
+            var scene = window.cesiumViewer.scene;
+            
+            // Disable dark lighting effects
             scene.globe.enableLighting = false;
             scene.globe.showGroundAtmosphere = false;
+            scene.globe.depthTestAgainstTerrain = false;
             
+            // Disable sky/atmosphere for daytime terrain look
+            if (scene.skyBox) {
+                scene.skyBox.show = false;
+            }
             if (scene.skyAtmosphere) {
                 scene.skyAtmosphere.show = false;
             }
             
-            scene.sun.show = true;
-            scene.globe.depthTestAgainstTerrain = false;
+            // Show sun
+            if (scene.sun) {
+                scene.sun.show = true;
+            }
             
-            // Set initial camera position looking at terrain
-            setStatus('Setting camera position...');
+            setStatus('Stage 6: Centering camera...');
+            post('debug:Scene configured');
             
-            viewer.camera.flyTo({
-                destination: Cesium.Cartesian3.fromDegrees(DEFAULT_LNG, DEFAULT_LAT, DEFAULT_HEIGHT),
-                orientation: {
-                    heading: Cesium.Math.toRadians(0),
-                    pitch: Cesium.Math.toRadians(PITCH),
-                    roll: 0
-                },
-                duration: 0
-            });
+            // Center camera on default location immediately
+            centerCamera(DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ALT, 0, PITCH, 0);
             
-            post('debug:Camera positioned');
-            setStatus('3D Map ready');
+            setStatus('Stage 7: 3D Map ready');
+            post('debug:Camera centered');
             hideLoading();
             
             // Expose API
@@ -669,31 +691,27 @@ namespace MissionPlanner.GCSViews
                     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
                     
                     var cameraAlt = Math.max(Number.isFinite(alt) ? alt : 0, 100) + 500;
-                    viewer.camera.flyTo({
-                        destination: Cesium.Cartesian3.fromDegrees(lng, lat, cameraAlt),
-                        orientation: {
-                            heading: Cesium.Math.toRadians(Number.isFinite(heading) ? heading : 0),
-                            pitch: Cesium.Math.toRadians(PITCH),
-                            roll: 0
-                        },
-                        duration: 0.5
-                    });
+                    centerCamera(lat, lng, cameraAlt, heading, PITCH, 0.5);
+                    setStatus('Using vehicle position');
                 },
-                centerOnVehicle: function() {},
-                enableFollow: function() {},
-                disableFollow: function() {},
+                centerOnVehicle: function() {
+                    // Will be called with vehicle coords when telemetry is available
+                    setStatus('Centering on vehicle');
+                },
+                enableFollow: function() {
+                    setStatus('Follow enabled');
+                },
+                disableFollow: function() {
+                    setStatus('Follow disabled');
+                },
                 resetView: function() {
-                    viewer.camera.flyTo({
-                        destination: Cesium.Cartesian3.fromDegrees(DEFAULT_LNG, DEFAULT_LAT, DEFAULT_HEIGHT),
-                        orientation: {
-                            heading: Cesium.Math.toRadians(0),
-                            pitch: Cesium.Math.toRadians(PITCH),
-                            roll: 0
-                        },
-                        duration: 0.5
-                    });
+                    setStatus('Resetting view...');
+                    centerCamera(DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ALT, 0, PITCH, 0.5);
+                    setStatus('3D Map ready');
                 },
-                clearTrack: function() {}
+                clearTrack: function() {
+                    setStatus('Track cleared');
+                }
             };
             
             setTimeout(function() {
@@ -702,7 +720,7 @@ namespace MissionPlanner.GCSViews
             
         } catch(e) {
             showError(e.message || String(e));
-            setStatus('Failed to create map');
+            setStatus('Failed: ' + (e.message || String(e)));
             post('error:Viewer creation failed: ' + String(e));
         }
         
