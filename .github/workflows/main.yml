@@ -41,7 +41,10 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "=== Create required directories for Inno Setup ==="
-          New-Item -ItemType Directory -Force -Path "C:\ProgramData\Mission Planner\gmapcache" | Out-Null
+          $gmapDir = "C:\ProgramData\Mission Planner\gmapcache"
+          New-Item -ItemType Directory -Force -Path $gmapDir | Out-Null
+          # Add a placeholder file so Inno Setup doesn't fail with "No files found"
+          Set-Content -Path "$gmapDir\placeholder.txt" -Value "Placeholder for gmapcache directory" -NoNewline
           Write-Host "=== EXE Installer Build Debug ==="
           Write-Host "Current directory: $(Get-Location)"
           Write-Host "Files in current dir:"
