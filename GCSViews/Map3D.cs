@@ -228,12 +228,8 @@ namespace MissionPlanner.GCSViews
                     }
                 };
                 
-                // Handle console messages from JavaScript
-                try
-                {
-                    webView.CoreWebView2.AddHostObjectToScriptWithOrigins(null);
-                }
-                catch { }
+                // Handle console messages from JavaScript - removed AddHostObjectToScriptWithOrigins call
+                // (not available in all WebView2 versions)
 
                 LogDebug("Stage 2: Loading HTML content");
                 lblStatus.Text = "Loading 3D map HTML...";
