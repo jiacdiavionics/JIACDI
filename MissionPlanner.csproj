@@ -216,6 +216,9 @@
     <PackageReference Include="Microsoft.Diagnostics.Runtime">
       <Version>1.1.127808</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Web.WebView2">
+      <Version>1.0.4022.49</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers">
       <Version>16.10.56</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -266,6 +269,13 @@
     <Reference Include="WebSocket4Net">
       <HintPath>$(NuGetPackageRoot)\websocket4net\0.15.2\lib\netstandard1.3\WebSocket4Net.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="scrcpy-win64-v3.3.4\**\*" />
+    <Content Include="scrcpy-win64-v3.3.4\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Tools\scrcpy\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Controls\DroneCANSubscriber.cs">

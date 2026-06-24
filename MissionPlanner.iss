@@ -41,7 +41,9 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 [Files]
 ; Main application files from bin\Release\net461
 Source: "bin\Release\net461\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-; Note: Don't include user data directories or temp files
+; Bundled offline/prefetched 2D GMap cache
+Source: "C:\ProgramData\Mission Planner\gmapcache\*"; DestDir: "{commonappdata}\Mission Planner\gmapcache"; Flags: ignoreversion recursesubdirs createallsubdirs onlyifdoesntexist
+; Note: Don't include other user data directories or temp files
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

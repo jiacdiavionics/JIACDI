@@ -600,11 +600,12 @@ namespace MissionPlanner
 
         public void updateLayout(object sender, EventArgs e)
         {
-            // Setup and Config require unlock - Simulation, Help, and Map3D are always visible
+            // Setup and Config require unlock. Simulation and Help stay visible.
             bool menusUnlocked = !_advancedMenusLocked;
             MenuInitConfig.Visible = menusUnlocked;
             MenuConfigTune.Visible = menusUnlocked;
             MenuSimulation.Visible = true;
+            MenuMap.Visible = false;
             MenuMap3D.Visible = true;
             MenuHelp.Visible = true;
             MissionPlanner.Controls.BackstageView.BackstageView.Advanced = DisplayConfiguration.isAdvancedMode;
@@ -712,8 +713,11 @@ namespace MissionPlanner
 
             InitializeComponent();
 
-            // Set Map button text (it's a standalone window)
-            MenuMap.Text = "Map";
+            MenuMap.Visible = false;
+            MenuMap3D.Text = "3D Map";
+            MenuMap3D.ToolTipText = "Open 3D map";
+            MenuMap3D.Visible = true;
+
             // Set Tablet Mirror button text
             MenuTabletMirror.Text = "Tablet Mirror";
 
@@ -1418,7 +1422,6 @@ namespace MissionPlanner
 
         private void MenuMap3D_Click(object sender, EventArgs e)
         {
-            // Show 3D map window
             MissionPlanner.GCSViews.Map3D.ShowMap();
 
             // save config

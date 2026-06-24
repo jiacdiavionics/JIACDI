@@ -79,7 +79,6 @@ namespace MissionPlanner
             this.MenuConfigTune,
             this.MenuSimulation,
             this.MenuMap3D,
-            this.MenuMap,
             this.MenuTabletMirror,
             this.MenuHelp,
             this.MenuConnect,
