@@ -149,7 +149,12 @@ namespace MissionPlanner.GCSViews
             refreshTimer.Interval = 500;
             refreshTimer.Tick += RefreshTimer_Tick;
 
+            // Add controls in correct order for proper docking
+            // webView must be added FIRST (will be below toolbar due to docking order)
+            // toolbar and statusStrip use Dock.Top, webView uses DockStyle.None (default)
             Controls.Add(webView);
+            Controls.Add(toolbar);
+            Controls.Add(statusStrip);
 
             FormClosing += Map3D_FormClosing;
 
@@ -254,17 +259,19 @@ namespace MissionPlanner.GCSViews
             {
                 Screen[] screens = Screen.AllScreens;
 
+                // Center on primary screen by default
+                StartPosition = FormStartPosition.CenterScreen;
+                Size = new Size(Math.Min(1280, Screen.PrimaryScreen.WorkingArea.Width),
+                               Math.Min(800, Screen.PrimaryScreen.WorkingArea.Height - 100));
+
                 if (screens.Length > 1)
                 {
+                    // Position on secondary monitor if available
                     Screen secondary = screens[1];
                     StartPosition = FormStartPosition.Manual;
                     Location = secondary.WorkingArea.Location;
-                    WindowState = FormWindowState.Maximized;
-                }
-                else
-                {
-                    StartPosition = FormStartPosition.CenterScreen;
-                    WindowState = FormWindowState.Maximized;
+                    Size = new Size(Math.Min(1280, secondary.WorkingArea.Width),
+                                   Math.Min(800, secondary.WorkingArea.Height));
                 }
             }
             catch (Exception ex)
@@ -518,11 +525,10 @@ namespace MissionPlanner.GCSViews
         sceneModePicker: false,
         selectionIndicator: false,
         timeline: false,
-        terrainProvider: new Cesium.EllipsoidTerrainProvider(),
-        skyAtmosphere: new Cesium.SkyAtmosphere()
+        terrainProvider: new Cesium.EllipsoidTerrainProvider()
       });
 
-      // Hide loading indicator once terrain starts loading
+      // Hide loading indicator once Cesium viewer is ready
       document.getElementById('loading').style.display = 'none';
 
       // Configure scene for best 3D terrain visualization
@@ -531,10 +537,9 @@ namespace MissionPlanner.GCSViews
       viewer.scene.globe.depthTestAgainstTerrain = false;
       viewer.scene.globe.maximumScreenSpaceError = 1;
       
-      // Atmosphere settings for realistic sky
+      // Enable sky atmosphere if available
       if (viewer.scene.skyAtmosphere) {
         viewer.scene.skyAtmosphere.show = true;
-        viewer.scene.skyAtmosphere.brightnessShift = 0.0;
       }
       
       // Sun lighting
@@ -545,7 +550,9 @@ namespace MissionPlanner.GCSViews
       viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000;
       
       // Enable anti-aliasing
-      viewer.scene.fxaa = true;
+      if (viewer.scene.fxaa) {
+        viewer.scene.fxaa = true;
+      }
 
       // Vertical exaggeration for terrain
       if ('verticalExaggeration' in viewer.scene) {
@@ -553,39 +560,18 @@ namespace MissionPlanner.GCSViews
         viewer.scene.verticalExaggerationRelativeHeight = 0;
       }
 
-      // Load terrain with fallback chain
-      const loadTerrain = async () => {
-        const terrainUrls = [
-          // OpenTopoData terrain
-          { url: 'https://api.open-topo-data.net/v2/terrain', name: 'OpenTopoData' },
-          // STK Terrain from AGI
-          { url: 'https://assets.agi.com/stk-terrain/v1/tileset1.json', name: 'STK Terrain' },
-          // Cesium World Terrain via ion (public default)
-          { url: 'https://assets.cesium.com/1/cesium-terrain-provider', name: 'Cesium Ion' }
-        ];
-
-        for (const terrainConfig of terrainUrls) {
-          try {
-            console.log('Trying terrain:', terrainConfig.name);
-            const terrainProvider = await Cesium.CesiumTerrainProvider.fromUrl(
-              terrainConfig.url,
-              {
-                requestVertexNormals: true,
-                requestWaterMask: true
-              }
-            );
-            viewer.terrainProvider = terrainProvider;
-            console.log('Successfully loaded:', terrainConfig.name);
-            post('terrain:' + terrainConfig.name);
-            return;
-          } catch (e) {
-            console.log(terrainConfig.name + ' failed:', e.message);
-          }
-        }
-        
-        // If all terrain sources fail, use ellipsoid (no 3D terrain but map still works)
-        console.log('All terrain sources failed, using flat globe');
-        post('terrain:none');
+      // Load terrain with multiple fallback sources
+      const loadTerrain = () => {
+        // Try STK Terrain from AGI (most reliable free terrain)
+        Cesium.CesiumTerrainProvider.fromUrl(
+          'https://assets.agi.com/stk-terrain/v1/tileset1.json',
+          { requestVertexNormals: true }
+        ).then((terrainProvider) => {
+          viewer.terrainProvider = terrainProvider;
+          console.log('Terrain loaded: STK Terrain');
+        }).catch(() => {
+          console.log('STK Terrain unavailable, using flat globe');
+        });
       };
 
       // Start loading terrain
@@ -602,7 +588,7 @@ namespace MissionPlanner.GCSViews
         } catch (e) {
           console.log('Could not add labels:', e.message);
         }
-      }, 3000);
+      }, 2000);
 
       const defaultView = {
         lng: 35.5860,
