@@ -176,6 +176,9 @@ namespace MissionPlanner.GCSViews
         {
             try
             {
+                LogDebug("Stage 1: WebView2 initialization starting");
+                lblStatus.Text = "Initializing WebView2...";
+                
                 ConfigureWebView2LoaderPath();
 
                 string userDataFolder = Path.Combine(
@@ -187,22 +190,73 @@ namespace MissionPlanner.GCSViews
                 Directory.CreateDirectory(userDataFolder);
 
                 CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync(null, userDataFolder);
+                LogDebug("WebView2 environment created");
+                
                 await webView.EnsureCoreWebView2Async(environment);
+                LogDebug("CoreWebView2 initialized");
+                
+                lblStatus.Text = "Configuring WebView2...";
 
+                // Configure WebView2 settings
                 webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = true;
                 webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
                 webView.CoreWebView2.Settings.IsStatusBarEnabled = false;
+                
+                // Enable console logging for debugging
+                try
+                {
+                    webView.CoreWebView2.Settings.IsGeneralAutofillEnabled = false;
+                    webView.CoreWebView2.Settings.IsScriptEnabled = true;
+                    webView.CoreWebView2.Settings.IsWebMessageEnabled = true;
+                }
+                catch { }
+
+                // Add event handlers for diagnostics
                 webView.CoreWebView2.WebMessageReceived += CoreWebView2_WebMessageReceived;
+                
+                // Handle navigation events
+                webView.NavigationStarting += (s, e) => {
+                    LogDebug("Navigation starting: " + e.Uri);
+                    lblStatus.Text = "Loading HTML...";
+                };
+                
+                webView.NavigationCompleted += (s, e) => {
+                    LogDebug("Navigation completed. Success: " + e.IsSuccess + ", Error: " + e.WebErrorStatus);
+                    if (!e.IsSuccess)
+                    {
+                        LogDebug("Navigation failed with error: " + e.WebErrorStatus);
+                    }
+                };
+                
+                // Handle console messages from JavaScript
+                try
+                {
+                    webView.CoreWebView2.AddHostObjectToScriptWithOrigins(null);
+                }
+                catch { }
+
+                LogDebug("Stage 2: Loading HTML content");
+                lblStatus.Text = "Loading 3D map HTML...";
+                
+                // Navigate to the Cesium HTML content
                 webView.NavigateToString(GetCesiumHtml());
+                
+                LogDebug("HTML content loaded into WebView2");
             }
             catch (Exception ex)
             {
-                lblStatus.Text = "3D map unavailable";
+                string errorMsg = ex.Message;
+                LogDebug("CRITICAL ERROR in InitializeWebView: " + errorMsg);
+                LogDebug("Stack: " + ex.StackTrace);
+                
+                lblStatus.Text = "WebView2 Error: " + errorMsg;
                 lblStatus.ForeColor = Color.FromArgb(255, 100, 100);
+                
                 CustomMessageBox.Show(
-                    "The 3D map requires Microsoft Edge WebView2 Runtime and internet access for map tiles." +
-                    Environment.NewLine + Environment.NewLine + ex.Message,
-                    "3D Map");
+                    "Failed to initialize 3D Map WebView2:\n\n" + errorMsg +
+                    "\n\nPlease ensure Microsoft Edge WebView2 Runtime is installed.\n" +
+                    "Download from: https://developer.microsoft.com/en-us/microsoft-edge/webview2/",
+                    "3D Map - WebView2 Error");
             }
         }
 
@@ -235,21 +289,35 @@ namespace MissionPlanner.GCSViews
         private void CoreWebView2_WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
         {
             string message = e.TryGetWebMessageAsString();
+            LogDebug("WebMessage received: " + message);
 
             if (message == "ready")
             {
                 webReady = true;
                 lblStatus.Text = "3D map ready";
                 lblStatus.ForeColor = Color.FromArgb(0, 200, 100);
+                LogDebug("Stage 8: 3D Map ready");
                 ExecuteMapCommand(followVehicle ? "enableFollow" : "disableFollow");
                 refreshTimer.Start();
                 UpdateMapFromTelemetry();
             }
             else if (message.StartsWith("error:", StringComparison.OrdinalIgnoreCase))
             {
-                lblStatus.Text = "3D map error";
+                string errorDetails = message.Substring(6); // Remove "error:" prefix
+                lblStatus.Text = "JS Error: " + errorDetails;
                 lblStatus.ForeColor = Color.FromArgb(255, 100, 100);
-                Console.WriteLine("Map3D WebView Error: " + message);
+                LogDebug("JavaScript Error: " + errorDetails);
+            }
+            else if (message.StartsWith("status:", StringComparison.OrdinalIgnoreCase))
+            {
+                string statusText = message.Substring(7); // Remove "status:" prefix
+                lblStatus.Text = statusText;
+                LogDebug("Status: " + statusText);
+            }
+            else if (message.StartsWith("debug:", StringComparison.OrdinalIgnoreCase))
+            {
+                string debugText = message.Substring(6); // Remove "debug:" prefix
+                LogDebug("JS Debug: " + debugText);
             }
         }
 
@@ -279,6 +347,20 @@ namespace MissionPlanner.GCSViews
                 Console.WriteLine("Map3D PositionOnSecondaryMonitor Error: " + ex.Message);
                 StartPosition = FormStartPosition.CenterScreen;
             }
+        }
+
+        private static void LogDebug(string message)
+        {
+            string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "map3d_debug.log");
+            try
+            {
+                File.AppendAllText(logPath, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " [Map3D] " + message + Environment.NewLine);
+            }
+            catch
+            {
+                // Ignore logging errors
+            }
+            Console.WriteLine("[Map3D] " + message);
         }
 
         private void RefreshTimer_Tick(object sender, EventArgs e)
@@ -420,469 +502,216 @@ namespace MissionPlanner.GCSViews
 
         private static string GetCesiumHtml()
         {
-            return @"<!doctype html>
+            return @"<!DOCTYPE html>
 <html>
 <head>
-  <meta charset=""utf-8"">
-  <meta http-equiv=""X-UA-Compatible"" content=""IE=edge"">
-  <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
-  <title>DIMP 3D Terrain Map</title>
-  <script src=""https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Cesium.js""></script>
-  <link href=""https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Widgets/widgets.css"" rel=""stylesheet"">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    html, body, #cesiumContainer {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: #87CEEB;
-      font-family: 'Segoe UI', Arial, sans-serif;
-    }
-
-    #loading-overlay {
-      position: absolute;
-      left: 0;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      color: #fff;
-    }
-
-    #loading-overlay.hidden {
-      display: none;
-    }
-
-    #loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid rgba(255,255,255,0.2);
-      border-top: 4px solid #4a90d9;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    #loading-text {
-      font-size: 16px;
-      color: #ccc;
-    }
-
-    #status-message {
-      font-size: 12px;
-      color: #888;
-      margin-top: 10px;
-      max-width: 300px;
-      text-align: center;
-    }
-
-    #error-overlay {
-      position: absolute;
-      left: 0;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.85);
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9998;
-      color: #fff;
-      padding: 20px;
-    }
-
-    #error-overlay.visible {
-      display: flex;
-    }
-
-    #error-title {
-      font-size: 20px;
-      color: #ff6b6b;
-      margin-bottom: 15px;
-    }
-
-    #error-details {
-      font-size: 14px;
-      color: #ccc;
-      max-width: 500px;
-      text-align: center;
-      line-height: 1.6;
-    }
-
-    .cesium-viewer-bottom,
-    .cesium-credit-logoContainer {
-      display: none !important;
-    }
-
-    .cesium-viewer-toolbar,
-    .cesium-viewer-animationContainer,
-    .cesium-viewer-timelineContainer,
-    .cesium-viewer-fullscreenContainer,
-    .cesium-viewer-geocoderContainer,
-    .cesium-navigationHelpButton-wrapper,
-    .cesium-sceneModePicker-wrapper,
-    .cesium-home-button {
-      display: none !important;
-    }
-  </style>
+    <meta charset=""utf-8"">
+    <meta http-equiv=""X-UA-Compatible"" content=""IE=edge"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>DIMP 3D Map</title>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body, #cesiumContainer {
+            width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+            background: #87CEEB;
+        }
+        
+        #loading {
+            position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; color: #fff; font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        #loading.hidden { display: none; }
+        
+        #loading h2 { margin-bottom: 20px; color: #4a90d9; }
+        #loading p { color: #aaa; font-size: 14px; margin: 5px 0; }
+        #loading .error { color: #ff6b6b; display: none; }
+        #loading .spinner {
+            width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.2);
+            border-top: 3px solid #4a90d9; border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
 </head>
 <body>
-  <div id=""loading-overlay"">
-    <div id=""loading-spinner""></div>
-    <div id=""loading-text"">Initializing 3D Map...</div>
-    <div id=""status-message"">Loading Cesium engine</div>
-  </div>
-
-  <div id=""error-overlay"">
-    <div id=""error-title"">3D Map Error</div>
-    <div id=""error-details""></div>
-  </div>
-
-  <div id=""cesiumContainer""></div>
-
-  <script>
-    (function () {
-      'use strict';
-
-      // Status reporting to host
-      const post = (message) => {
-        console.log('[DIMP-3D]', message);
-        if (window.chrome && window.chrome.webview) {
-          window.chrome.webview.postMessage(message);
-        }
-      };
-
-      const setStatus = (text) => {
-        document.getElementById('status-message').textContent = text;
-        post('status:' + text);
-      };
-
-      const showError = (title, message) => {
-        document.getElementById('error-title').textContent = title || 'Error';
-        document.getElementById('error-details').textContent = message;
-        document.getElementById('error-overlay').classList.add('visible');
-        post('error:' + title + ': ' + message);
-      };
-
-      const hideLoading = () => {
-        document.getElementById('loading-overlay').classList.add('hidden');
-      };
-
-      // Global error handlers
-      window.onerror = function(msg, url, line, col, error) {
-        setStatus('JavaScript error: ' + msg);
-        showError('JavaScript Error', msg + ' (line ' + line + ')');
-        return false;
-      };
-
-      window.onunhandledrejection = function(event) {
-        setStatus('Unhandled promise error');
-        showError('Promise Error', event.reason ? event.reason.toString() : 'Unknown error');
-      };
-
-      // Check Cesium loaded
-      if (typeof Cesium === 'undefined' || !window.Cesium) {
-        showError('Load Error', 'Cesium.js failed to load. Please check your internet connection and ensure WebView2 is installed.');
-        document.getElementById('loading-text').textContent = 'Failed to load Cesium';
-        return;
-      }
-
-      setStatus('Cesium loaded successfully');
-      post('debug:Cesium initialized');
-
-      // Default view position: Amman, Jordan
-      const defaultView = {
-        lng: 35.9106,
-        lat: 31.9539,
-        height: 2000,      // 2km altitude - close enough to see terrain
-        heading: 0,         // North
-        pitch: -45          // 45 degrees down - looking at terrain
-      };
-
-      // Create viewer with Bing imagery (includes terrain elevation)
-      setStatus('Creating map viewer...');
-
-      try {
-        // Use ESRI World Imagery for clear satellite tiles
-        const imageryProvider = new Cesium.UrlTemplateImageryProvider({
-          url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-          maximumLevel: 19,
-          credit: 'Esri World Imagery'
-        });
-
-        // Create viewer
-        const viewer = new Cesium.Viewer('cesiumContainer', {
-          animation: false,
-          baseLayerPicker: false,
-          fullscreenButton: false,
-          geocoder: false,
-          homeButton: false,
-          infoBox: false,
-          imageryProvider: imageryProvider,
-          navigationHelpButton: false,
-          sceneMode: Cesium.SceneMode.SCENE3D,
-          sceneModePicker: false,
-          selectionIndicator: false,
-          timeline: false,
-          // Start with ellipsoid (flat) terrain, then upgrade to 3D terrain
-          terrainProvider: new Cesium.EllipsoidTerrainProvider(),
-          skyBox: false,
-          skyAtmosphere: false,
-          requestRenderMode: false,
-          maximumRenderTimeChange: Infinity
-        });
-
-        setStatus('Viewer created, configuring scene...');
-
-        // Hide default imagery picker button if it appears
-        viewer.baseLayerPicker = false;
-
-        // Configure scene for TERRAIN view (not space/globe)
-        const scene = viewer.scene;
-
-        // Disable atmosphere effects that make it look like space
-        scene.globe.enableLighting = false;
-        scene.globe.showGroundAtmosphere = false;
-        scene.skyAtmosphere.show = false;
+    <div id=""loading"">
+        <div class=""spinner""></div>
+        <h2>DIMP 3D Map</h2>
+        <p id=""status"">Loading...</p>
+        <p class=""error"" id=""error""></p>
+    </div>
+    <div id=""cesiumContainer""></div>
+    
+    <!-- Load Cesium JS -->
+    <script src=""https://cesium.com/downloads/cesiumjs/releases/1.104/Build/Cesium/Cesium.js""></script>
+    
+    <script>
+    (function() {
+        'use strict';
         
-        // Show sun during day
-        scene.sun.show = true;
-
-        // Set globe to show terrain imagery clearly
-        scene.globe.depthTestAgainstTerrain = false;
-        scene.globe.maximumScreenSpaceError = 2; // Higher = faster rendering, lower = sharper
+        var cesiumLoaded = false;
+        var viewerCreated = false;
         
-        // Configure camera for terrain viewing
-        scene.screenSpaceCameraController.minimumZoomDistance = 100;   // 100m minimum height
-        scene.screenSpaceCameraController.maximumZoomDistance = 50000; // 50km maximum height
+        function post(msg) {
+            console.log('[Map3D]', msg);
+            try {
+                if (window.chrome && window.chrome.webview) {
+                    window.chrome.webview.postMessage(msg);
+                }
+            } catch(e) {}
+        }
         
-        // Reduce terrain exaggeration for cleaner look
-        if ('verticalExaggeration' in scene) {
-          scene.verticalExaggeration = 1.0; // No exaggeration
+        function setStatus(s) {
+            document.getElementById('status').textContent = s;
+            post('status:' + s);
         }
-
-        // Enable FXAA for smoother edges
-        if (scene.fxaa) {
-          scene.fxaa = true;
+        
+        function showError(msg) {
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').textContent = 'Error: ' + msg;
+            post('error:' + msg);
         }
-
-        post('debug:Scene configured');
-
-        // Load 3D terrain data
-        setStatus('Loading terrain data...');
-
-        const loadTerrain = async () => {
-          // Try to load Cesium World Terrain (includes elevation)
-          try {
-            setStatus('Requesting 3D terrain...');
-            
-            // Try STK Terrain from AGI
-            const terrainProvider = await Cesium.CesiumTerrainProvider.fromUrl(
-              'https://assets.agi.com/stk-terrain/v1/tileset1.json',
-              {
-                requestVertexNormals: false, // Faster loading
-                requestWaterMask: false      // Faster loading
-              }
-            );
-
-            viewer.terrainProvider = terrainProvider;
-            setStatus('3D terrain loaded');
-            post('debug:Terrain loaded - STK Terrain');
-            
-            // Enable lighting now that terrain is loaded
-            scene.globe.enableLighting = true;
-            
-          } catch (terrainError) {
-            console.log('Terrain load failed:', terrainError);
-            setStatus('Terrain unavailable - using flat map');
-            post('debug:Terrain unavailable - flat globe mode');
-            
-            // The map will still show satellite imagery, just without elevation
-          }
+        
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+        
+        // Catch all errors
+        window.onerror = function(msg, url, line) {
+            setStatus('JS Error: ' + msg);
+            showError(msg + ' (line ' + line + ')');
+            return true;
         };
-
-        // Start terrain loading
-        loadTerrain();
-
-        // Set initial camera position to show TERRAIN immediately
-        setStatus('Setting camera view...');
-
-        // Use flyTo with a view that looks AT the terrain
-        viewer.camera.flyTo({
-          destination: Cesium.Cartesian3.fromDegrees(
-            defaultView.lng,
-            defaultView.lat,
-            defaultView.height
-          ),
-          orientation: {
-            heading: Cesium.Math.toRadians(defaultView.heading),
-            pitch: Cesium.Math.toRadians(defaultView.pitch), // Looking DOWN at terrain
-            roll: 0
-          },
-          duration: 0 // Instant - no animation delay
-        });
-
-        setStatus('Map ready');
-        post('debug:Initial view set to terrain');
-        hideLoading();
-
-        // Vehicle tracking state
-        let followVehicle = true;
-        let lastPosition = null;
-        let firstVehicleFix = true;
-        let lastFollowCameraMove = 0;
-
-        // Look at terrain from above
-        const lookAtTerrain = (lat, lng, altitude, heading, duration) => {
-          if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-
-          // Calculate camera altitude: above terrain + offset
-          const cameraHeight = Math.max(Number.isFinite(altitude) ? altitude : 0, 500) + 1500;
-          
-          viewer.camera.flyTo({
-            destination: Cesium.Cartesian3.fromDegrees(
-              lng,   // Note: Cesium uses lng, lat order
-              lat,
-              cameraHeight
-            ),
-            orientation: {
-              heading: Cesium.Math.toRadians(Number.isFinite(heading) ? heading : 0),
-              pitch: Cesium.Math.toRadians(-35), // Looking down at terrain
-              roll: 0
-            },
-            duration: duration || 0.5
-          });
+        
+        window.onunhandledrejection = function(e) {
+            setStatus('Promise error');
+            showError(String(e.reason));
         };
-
-        // Expose API for C# to call
-        window.dimpMap = {
-          // Set vehicle position - this is called from C# with telemetry data
-          setVehicle: function(lat, lng, alt, heading, speed) {
-            if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-              return;
-            }
-
-            lastPosition = { lat: lat, lng: lng, alt: alt };
-
-            if (firstVehicleFix) {
-              firstVehicleFix = false;
-              setStatus('Using vehicle position');
-              post('debug:Using vehicle position: ' + lat + ', ' + lng);
-              lookAtTerrain(lat, lng, alt, heading, 1.0);
-              lastFollowCameraMove = Date.now();
-            } else if (followVehicle && Date.now() - lastFollowCameraMove > 3000) {
-              lookAtTerrain(lat, lng, alt, heading, 0.3);
-              lastFollowCameraMove = Date.now();
-            }
-          },
-
-          // Center camera on vehicle
-          centerOnVehicle: function() {
-            if (lastPosition) {
-              setStatus('Centering on vehicle');
-              post('debug:Center on vehicle');
-              lookAtTerrain(lastPosition.lat, lastPosition.lng, lastPosition.alt, 0, 0.5);
-              lastFollowCameraMove = Date.now();
-            } else {
-              setStatus('No vehicle position available');
-            }
-          },
-
-          // Enable vehicle following
-          enableFollow: function() {
-            followVehicle = true;
-            setStatus('Vehicle follow enabled');
-            post('debug:Follow enabled');
-            if (lastPosition) {
-              lookAtTerrain(lastPosition.lat, lastPosition.lng, lastPosition.alt, 0, 0.5);
-              lastFollowCameraMove = Date.now();
-            }
-          },
-
-          // Disable vehicle following
-          disableFollow: function() {
-            followVehicle = false;
-            setStatus('Vehicle follow disabled');
-            post('debug:Follow disabled');
-          },
-
-          // Reset to default view (Amman, Jordan terrain)
-          resetView: function() {
-            setStatus('Resetting to default view');
-            post('debug:Reset view');
+        
+        setStatus('Checking Cesium...');
+        
+        // Check if Cesium loaded
+        if (typeof Cesium === 'undefined') {
+            showError('Cesium.js failed to load. Check internet connection.');
+            return;
+        }
+        
+        cesiumLoaded = true;
+        setStatus('Cesium loaded - creating map...');
+        post('debug:Cesium library loaded');
+        
+        // Default view: Amman, Jordan
+        var DEFAULT_LNG = 35.9106;
+        var DEFAULT_LAT = 31.9539;
+        var DEFAULT_HEIGHT = 3000; // meters above ground
+        var PITCH = -45; // looking down at terrain
+        
+        try {
+            setStatus('Creating Cesium viewer...');
             
-            // Fly to Amman, Jordan - clear terrain view
-            viewer.camera.flyTo({
-              destination: Cesium.Cartesian3.fromDegrees(
-                defaultView.lng,
-                defaultView.lat,
-                defaultView.height
-              ),
-              orientation: {
-                heading: Cesium.Math.toRadians(defaultView.heading),
-                pitch: Cesium.Math.toRadians(defaultView.pitch),
-                roll: 0
-              },
-              duration: 0.8
+            // Simple viewer with just imagery
+            var viewer = new Cesium.Viewer('cesiumContainer', {
+                animation: false,
+                baseLayerPicker: false,
+                fullscreenButton: false,
+                geocoder: false,
+                homeButton: false,
+                infoBox: false,
+                navigationHelpButton: false,
+                sceneModePicker: false,
+                selectionIndicator: false,
+                timeline: false,
+                // Use OpenStreetMap as it is most reliable
+                imageryProvider: Cesium.createOpenStreetMapImageryProvider({
+                    url: 'https://tile.openstreetmap.org/'
+                }),
+                terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+                skyBox: false,
+                skyAtmosphere: false,
+                scene3DOnly: true
             });
             
-            firstVehicleFix = true; // Allow next vehicle position to set view
-          },
-
-          // Clear track (placeholder for future implementation)
-          clearTrack: function() {
-            post('debug:Clear track');
-          },
-
-          // Debug: set view to specific location
-          setView: function(lat, lng, height, heading, pitch) {
+            viewerCreated = true;
+            post('debug:Viewer created');
+            setStatus('Configuring scene...');
+            
+            // Configure scene for terrain view
+            var scene = viewer.scene;
+            scene.globe.enableLighting = false;
+            scene.globe.showGroundAtmosphere = false;
+            
+            if (scene.skyAtmosphere) {
+                scene.skyAtmosphere.show = false;
+            }
+            
+            scene.sun.show = true;
+            scene.globe.depthTestAgainstTerrain = false;
+            
+            // Set initial camera position looking at terrain
+            setStatus('Setting camera position...');
+            
             viewer.camera.flyTo({
-              destination: Cesium.Cartesian3.fromDegrees(
-                lng || defaultView.lng,
-                lat || defaultView.lat,
-                height || defaultView.height
-              ),
-              orientation: {
-                heading: Cesium.Math.toRadians(heading || 0),
-                pitch: Cesium.Math.toRadians(pitch || -45),
-                roll: 0
-              },
-              duration: 0.5
+                destination: Cesium.Cartesian3.fromDegrees(DEFAULT_LNG, DEFAULT_LAT, DEFAULT_HEIGHT),
+                orientation: {
+                    heading: Cesium.Math.toRadians(0),
+                    pitch: Cesium.Math.toRadians(PITCH),
+                    roll: 0
+                },
+                duration: 0
             });
-          }
-        };
-
-        // Notify C# that 3D map is ready
-        setTimeout(() => {
-          post('ready');
-          setStatus('3D Map initialized');
-        }, 500);
-
-      } catch (initError) {
-        console.error('Initialization error:', initError);
-        showError('Initialization Failed', initError.message || initError.toString());
-        setStatus('Initialization failed');
-      }
-
+            
+            post('debug:Camera positioned');
+            setStatus('3D Map ready');
+            hideLoading();
+            
+            // Expose API
+            window.dimpMap = {
+                setVehicle: function(lat, lng, alt, heading, speed) {
+                    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+                    
+                    var cameraAlt = Math.max(Number.isFinite(alt) ? alt : 0, 100) + 500;
+                    viewer.camera.flyTo({
+                        destination: Cesium.Cartesian3.fromDegrees(lng, lat, cameraAlt),
+                        orientation: {
+                            heading: Cesium.Math.toRadians(Number.isFinite(heading) ? heading : 0),
+                            pitch: Cesium.Math.toRadians(PITCH),
+                            roll: 0
+                        },
+                        duration: 0.5
+                    });
+                },
+                centerOnVehicle: function() {},
+                enableFollow: function() {},
+                disableFollow: function() {},
+                resetView: function() {
+                    viewer.camera.flyTo({
+                        destination: Cesium.Cartesian3.fromDegrees(DEFAULT_LNG, DEFAULT_LAT, DEFAULT_HEIGHT),
+                        orientation: {
+                            heading: Cesium.Math.toRadians(0),
+                            pitch: Cesium.Math.toRadians(PITCH),
+                            roll: 0
+                        },
+                        duration: 0.5
+                    });
+                },
+                clearTrack: function() {}
+            };
+            
+            setTimeout(function() {
+                post('ready');
+            }, 1000);
+            
+        } catch(e) {
+            showError(e.message || String(e));
+            setStatus('Failed to create map');
+            post('error:Viewer creation failed: ' + String(e));
+        }
+        
     })();
-  </script>
+    </script>
 </body>
 </html>";
         }
