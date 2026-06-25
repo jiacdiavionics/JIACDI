@@ -150,11 +150,10 @@ namespace MissionPlanner.GCSViews
             refreshTimer.Tick += RefreshTimer_Tick;
 
             // Add controls in correct order for proper docking
-            // webView must be added FIRST (will be below toolbar due to docking order)
-            // toolbar and statusStrip use Dock.Top, webView uses DockStyle.None (default)
-            Controls.Add(webView);
+            // Order matters: toolbar (top), statusStrip (bottom), webView (fill remaining space)
             Controls.Add(toolbar);
             Controls.Add(statusStrip);
+            Controls.Add(webView);
 
             FormClosing += Map3D_FormClosing;
 
@@ -220,11 +219,31 @@ namespace MissionPlanner.GCSViews
                     lblStatus.Text = "Loading HTML...";
                 };
                 
-                webView.NavigationCompleted += (s, e) => {
+                webView.NavigationCompleted += async (s, e) => {
                     LogDebug("Navigation completed. Success: " + e.IsSuccess + ", Error: " + e.WebErrorStatus);
                     if (!e.IsSuccess)
                     {
                         LogDebug("Navigation failed with error: " + e.WebErrorStatus);
+                    }
+                    else
+                    {
+                        // Force resize after page load
+                        await Task.Delay(100);
+                        try
+                        {
+                            await webView.CoreWebView2.ExecuteScriptAsync(@"
+                                if (window.cesiumViewer) {
+                                    console.log('Forcing viewer resize after navigation');
+                                    window.cesiumViewer.resize();
+                                    window.cesiumViewer.scene.requestRender();
+                                    console.log('Viewer resize complete');
+                                }
+                            ");
+                        }
+                        catch (Exception jsEx)
+                        {
+                            LogDebug("JavaScript resize error: " + jsEx.Message);
+                        }
                     }
                 };
                 
@@ -503,23 +522,25 @@ namespace MissionPlanner.GCSViews
 <head>
     <meta charset=""utf-8"">
     <meta http-equiv=""X-UA-Compatible"" content=""IE=edge"">
-    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"">
     <title>DIMP 3D Map</title>
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0 !important; padding: 0 !important; box-sizing: border-box; }
         html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #1a5276;
+            width: 100vw !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+            background: #000000 !important;
         }
         #cesiumContainer {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
+            width: 100vw !important;
+            height: 100vh !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
         }
         
         #loading {
@@ -535,7 +556,7 @@ namespace MissionPlanner.GCSViews
             color: #fff;
             font-family: 'Segoe UI', Arial, sans-serif;
         }
-        #loading.hidden { display: none; }
+        #loading.hidden { display: none !important; }
         
         #loading h2 { margin-bottom: 20px; color: #4a90d9; }
         #loading p { color: #aaa; font-size: 14px; margin: 5px 0; }
@@ -581,6 +602,25 @@ namespace MissionPlanner.GCSViews
             } catch(e) {}
         }
         
+        function logSizes() {
+            post('debug:window.innerWidth: ' + window.innerWidth);
+            post('debug:window.innerHeight: ' + window.innerHeight);
+            var container = document.getElementById('cesiumContainer');
+            if (container) {
+                post('debug:cesiumContainer.clientWidth: ' + container.clientWidth);
+                post('debug:cesiumContainer.clientHeight: ' + container.clientHeight);
+                post('debug:cesiumContainer.offsetWidth: ' + container.offsetWidth);
+                post('debug:cesiumContainer.offsetHeight: ' + container.offsetHeight);
+            }
+            var canvas = document.querySelector('#cesiumContainer canvas');
+            if (canvas) {
+                post('debug:canvas.width: ' + canvas.width);
+                post('debug:canvas.height: ' + canvas.height);
+                post('debug:canvas.clientWidth: ' + canvas.clientWidth);
+                post('debug:canvas.clientHeight: ' + canvas.clientHeight);
+            }
+        }
+        
         function setStatus(s) {
             var el = document.getElementById('status');
             if (el) el.textContent = s;
@@ -619,24 +659,33 @@ namespace MissionPlanner.GCSViews
                 window.cesiumViewer.scene.requestRender();
                 
                 post('debug:resetView complete');
-                
-                // Log canvas size
-                var canvas = document.querySelector('#cesiumContainer canvas');
-                if (canvas) {
-                    post('debug:Canvas size: ' + canvas.width + 'x' + canvas.height);
-                }
+                logSizes();
             } catch(e) {
                 post('error:resetView failed: ' + String(e));
             }
         }
         
+        function forceResize() {
+            if (!window.cesiumViewer) return;
+            
+            // Force the container to full size
+            var container = document.getElementById('cesiumContainer');
+            if (container) {
+                container.style.width = window.innerWidth + 'px';
+                container.style.height = window.innerHeight + 'px';
+            }
+            
+            // Call viewer resize
+            window.cesiumViewer.resize();
+            window.cesiumViewer.scene.requestRender();
+            
+            logSizes();
+        }
+        
         function initViewer() {
             setStatus('Stage 1: HTML loaded');
             post('debug:HTML loaded');
-            
-            // Check container size
-            var container = document.getElementById('cesiumContainer');
-            post('debug:Container size: ' + container.offsetWidth + 'x' + container.offsetHeight);
+            logSizes();
             
             if (typeof Cesium === 'undefined') {
                 showError('Cesium.js failed to load. Check internet connection.');
@@ -673,13 +722,15 @@ namespace MissionPlanner.GCSViews
                 setStatus('Stage 4: Viewer created');
                 post('debug:Viewer created successfully');
                 
+                // Force initial resize
+                window.cesiumViewer.resize();
+                
                 // Check globe is visible
                 var scene = window.cesiumViewer.scene;
                 post('debug:Globe show: ' + scene.globe.show);
-                post('debug:Globe enabled: ' + !scene.globe.enableLighting);
                 
                 // Configure scene
-                scene.globe.enableLighting = false;
+                scene.globe.enableLighting = true;
                 scene.globe.showGroundAtmosphere = false;
                 scene.globe.depthTestAgainstTerrain = false;
                 
@@ -688,13 +739,10 @@ namespace MissionPlanner.GCSViews
                 if (scene.skyAtmosphere) scene.skyAtmosphere.show = false;
                 if (scene.sun) scene.sun.show = true;
                 
-                // Show sun lighting on globe
-                scene.globe.enableLighting = true;
-                
                 setStatus('Stage 5: Scene configured');
                 post('debug:Scene configured');
                 
-                // Resize and render
+                // Initial resize and render
                 window.cesiumViewer.resize();
                 scene.requestRender();
                 
@@ -717,19 +765,34 @@ namespace MissionPlanner.GCSViews
             
             // Window resize handler
             window.addEventListener('resize', function() {
-                if (window.cesiumViewer) {
-                    window.cesiumViewer.resize();
-                    window.cesiumViewer.scene.requestRender();
-                    post('debug:Window resized');
-                }
+                post('debug:Window resize event');
+                forceResize();
             });
             
-            // Delayed camera reset after everything is loaded
+            // Multiple delayed resize calls
             setTimeout(function() {
+                post('debug:Delayed resize 250ms');
+                forceResize();
                 resetView();
-                window.cesiumViewer.scene.requestRender();
-                post('debug:Delayed resize complete');
+            }, 250);
+            
+            setTimeout(function() {
+                post('debug:Delayed resize 500ms');
+                forceResize();
+                logSizes();
             }, 500);
+            
+            setTimeout(function() {
+                post('debug:Delayed resize 1000ms');
+                forceResize();
+                logSizes();
+            }, 1000);
+            
+            setTimeout(function() {
+                post('debug:Delayed resize 2000ms');
+                forceResize();
+                logSizes();
+            }, 2000);
             
             // Expose API
             window.dimpMap = {
@@ -762,17 +825,23 @@ namespace MissionPlanner.GCSViews
                     setStatus('Follow disabled');
                 },
                 resetView: function() {
+                    forceResize();
                     resetView();
                     setStatus('3D Map ready');
                 },
                 clearTrack: function() {
                     setStatus('Track cleared');
+                },
+                resize: function() {
+                    forceResize();
+                    logSizes();
                 }
             };
             
             setTimeout(function() {
                 post('ready');
                 setStatus('3D Map ready');
+                logSizes();
             }, 1500);
         }
         
