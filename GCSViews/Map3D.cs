@@ -63,6 +63,8 @@ namespace MissionPlanner.GCSViews
             InitializeWebView();
         }
 
+        private Panel mapPanel;
+        
         private void InitializeComponent()
         {
             Text = "DIMP - 3D Map";
@@ -86,10 +88,12 @@ namespace MissionPlanner.GCSViews
             lblSpeed = new ToolStripStatusLabel();
             lblHeading = new ToolStripStatusLabel();
             webView = new WebView2();
+            mapPanel = new Panel();
             refreshTimer = new Timer();
 
             SuspendLayout();
 
+            // Toolbar
             toolbar.BackColor = Color.FromArgb(30, 30, 46);
             toolbar.ForeColor = Color.FromArgb(220, 220, 230);
             toolbar.GripStyle = ToolStripGripStyle.Hidden;
@@ -98,7 +102,7 @@ namespace MissionPlanner.GCSViews
 
             ConfigureToolButton(btnCenter, "Center", "Center terrain view on vehicle");
             btnCenter.Click += (sender, args) => ExecuteMapCommand("centerOnVehicle");
-
+	
             ConfigureToolButton(btnFollow, "Follow: On", "Toggle vehicle follow");
             btnFollow.Click += (sender, args) =>
             {
@@ -121,12 +125,21 @@ namespace MissionPlanner.GCSViews
                 btnClearTrack
             });
 
+            // Map panel - fills center
+            mapPanel.Dock = DockStyle.Fill;
+            mapPanel.BackColor = Color.Black;
+            mapPanel.Padding = new Padding(0);
+
+            // WebView inside panel
             webView.Dock = DockStyle.Fill;
             webView.BackColor = Color.Black;
             webView.DefaultBackgroundColor = Color.Black;
+            mapPanel.Controls.Add(webView);
 
+            // Status strip
             statusStrip.BackColor = Color.FromArgb(20, 20, 36);
             statusStrip.ForeColor = Color.FromArgb(220, 220, 230);
+            statusStrip.Dock = DockStyle.Bottom;
             statusStrip.SizingGrip = false;
             statusStrip.Items.AddRange(new ToolStripItem[]
             {
@@ -150,16 +163,34 @@ namespace MissionPlanner.GCSViews
             refreshTimer.Interval = 500;
             refreshTimer.Tick += RefreshTimer_Tick;
 
-            // Add controls in correct order for proper docking
-            // Order matters: toolbar (top), statusStrip (bottom), webView (fill remaining space)
-            Controls.Add(toolbar);
+            // Add controls: panel (fill), status (bottom), toolbar (top)
+            Controls.Add(mapPanel);
             Controls.Add(statusStrip);
-            Controls.Add(webView);
+            Controls.Add(toolbar);
 
             FormClosing += Map3D_FormClosing;
+            Resize += Map3D_Form_Resize;
 
             ResumeLayout(false);
             PerformLayout();
+        }
+        
+        private void Map3D_Form_Resize(object sender, EventArgs e)
+        {
+            // Force WebView resize when form is resized
+            if (webView != null && webView.CoreWebView2 != null)
+            {
+                try
+                {
+                    webView.CoreWebView2.ExecuteScriptAsync(@"
+                        if (window.cesiumViewer) {
+                            window.cesiumViewer.resize();
+                            window.cesiumViewer.scene.requestRender();
+                        }
+                    ");
+                }
+                catch { }
+            }
         }
 
         private static void ConfigureToolButton(ToolStripButton button, string text, string tooltip)
@@ -529,19 +560,19 @@ namespace MissionPlanner.GCSViews
     <style>
         * { margin: 0 !important; padding: 0 !important; box-sizing: border-box; }
         html, body {
-            width: 100vw !important;
-            height: 100vh !important;
+            width: 100% !important;
+            height: 100% !important;
             overflow: hidden !important;
             background: #000000 !important;
         }
         #cesiumContainer {
-            width: 100vw !important;
-            height: 100vh !important;
-            position: fixed !important;
+            width: 100% !important;
+            height: 100% !important;
+            position: relative !important;
             top: 0 !important;
             left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
+            right: auto !important;
+            bottom: auto !important;
         }
         
         #loading {
@@ -669,11 +700,12 @@ namespace MissionPlanner.GCSViews
         function forceResize() {
             if (!window.cesiumViewer) return;
             
-            // Force the container to full size
+            // Force the container to full size using percentage
             var container = document.getElementById('cesiumContainer');
             if (container) {
-                container.style.width = window.innerWidth + 'px';
-                container.style.height = window.innerHeight + 'px';
+                container.style.width = '100%';
+                container.style.height = '100%';
+                container.style.position = 'relative';
             }
             
             // Call viewer resize
