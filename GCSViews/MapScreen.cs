@@ -99,7 +99,7 @@ namespace MissionPlanner.GCSViews
             this.Text = "DIMP - Map View (Move to second monitor)";
             this.Size = new Size(1280, 800);
             this.MinimumSize = new Size(800, 600);
-            this.BackColor = Color.FromArgb(26, 26, 46);
+            this.BackColor = ModernUi.Canvas;
             this.FormBorderStyle = FormBorderStyle.Sizable;
             this.StartPosition = FormStartPosition.Manual;
             this.TopMost = false;
@@ -124,7 +124,7 @@ namespace MissionPlanner.GCSViews
             this.SuspendLayout();
             
             // mapPanel
-            this.mapPanel.BackColor = Color.FromArgb(26, 26, 46);
+            this.mapPanel.BackColor = ModernUi.Canvas;
             this.mapPanel.Dock = DockStyle.Fill;
             this.mapPanel.Location = new Point(0, 25);
             this.mapPanel.Name = "mapPanel";
@@ -132,7 +132,7 @@ namespace MissionPlanner.GCSViews
             this.mapPanel.TabIndex = 0;
             
             // mapControl
-            this.mapControl.BackColor = Color.FromArgb(26, 26, 46);
+            this.mapControl.BackColor = ModernUi.Canvas;
             this.mapControl.Dock = DockStyle.Fill;
             this.mapControl.Location = new Point(0, 0);
             this.mapControl.Name = "mapControl";
@@ -141,7 +141,8 @@ namespace MissionPlanner.GCSViews
             this.mapControl.DragButton = MouseButtons.Left;
             
             // toolbar
-            this.toolbar.BackColor = Color.FromArgb(30, 30, 46);
+            this.toolbar.BackColor = ModernUi.Surface;
+            this.toolbar.ForeColor = ModernUi.TextPrimary;
             this.toolbar.GripStyle = ToolStripGripStyle.Hidden;
             this.toolbar.ImageScalingSize = new Size(24, 24);
             this.toolbar.Name = "toolbar";
@@ -152,6 +153,8 @@ namespace MissionPlanner.GCSViews
             this.btnZoomIn.Name = "btnZoomIn";
             this.btnZoomIn.Size = new Size(40, 22);
             this.btnZoomIn.Text = "+";
+            this.btnZoomIn.Image = ModernUi.CreateIcon("\uE710");
+            this.btnZoomIn.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.btnZoomIn.ToolTipText = "Zoom In";
             this.btnZoomIn.Click += new EventHandler(this.btnZoomIn_Click);
             
@@ -159,6 +162,8 @@ namespace MissionPlanner.GCSViews
             this.btnZoomOut.Name = "btnZoomOut";
             this.btnZoomOut.Size = new Size(40, 22);
             this.btnZoomOut.Text = "-";
+            this.btnZoomOut.Image = ModernUi.CreateIcon("\uE738");
+            this.btnZoomOut.DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.btnZoomOut.ToolTipText = "Zoom Out";
             this.btnZoomOut.Click += new EventHandler(this.btnZoomOut_Click);
             
@@ -171,6 +176,8 @@ namespace MissionPlanner.GCSViews
             this.btnCenter.Name = "btnCenter";
             this.btnCenter.Size = new Size(60, 22);
             this.btnCenter.Text = "Center";
+            this.btnCenter.Image = ModernUi.CreateIcon("\uE707");
+            this.btnCenter.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
             this.btnCenter.ToolTipText = "Center on Drone";
             this.btnCenter.Click += new EventHandler(this.btnCenter_Click);
             
@@ -178,6 +185,8 @@ namespace MissionPlanner.GCSViews
             this.btnFullscreen.Name = "btnFullscreen";
             this.btnFullscreen.Size = new Size(75, 22);
             this.btnFullscreen.Text = "Fullscreen";
+            this.btnFullscreen.Image = ModernUi.CreateIcon("\uE740");
+            this.btnFullscreen.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
             this.btnFullscreen.ToolTipText = "Toggle Fullscreen (F11)";
             this.btnFullscreen.Click += new EventHandler(this.btnFullscreen_Click);
             
@@ -193,7 +202,7 @@ namespace MissionPlanner.GCSViews
             });
             
             // statusPanel
-            this.statusPanel.BackColor = Color.FromArgb(20, 20, 36);
+            this.statusPanel.BackColor = ModernUi.Surface;
             this.statusPanel.Dock = DockStyle.Bottom;
             this.statusPanel.Location = new Point(0, 742);
             this.statusPanel.Name = "statusPanel";
@@ -203,7 +212,7 @@ namespace MissionPlanner.GCSViews
             // Labels
             this.lblLat.AutoSize = true;
             this.lblLat.Font = new Font("Segoe UI", 10F);
-            this.lblLat.ForeColor = Color.FromArgb(0, 200, 100);
+            this.lblLat.ForeColor = ModernUi.Success;
             this.lblLat.Location = new Point(10, 12);
             this.lblLat.Name = "lblLat";
             this.lblLat.Size = new Size(40, 17);
@@ -211,7 +220,7 @@ namespace MissionPlanner.GCSViews
             
             this.lblLng.AutoSize = true;
             this.lblLng.Font = new Font("Segoe UI", 10F);
-            this.lblLng.ForeColor = Color.FromArgb(0, 200, 100);
+            this.lblLng.ForeColor = ModernUi.Success;
             this.lblLng.Location = new Point(170, 12);
             this.lblLng.Name = "lblLng";
             this.lblLng.Size = new Size(41, 17);
@@ -219,7 +228,7 @@ namespace MissionPlanner.GCSViews
             
             this.lblAlt.AutoSize = true;
             this.lblAlt.Font = new Font("Segoe UI", 10F);
-            this.lblAlt.ForeColor = Color.FromArgb(220, 220, 230);
+            this.lblAlt.ForeColor = ModernUi.TextPrimary;
             this.lblAlt.Location = new Point(330, 12);
             this.lblAlt.Name = "lblAlt";
             this.lblAlt.Size = new Size(40, 17);
@@ -227,7 +236,7 @@ namespace MissionPlanner.GCSViews
             
             this.lblSpeed.AutoSize = true;
             this.lblSpeed.Font = new Font("Segoe UI", 10F);
-            this.lblSpeed.ForeColor = Color.FromArgb(220, 220, 230);
+            this.lblSpeed.ForeColor = ModernUi.TextPrimary;
             this.lblSpeed.Location = new Point(490, 12);
             this.lblSpeed.Name = "lblSpeed";
             this.lblSpeed.Size = new Size(40, 17);
@@ -235,7 +244,7 @@ namespace MissionPlanner.GCSViews
             
             this.lblHeading.AutoSize = true;
             this.lblHeading.Font = new Font("Segoe UI", 10F);
-            this.lblHeading.ForeColor = Color.FromArgb(220, 220, 230);
+            this.lblHeading.ForeColor = ModernUi.TextPrimary;
             this.lblHeading.Location = new Point(650, 12);
             this.lblHeading.Name = "lblHeading";
             this.lblHeading.Size = new Size(40, 17);
@@ -243,7 +252,7 @@ namespace MissionPlanner.GCSViews
             
             this.lblStatus.AutoSize = true;
             this.lblStatus.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            this.lblStatus.ForeColor = Color.FromArgb(255, 100, 100);
+            this.lblStatus.ForeColor = ModernUi.Danger;
             this.lblStatus.Location = new Point(900, 12);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new Size(200, 17);
@@ -270,6 +279,8 @@ namespace MissionPlanner.GCSViews
             
             // Handle form closing
             this.FormClosing += new FormClosingEventHandler(this.MapScreen_FormClosing);
+
+            ModernUi.Apply(this);
             
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -23,6 +23,11 @@ namespace MissionPlanner
 
         public static GMapMarker getMAVMarker(MAVState MAV, GMapOverlay overlay = null)
         {
+            if (MAV?.cs == null || !VehicleTelemetryValidation.HasUsablePosition(MAV.cs))
+            {
+                return null;
+            }
+
             PointLatLng portlocation = MAV.cs.Location;
 
             if(overlay!= null)

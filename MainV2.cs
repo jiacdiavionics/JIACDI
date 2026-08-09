@@ -585,6 +585,7 @@ namespace MissionPlanner
 
         public GCSViews.FlightPlanner FlightPlanner;
         GCSViews.SITL Simulation;
+        private GCSViews.ThreeScreenManager threeScreenManager;
 
         private Form connectionStatsForm;
         private ConnectionStats _connectionStats;
@@ -607,6 +608,7 @@ namespace MissionPlanner
             MenuSimulation.Visible = true;
             MenuMap.Visible = false;
             MenuMap3D.Visible = true;
+            MenuThreeScreens.Visible = true;
             MenuHelp.Visible = true;
             MissionPlanner.Controls.BackstageView.BackstageView.Advanced = DisplayConfiguration.isAdvancedMode;
 
@@ -720,6 +722,8 @@ namespace MissionPlanner
 
             // Set Tablet Mirror button text
             MenuTabletMirror.Text = "Tablet Mirror";
+            MenuThreeScreens.Text = "3 Screens";
+            MenuThreeScreens.ToolTipText = "Open UAV data, HUD, and map displays";
 
             // Ensure Setup and Config are hidden on startup (they require unlock)
             updateLayout(null, null);
@@ -738,6 +742,7 @@ namespace MissionPlanner
             ThemeManager.LoadTheme(Settings.Instance["theme"]);
 
             Utilities.ThemeManager.ApplyThemeTo(this);
+            ModernUi.ApplyMainShell(this);
 
 
             // define default basestream
@@ -1193,7 +1198,10 @@ namespace MissionPlanner
             {
                 // dont update if no change
                 if (displayicons.GetType() == icons.GetType())
+                {
+                    ModernUi.ApplyMainShell(this);
                     return;
+                }
             }
 
             displayicons = icons;
@@ -1207,6 +1215,7 @@ namespace MissionPlanner
             MenuInitConfig.Image = displayicons.initsetup;
             MenuSimulation.Image = displayicons.sim;
             MenuMap3D.ForeColor = ThemeManager.TextColor;
+            MenuThreeScreens.ForeColor = ThemeManager.TextColor;
             MenuConfigTune.Image = displayicons.config_tuning;
             MenuConnect.Image = displayicons.connect;
             MenuHelp.Image = displayicons.help;
@@ -1217,9 +1226,11 @@ namespace MissionPlanner
             MenuInitConfig.ForeColor = ThemeManager.TextColor;
             MenuSimulation.ForeColor = ThemeManager.TextColor;
             MenuMap3D.ForeColor = ThemeManager.TextColor;
+            MenuThreeScreens.ForeColor = ThemeManager.TextColor;
             MenuConfigTune.ForeColor = ThemeManager.TextColor;
             MenuConnect.ForeColor = ThemeManager.TextColor;
             MenuHelp.ForeColor = ThemeManager.TextColor;
+            ModernUi.ApplyMainShell(this);
         }
 
         void adsb_UpdatePlanePosition(object sender, MissionPlanner.Utilities.adsb.PointLatLngAltHdg adsb)
@@ -1434,6 +1445,55 @@ namespace MissionPlanner
 
             // save config
             SaveConfig();
+        }
+
+        private void MenuThreeScreens_Click(object sender, EventArgs e)
+        {
+            if (threeScreenManager != null && threeScreenManager.IsActive)
+            {
+                threeScreenManager.Stop();
+                return;
+            }
+
+            try
+            {
+                MyView.ShowScreen("FlightData");
+
+                var manager = new GCSViews.ThreeScreenManager(this, FlightData);
+                manager.Closed += ThreeScreenManager_Closed;
+                threeScreenManager = manager;
+                manager.Start();
+                MenuThreeScreens.Checked = true;
+            }
+            catch (Exception ex)
+            {
+                DisposeThreeScreenManager();
+                CustomMessageBox.Show(
+                    "Unable to start the three-screen dashboard:\n\n" + ex.Message,
+                    "3 Screens");
+            }
+        }
+
+        private void ThreeScreenManager_Closed(object sender, EventArgs e)
+        {
+            DisposeThreeScreenManager();
+        }
+
+        private void DisposeThreeScreenManager()
+        {
+            var manager = threeScreenManager;
+            threeScreenManager = null;
+
+            if (manager != null)
+            {
+                manager.Closed -= ThreeScreenManager_Closed;
+                manager.Dispose();
+            }
+
+            if (MenuThreeScreens != null)
+            {
+                MenuThreeScreens.Checked = false;
+            }
         }
 
         private void MenuTuning_Click(object sender, EventArgs e)
@@ -1897,7 +1957,7 @@ namespace MissionPlanner
                     HUD.Custom.src = MainV2.comPort.MAV.cs;
 
                     // set connected icon
-                    this.MenuConnect.Image = displayicons.disconnect;
+                    this.MenuConnect.Image = ModernUi.CreateNamedIcon("MenuConnect", 18, Color.White);
                 });
             }
             catch (Exception ex)
@@ -2083,6 +2143,8 @@ namespace MissionPlanner
             base.OnClosing(e);
 
             log.Info("MainV2_FormClosing");
+
+            DisposeThreeScreenManager();
 
             log.Info("GMaps write cache");
             // speed up tile saving on exit
@@ -2549,7 +2611,7 @@ namespace MissionPlanner
                     {
                         this.BeginInvoke((MethodInvoker) delegate
                         {
-                            this.MenuConnect.Image = displayicons.disconnect;
+                            this.MenuConnect.Image = ModernUi.CreateNamedIcon("MenuConnect", 18, Color.White);
                             this.MenuConnect.Image.Tag = "Disconnect";
                             this.MenuConnect.Text = Strings.DISCONNECTc;
                             _connectionControl.IsConnected(true);
@@ -2562,7 +2624,7 @@ namespace MissionPlanner
                     {
                         this.BeginInvoke((MethodInvoker) delegate
                         {
-                            this.MenuConnect.Image = displayicons.connect;
+                            this.MenuConnect.Image = ModernUi.CreateNamedIcon("MenuConnect", 18, Color.White);
                             this.MenuConnect.Image.Tag = "Connect";
                             this.MenuConnect.Text = Strings.CONNECTc;
                             _connectionControl.IsConnected(false);

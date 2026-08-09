@@ -103,22 +103,24 @@ namespace MissionPlanner.GCSViews
             this.MinimumSize = new Size(640, 480);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormClosing += TabletMirrorForm_FormClosing;
-            this.BackColor = Color.FromArgb(30, 30, 30);
+            this.BackColor = ModernUi.Canvas;
+            this.ForeColor = ModernUi.TextPrimary;
+            this.Font = new Font(ModernUi.UiFontFamily, 9F);
 
             // Top panel with status
             _topPanel = new Panel
             {
                 Dock = DockStyle.Top,
-                Height = 50,
-                BackColor = Color.FromArgb(45, 45, 48),
-                Padding = new Padding(10)
+                Height = 56,
+                BackColor = ModernUi.SurfaceRaised,
+                Padding = new Padding(14, 10, 14, 10)
             };
 
             _lblStatus = new Label
             {
                 Text = "Ready",
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 10F),
+                ForeColor = ModernUi.Success,
+                Font = new Font(ModernUi.UiFontFamily, 10F, FontStyle.Bold),
                 AutoSize = true,
                 Location = new Point(10, 15)
             };
@@ -126,8 +128,8 @@ namespace MissionPlanner.GCSViews
             _lblDeviceInfo = new Label
             {
                 Text = "",
-                ForeColor = Color.LightGray,
-                Font = new Font("Segoe UI", 9F),
+                ForeColor = ModernUi.TextSecondary,
+                Font = new Font(ModernUi.UiFontFamily, 9F),
                 AutoSize = true,
                 Location = new Point(200, 17)
             };
@@ -138,15 +140,15 @@ namespace MissionPlanner.GCSViews
             var devicePanel = new Panel
             {
                 Dock = DockStyle.Top,
-                Height = 40,
-                BackColor = Color.FromArgb(37, 37, 38),
-                Padding = new Padding(10, 5, 10, 5)
+                Height = 48,
+                BackColor = ModernUi.Surface,
+                Padding = new Padding(14, 8, 14, 8)
             };
 
             _lblDevice = new Label
             {
                 Text = "Device:",
-                ForeColor = Color.White,
+                ForeColor = ModernUi.TextSecondary,
                 AutoSize = true,
                 Location = new Point(10, 10)
             };
@@ -156,8 +158,8 @@ namespace MissionPlanner.GCSViews
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Width = 300,
                 Location = new Point(60, 7),
-                BackColor = Color.FromArgb(63, 63, 70),
-                ForeColor = Color.White,
+                BackColor = ModernUi.SurfaceRaised,
+                ForeColor = ModernUi.TextPrimary,
                 FlatStyle = FlatStyle.Flat
             };
 
@@ -166,8 +168,10 @@ namespace MissionPlanner.GCSViews
                 Text = "Refresh Devices",
                 Width = 120,
                 Location = new Point(380, 5),
-                BackColor = Color.FromArgb(0, 122, 204),
-                ForeColor = Color.White,
+                Image = ModernUi.CreateIcon("\uE72C", 16, ModernUi.TextPrimary),
+                TextImageRelation = TextImageRelation.ImageBeforeText,
+                BackColor = ModernUi.SurfaceRaised,
+                ForeColor = ModernUi.TextPrimary,
                 FlatStyle = FlatStyle.Flat
             };
             _btnRefresh.Click += BtnRefresh_Click;
@@ -178,7 +182,7 @@ namespace MissionPlanner.GCSViews
             _displayPanel = new Panel
             {
                 Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(20, 20, 20),
+                BackColor = ModernUi.Canvas,
                 Padding = new Padding(5)
             };
 
@@ -186,8 +190,8 @@ namespace MissionPlanner.GCSViews
             {
                 Text = "No device connected.\n\nConnect your Android tablet via USB-C and click 'Refresh Devices'.",
                 TextAlign = ContentAlignment.MiddleCenter,
-                ForeColor = Color.Gray,
-                Font = new Font("Segoe UI", 12F),
+                ForeColor = ModernUi.TextSecondary,
+                Font = new Font(ModernUi.UiFontFamily, 12F),
                 Dock = DockStyle.Fill,
                 BackColor = Color.Transparent
             };
@@ -198,16 +202,18 @@ namespace MissionPlanner.GCSViews
             _buttonPanel = new Panel
             {
                 Dock = DockStyle.Bottom,
-                Height = 50,
-                BackColor = Color.FromArgb(45, 45, 48),
-                Padding = new Padding(10, 8, 10, 8)
+                Height = 58,
+                BackColor = ModernUi.SurfaceRaised,
+                Padding = new Padding(14, 10, 14, 10)
             };
 
             _btnStart = new Button
             {
                 Text = "Start Mirror",
                 Width = 120,
-                BackColor = Color.FromArgb(0, 122, 204),
+                Image = ModernUi.CreateIcon("\uE768", 16, Color.White),
+                TextImageRelation = TextImageRelation.ImageBeforeText,
+                BackColor = ModernUi.Accent,
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Location = new Point(10, 8)
@@ -218,7 +224,9 @@ namespace MissionPlanner.GCSViews
             {
                 Text = "Stop Mirror",
                 Width = 120,
-                BackColor = Color.FromArgb(204, 0, 0),
+                Image = ModernUi.CreateIcon("\uE71A", 16, Color.White),
+                TextImageRelation = TextImageRelation.ImageBeforeText,
+                BackColor = ModernUi.Danger,
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Location = new Point(140, 8),
@@ -230,8 +238,10 @@ namespace MissionPlanner.GCSViews
             {
                 Text = "Open External Mirror",
                 Width = 150,
-                BackColor = Color.FromArgb(70, 70, 70),
-                ForeColor = Color.White,
+                Image = ModernUi.CreateIcon("\uE8A7", 16, ModernUi.TextPrimary),
+                TextImageRelation = TextImageRelation.ImageBeforeText,
+                BackColor = ModernUi.SurfaceRaised,
+                ForeColor = ModernUi.TextPrimary,
                 FlatStyle = FlatStyle.Flat,
                 Location = new Point(270, 8)
             };
@@ -244,6 +254,12 @@ namespace MissionPlanner.GCSViews
             this.Controls.Add(devicePanel);
             this.Controls.Add(_topPanel);
             this.Controls.Add(_buttonPanel);
+
+            ModernUi.Apply(this);
+            _btnStart.BackColor = ModernUi.Accent;
+            _btnStart.FlatAppearance.BorderColor = ModernUi.AccentBright;
+            _btnStop.BackColor = ModernUi.Danger;
+            _btnStop.FlatAppearance.BorderColor = ModernUi.Danger;
         }
 
         private void PositionOnSecondaryMonitor()

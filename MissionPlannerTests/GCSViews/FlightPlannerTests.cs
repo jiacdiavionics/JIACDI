@@ -13,6 +13,7 @@ namespace MissionPlanner.GCSViews.Tests
     public class FlightPlannerTests
     {
         [TestMethod()]
+        [TestCategory("Integration")]
         public void MakeRequestTest()
         {
             FlightPlanner flightPlanner = new FlightPlanner();

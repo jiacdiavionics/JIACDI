@@ -10,6 +10,7 @@ namespace MissionPlanner.Utilities.Tests
     public class GitHubContentTests
     {
         [TestMethod()]
+        [TestCategory("Integration")]
         public void GetDirContentTest()
         {
             var paramfiles = GitHubContent.GetDirContent("ArduPilot", "ardupilot", "/Tools/Frame_params/", ".param");
@@ -21,6 +22,7 @@ namespace MissionPlanner.Utilities.Tests
             Assert.Fail();
         }
         [TestMethod()]
+        [TestCategory("Integration")]
         public void GetFileContentTest()
         {
             var paramfiles = GitHubContent.GetDirContent("ArduPilot", "ardupilot", "/Tools/Frame_params/", ".param");

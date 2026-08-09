@@ -12,6 +12,7 @@ namespace MissionPlannerTests
     public class DroneCANTests
     {
         [TestMethod()]
+        [TestCategory("Integration")]
         public void DroneCAN1()
         {
             var ans = new DroneCAN.DroneCAN().LookForUpdate("com.cubepilot.test", 1.0, false);
@@ -23,6 +24,7 @@ namespace MissionPlannerTests
             Assert.Fail();
         }
         [TestMethod()]
+        [TestCategory("Integration")]
         public void DroneCAN2()
         {
             var ans = new DroneCAN.DroneCAN().LookForUpdate("com.cubepilot.herepro", 19.137, false);

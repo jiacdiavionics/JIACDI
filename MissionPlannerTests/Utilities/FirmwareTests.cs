@@ -12,6 +12,7 @@ namespace MissionPlanner.Utilities.Tests
     public class FirmwareTests
     {
         [TestMethod()]
+        [TestCategory("Integration")]
         public void getFWListTest()
         {
             var list = new Firmware().getFWList();

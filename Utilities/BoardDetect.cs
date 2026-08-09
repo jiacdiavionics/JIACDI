@@ -73,6 +73,14 @@ namespace MissionPlanner.Utilities
                     {
                         log.InfoFormat("{0}: {1} - {2}", item.name, item.description, item.board);
 
+                        string legacyBootloader = GetLegacyBootloaderName(item.board);
+                        if (legacyBootloader != null)
+                        {
+                            chbootloader = legacyBootloader;
+                            log.Info("is legacy bootloader " + legacyBootloader);
+                            return boards.chbootloader;
+                        }
+
                         //if (port.ToLower() == item.name.ToLower())
                         {
                             //USB\VID_0483&PID_DF11   -- stm32 bootloader
@@ -557,6 +565,27 @@ namespace MissionPlanner.Utilities
                     return boards.b2560;
                 }
             }
+        }
+
+        private static string GetLegacyBootloaderName(string boardName)
+        {
+            if (string.IsNullOrWhiteSpace(boardName))
+                return null;
+
+            if (boardName.StartsWith("PX4 BL FMU v2", StringComparison.OrdinalIgnoreCase))
+                return "fmuv2";
+            if (boardName.StartsWith("PX4 BL FMU v3", StringComparison.OrdinalIgnoreCase))
+                return "fmuv3";
+            if (boardName.StartsWith("PX4 BL FMU v4.x PRO", StringComparison.OrdinalIgnoreCase))
+                return "fmuv4pro";
+            if (boardName.StartsWith("PX4 BL FMU v4", StringComparison.OrdinalIgnoreCase))
+                return "fmuv4";
+            if (boardName.StartsWith("PX4 BL FMU v5", StringComparison.OrdinalIgnoreCase))
+                return "fmuv5";
+            if (boardName.StartsWith("ProfiCNC CUBE F4 BL", StringComparison.OrdinalIgnoreCase))
+                return "CubeBlack";
+
+            return null;
         }
 
         /// <summary>

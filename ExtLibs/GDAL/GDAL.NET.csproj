@@ -19,7 +19,7 @@
     <PackageReference Include="GDAL" Version="2.3.2" Condition="'$(TargetFramework)' != 'netstandard2.0'">
      
     </PackageReference>
-    <PackageReference Include="log4net" Version="2.0.13" />
+    <PackageReference Include="log4net" Version="3.3.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 
     <ProjectReference Include="..\MissionPlanner.Drawing.Common\MissionPlanner.Drawing.Common.csproj" Condition="'$(TargetFramework)' == 'netstandard2.0'" />

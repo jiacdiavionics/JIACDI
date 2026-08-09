@@ -50,6 +50,7 @@ namespace MissionPlanner
             this.MenuMap3D = new System.Windows.Forms.ToolStripButton();
             this.MenuMap = new System.Windows.Forms.ToolStripButton();
             this.MenuTabletMirror = new System.Windows.Forms.ToolStripButton();
+            this.MenuThreeScreens = new System.Windows.Forms.ToolStripButton();
             this.MenuHelp = new System.Windows.Forms.ToolStripButton();
             this.MenuConnect = new System.Windows.Forms.ToolStripButton();
             this.toolStripConnectionControl = new MissionPlanner.Controls.ToolStripConnectionControl();
@@ -80,6 +81,7 @@ namespace MissionPlanner
             this.MenuSimulation,
             this.MenuMap3D,
             this.MenuTabletMirror,
+            this.MenuThreeScreens,
             this.MenuHelp,
             this.MenuConnect,
             this.toolStripConnectionControl,
@@ -239,7 +241,21 @@ namespace MissionPlanner
             this.MenuTabletMirror.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
             this.MenuTabletMirror.Size = new System.Drawing.Size(110, 39);
             this.MenuTabletMirror.Click += new System.EventHandler(this.MenuTabletMirror_Click);
-            // 
+            //
+            // MenuThreeScreens - Multi-display flight dashboard
+            //
+            this.MenuThreeScreens.BackColor = System.Drawing.Color.Transparent;
+            this.MenuThreeScreens.ForeColor = System.Drawing.Color.FromArgb(220, 220, 230);
+            this.MenuThreeScreens.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MenuThreeScreens.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.MenuThreeScreens.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MenuThreeScreens.Name = "MenuThreeScreens";
+            this.MenuThreeScreens.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
+            this.MenuThreeScreens.Size = new System.Drawing.Size(96, 39);
+            this.MenuThreeScreens.Text = "3 Screens";
+            this.MenuThreeScreens.ToolTipText = "Open UAV data, HUD, and map displays";
+            this.MenuThreeScreens.Click += new System.EventHandler(this.MenuThreeScreens_Click);
+            //
             // MenuHelp - Text Only Tab
             // 
             this.MenuHelp.BackColor = System.Drawing.Color.Transparent;
@@ -363,6 +379,7 @@ namespace MissionPlanner
         public System.Windows.Forms.ToolStripButton MenuConfigTune;
         public System.Windows.Forms.ToolStripButton MenuConnect;
         public System.Windows.Forms.ToolStripButton MenuTabletMirror;
+        public System.Windows.Forms.ToolStripButton MenuThreeScreens;
         private Controls.ToolStripConnectionControl toolStripConnectionControl;
         private Controls.MyButton menu;
         public System.Windows.Forms.Panel panel1;

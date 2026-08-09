@@ -8,6 +8,8 @@ obj/
 packages/
 *.psess
 *.pyc
+__pycache__/
+/artifacts/
 /ExtLibs/Mavlink/mavlink
 /LogAnalyzer/py2exe/
 *.vspx
@@ -49,3 +51,14 @@ obj3/
 
 /.claude/settings.local.json
 /CLAUDE.md
+
+# Generated raw OSM downloads used to build offline 3D building tiles.
+/map3d/osm-cache/
+/map3d/osm-cache-clean/
+/map3d/**/*.osm.pbf
+
+# Local SITL runtime state is generated per simulator session.
+/sitl/eeprom.bin
+/sitl/logs/
+/sitl/**/eeprom.bin
+/sitl/**/.dimp-sitl-state

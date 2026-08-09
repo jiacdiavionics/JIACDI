@@ -59,19 +59,17 @@ namespace MissionPlanner.Controls
 
             try
             {
-                // DIMP Professional Aviation Theme - Blue progress bar
-                using (Brush bgBrush = new SolidBrush(Color.FromArgb(0x2A, 0x2A, 0x40)))
+                using (Brush bgBrush = new SolidBrush(Utilities.ModernUi.SurfaceRaised))
                 {
                     e.Graphics.FillRectangle(bgBrush, 0, 0, Width, Height);
                 }
                 
-                using (Brush progressBrush = new SolidBrush(Color.FromArgb(0x00, 0x7A, 0xCC)))
+                using (Brush progressBrush = new SolidBrush(Utilities.ModernUi.AccentBright))
                 {
                     e.Graphics.FillRectangle(progressBrush, 0, 0, (float)(Width * (_percent / 100.0)), Height);
                 }
                 
-                // Subtle border
-                using (Pen borderPen = new Pen(Color.FromArgb(0x3A, 0x3A, 0x56), 1))
+                using (Pen borderPen = new Pen(Utilities.ModernUi.Border, 1))
                 {
                     e.Graphics.DrawRectangle(borderPen, 0, 0, Width - 1, Height - 1);
                 }
@@ -84,8 +82,7 @@ namespace MissionPlanner.Controls
 
         protected override void OnPaintBackground(PaintEventArgs e)
         {
-            // DIMP Theme - Dark background
-            using (Brush bgBrush = new SolidBrush(Color.FromArgb(0x20, 0x20, 0x36)))
+            using (Brush bgBrush = new SolidBrush(Utilities.ModernUi.Surface))
             {
                 e.Graphics.FillRectangle(bgBrush, e.ClipRectangle);
             }

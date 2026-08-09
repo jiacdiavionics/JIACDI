@@ -499,30 +499,42 @@ namespace MissionPlanner.Utilities
                 DateTime starttime = DateTime.Now;
                 int got = 0;
 
-                while (dataStream.CanRead && bytes > 0)
+                while (dataStream.CanRead && bytes != 0)
                 {
                     int len = dataStream.Read(buf1, 0, buf1.Length);
-                    bytes -= len;
+                    if (len <= 0)
+                        break;
+
+                    if (bytes > 0)
+                        bytes -= len;
                     got += len;
                     fs.Write(buf1, 0, len);
 
                     var elapsed = (DateTime.Now - starttime).TotalSeconds;
-                    var percent = ((got / (float)contlen) * 100.0f);
+                    var percent = contlen > 0 ? ((got / (float)contlen) * 100.0f) : 0;
                     if (lastupdate.Second != DateTime.Now.Second)
                     {
                         lastupdate = DateTime.Now;
-                        Console.WriteLine("{0} bps {1} {2}s {3}% of {4}     \r", got / elapsed, got, elapsed,
-                            percent, contlen);
-                        var timeleft = TimeSpan.FromSeconds(((elapsed / percent) * (100 - percent)));
-                        status?.Invoke((int)percent,
-                            "Downloading.. ETA: " +
-                            //DateTime.Now.AddSeconds(((elapsed / percent) * (100 - percent))).ToShortTimeString()
-                            formatTimeSpan(timeleft)
-                        );
+                        if (contlen > 0)
+                        {
+                            Console.WriteLine("{0} bps {1} {2}s {3}% of {4}     \r", got / elapsed, got, elapsed,
+                                percent, contlen);
+                            var timeleft = TimeSpan.FromSeconds(((elapsed / percent) * (100 - percent)));
+                            status?.Invoke((int)percent,
+                                "Downloading.. ETA: " +
+                                //DateTime.Now.AddSeconds(((elapsed / percent) * (100 - percent))).ToShortTimeString()
+                                formatTimeSpan(timeleft)
+                            );
+                        }
+                        else
+                        {
+                            Console.WriteLine("{0} bps {1} {2}s     \r", got / elapsed, got, elapsed);
+                            status?.Invoke(0, "Downloading.. " + got + " bytes");
+                        }
                     }
                 }
 
-                if (fs.Length != contlen)
+                if (contlen >= 0 && fs.Length != contlen)
                 {
                     lock (log)
                         log.Info("getFilefromNet(): " + "File size mismatch " + fs.Length + " vs " + contlen);

@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using MissionPlanner.Utilities;
 
 namespace MissionPlanner.Controls
 {
@@ -10,6 +11,10 @@ namespace MissionPlanner.Controls
         public ConnectionControl()
         {
             InitializeComponent();
+            BackgroundImage = null;
+            BackColor = ModernUi.Surface;
+            ForeColor = ModernUi.TextPrimary;
+            Font = new Font(ModernUi.UiFontFamily, 9F, FontStyle.Regular);
             this.linkLabel1.Click += (sender, e) =>
             {
                 ShowLinkStats?.Invoke(this, EventArgs.Empty);
@@ -54,12 +59,13 @@ namespace MissionPlanner.Controls
                 return;
 
             ComboBox combo = sender as ComboBox;
-            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
-                e.Graphics.FillRectangle(new SolidBrush(SystemColors.Highlight),
-                    e.Bounds);
-            else
-                e.Graphics.FillRectangle(new SolidBrush(combo.BackColor),
-                    e.Bounds);
+            Color background = (e.State & DrawItemState.Selected) == DrawItemState.Selected
+                ? ModernUi.AccentPressed
+                : combo.BackColor;
+            using (SolidBrush backgroundBrush = new SolidBrush(background))
+            {
+                e.Graphics.FillRectangle(backgroundBrush, e.Bounds);
+            }
 
             string text = combo.Items[e.Index].ToString();
             if (!MainV2.MONO)
@@ -67,11 +73,14 @@ namespace MissionPlanner.Controls
                 text = text + " " + SerialPort.GetNiceName(text);
             }
 
-            e.Graphics.DrawString(text, e.Font,
-                new SolidBrush(combo.ForeColor),
-                new Point(e.Bounds.X, e.Bounds.Y));
-
-            e.DrawFocusRectangle();
+            TextRenderer.DrawText(
+                e.Graphics,
+                text,
+                e.Font,
+                new Rectangle(e.Bounds.X + 6, e.Bounds.Y, Math.Max(1, e.Bounds.Width - 8), e.Bounds.Height),
+                combo.ForeColor,
+                TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine |
+                TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
         }
 
         public void UpdateSysIDS()

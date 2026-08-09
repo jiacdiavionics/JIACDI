@@ -22,6 +22,7 @@ namespace MissionPlanner.GCSViews
             this.setGStreamerSourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hereLinkVideoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gStreamerStopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.map3DFpvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setAspectRatioToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.russianHudToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -463,6 +464,7 @@ namespace MissionPlanner.GCSViews
             // 
             this.contextMenuStripHud.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.videoToolStripMenuItem,
+            this.map3DFpvToolStripMenuItem,
             this.setAspectRatioToolStripMenuItem,
             this.userItemsToolStripMenuItem,
             this.russianHudToolStripMenuItem,
@@ -527,7 +529,16 @@ namespace MissionPlanner.GCSViews
             this.gStreamerStopToolStripMenuItem.Name = "gStreamerStopToolStripMenuItem";
             resources.ApplyResources(this.gStreamerStopToolStripMenuItem, "gStreamerStopToolStripMenuItem");
             this.gStreamerStopToolStripMenuItem.Click += new System.EventHandler(this.GStreamerStopToolStripMenuItem_Click);
-            // 
+            //
+            // map3DFpvToolStripMenuItem
+            //
+            this.map3DFpvToolStripMenuItem.CheckOnClick = true;
+            this.map3DFpvToolStripMenuItem.Name = "map3DFpvToolStripMenuItem";
+            this.map3DFpvToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.map3DFpvToolStripMenuItem.Text = "3D Map FPV";
+            this.map3DFpvToolStripMenuItem.ToolTipText = "Show a simulated forward-facing 3D camera inside the HUD";
+            this.map3DFpvToolStripMenuItem.Click += new System.EventHandler(this.map3DFpvToolStripMenuItem_Click);
+            //
             // setAspectRatioToolStripMenuItem
             // 
             this.setAspectRatioToolStripMenuItem.Name = "setAspectRatioToolStripMenuItem";
@@ -3137,6 +3148,7 @@ namespace MissionPlanner.GCSViews
         private Controls.MyButton BUT_abortland;
         private Controls.MyButton but_disablejoystick;
         private System.Windows.Forms.ToolStripMenuItem videoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem map3DFpvToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem recordHudToAVIToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setMJPEGSourceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stopRecordToolStripMenuItem;

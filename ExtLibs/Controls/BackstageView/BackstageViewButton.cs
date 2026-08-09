@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace MissionPlanner.Controls.BackstageView
@@ -24,10 +23,12 @@ namespace MissionPlanner.Controls.BackstageView
         {
             this.SuspendLayout();
 
-            SetStyle(ControlStyles.ResizeRedraw, true);
+            SetStyle(ControlStyles.ResizeRedraw | ControlStyles.OptimizedDoubleBuffer |
+                     ControlStyles.AllPaintingInWmPaint, true);
 
             this.Width = 150;
-            this.Height = 30;
+            this.Height = 36;
+            this.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
             
             this.ResumeLayout(false);
         }
@@ -66,59 +67,38 @@ namespace MissionPlanner.Controls.BackstageView
                 ((BackStageViewMenuPanel)this.Parent).PaintBackground(pevent);
             }
 
-           Graphics g = pevent.Graphics;
+            Graphics graphics = pevent.Graphics;
+            Rectangle bounds = new Rectangle(0, 1, Math.Max(1, Width - 1), Math.Max(1, Height - 2));
 
-            // Now the little 'arrow' thingy if we are selected and the selected bg grad
-           if (_isSelected)
-           {
-               //var rect1 = new Rectangle(0, 0, Width / 1, Height);
-               var rect2 = new Rectangle(0, 0, Width, Height);
+            if (_isSelected)
+            {
+                using (SolidBrush selected = new SolidBrush(Color.FromArgb(48, HighlightColor1)))
+                using (SolidBrush accent = new SolidBrush(HighlightColor1))
+                {
+                    graphics.FillRectangle(selected, bounds);
+                    graphics.FillRectangle(accent, 0, 4, 3, Math.Max(1, Height - 8));
+                }
+            }
+            else if (_isMouseOver)
+            {
+                using (SolidBrush hover = new SolidBrush(Color.FromArgb(32, Color.White)))
+                {
+                    graphics.FillRectangle(hover, bounds);
+                }
+            }
 
-              // g.FillRectangle(new LinearGradientBrush(rect1, HighlightColor1, HighlightColor2, LinearGradientMode.Horizontal), rect1);
-               g.FillRectangle(new LinearGradientBrush(rect2, HighlightColor2, HighlightColor1, LinearGradientMode.Horizontal), rect2);
-
-               var butPen = new Pen(HighlightColor1);
-               g.DrawLine(butPen, 0, 0, Width, 0);
-               g.DrawLine(butPen, 0, Height - 1, Width, Height - 1);
-
-               var arrowBrush = new SolidBrush(this.ContentPageColor);
-
-               var midheight = Height / 2;
-               var arSize = 8;
-
-               var arrowPoints = new[]
-                                     {
-                                         new Point(Width, midheight + arSize),
-                                         new Point(Width - arSize, midheight),
-                                         new Point(Width, midheight - arSize)
-                                     };
-
-               g.DrawString(Text, new Font(FontFamily.GenericSansSerif, 10 * (100 / g.DpiX), FontStyle.Bold), new SolidBrush(SelectedTextColor), 5, 6);
-
-               var pencilBrush = new Pen(this.PencilBorderColor);
-
-               g.DrawLine(pencilBrush, Width - 1, 0, Width - 1, Height - 1);
-               g.FillPolygon(arrowBrush, arrowPoints); 
-
-               g.DrawPolygon(pencilBrush, arrowPoints);
-
-               
-           }
-           else
-           {
-               if (_isMouseOver)
-               {
-                   var brush = new SolidBrush(Color.FromArgb(10, 0xA0, 0xA0, 0xA0));
-
-                   g.FillRectangle(brush, this.ClientRectangle);
-
-                   var butPen = new Pen(PencilBorderColor);
-                   g.DrawLine(butPen, 0, 0, Width, 0);
-                   g.DrawLine(butPen, 0, Height - 1, Width, Height - 1);
-               }
-                
-                g.DrawString(Text, new Font(this.Font.FontFamily,10 * (100/g.DpiX), FontStyle.Bold), new SolidBrush(this.UnSelectedTextColor), 5, 6);
-           }
+            using (Font textFont = new Font("Segoe UI", 9F,
+                       _isSelected ? FontStyle.Bold : FontStyle.Regular))
+            {
+                TextRenderer.DrawText(
+                    graphics,
+                    Text,
+                    textFont,
+                    new Rectangle(14, 0, Math.Max(1, Width - 22), Height),
+                    _isSelected ? SelectedTextColor : UnSelectedTextColor,
+                    TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine |
+                    TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
+            }
         }
 
 

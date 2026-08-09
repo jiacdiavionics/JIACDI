@@ -40,7 +40,7 @@ namespace MissionPlanner.Controls
             // 
             // QuickView
             // 
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "QuickView";
             this.Size = new System.Drawing.Size(122, 54);
 

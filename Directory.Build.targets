@@ -1,0 +1,9 @@
+<Project>
+  <Target Name="RemoveUnusedMonoPosixFrameworkAssembly"
+          BeforeTargets="ResolveAssemblyReferences"
+          Condition="'$(MSBuildProjectName)' == 'MissionPlanner' Or '$(MSBuildProjectName)' == 'MissionPlannerTests'">
+    <ItemGroup>
+      <Reference Remove="Mono.Posix" />
+    </ItemGroup>
+  </Target>
+</Project>

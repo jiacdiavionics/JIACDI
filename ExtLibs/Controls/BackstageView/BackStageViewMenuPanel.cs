@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace MissionPlanner.Controls.BackstageView
@@ -8,8 +7,6 @@ namespace MissionPlanner.Controls.BackstageView
     {
         internal Color GradColor = Color.White;
         internal Color PencilBorderColor = Color.White;
-
-        private const int GradientWidth = 20;
 
         public BackStageViewMenuPanel()
         {
@@ -26,18 +23,10 @@ namespace MissionPlanner.Controls.BackstageView
         {
             base.OnPaintBackground(pevent);
 
-            var rc = new Rectangle(ClientSize.Width - GradientWidth, 0, GradientWidth, this.ClientSize.Height);
-
-            // prevent LinearGradientBrush exception on 0 height
-            if (rc.Height == 0 || rc.Width == 0)
-                return;
-
-            using (var brush = new LinearGradientBrush(rc, BackColor, GradColor, LinearGradientMode.Horizontal))
+            using (Pen border = new Pen(PencilBorderColor))
             {
-                pevent.Graphics.FillRectangle(brush, rc);
+                pevent.Graphics.DrawLine(border, Width - 1, 0, Width - 1, Height);
             }
-
-            pevent.Graphics.DrawLine(new Pen(PencilBorderColor), Width-1,0,Width-1,Height);
         }
 
         protected override void OnResize(System.EventArgs eventargs)

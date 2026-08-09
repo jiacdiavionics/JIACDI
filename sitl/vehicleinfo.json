@@ -1,0 +1,606 @@
+{
+  "AntennaTracker": {
+    "default_frame": "tracker",
+    "frames": {
+      "tracker": {
+        "waf_target": "bin/antennatracker"
+      }
+    }
+  },
+  "ArduCopter": {
+    "default_frame": "quad",
+    "frames": {
+      "+": {
+        "default_params_filename": "default_params/copter.parm",
+        "waf_target": "bin/arducopter"
+      },
+      "Callisto": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-octaquad.parm",
+          "models/Callisto.param"
+        ],
+        "model": "octa-quad:@ROMFS/models/Callisto.json",
+        "waf_target": "bin/arducopter"
+      },
+      "IrisRos": {
+        "default_params_filename": "default_params/copter.parm",
+        "external": true,
+        "waf_target": "bin/arducopter"
+      },
+      "X": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-X.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "airsim-copter": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/airsim-quadX.parm"
+        ],
+        "external": true,
+        "waf_target": "bin/arducopter"
+      },
+      "bfx": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-bfx.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "calibration": {
+        "external": true,
+        "extra_mavlink_cmds": "module load sitl_calibration;"
+      },
+      "coaxcopter": {
+        "default_params_filename": [
+          "default_params/copter-single.parm",
+          "default_params/copter-coax.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "cwx": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-cwx.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "deca": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-deca.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "deca-cwx": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-deca.parm",
+          "default_params/copter-deca-cwx.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "djix": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-djix.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "dodeca-hexa": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-dodecahexa.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "dotriaconta_octaquad_x": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-dotriaconta_octaquad_x.parm"
+        ],
+        "frame_example_script": "MotorMatrix_dotriaconta_octaquad_x.lua",
+        "waf_target": "bin/arducopter"
+      },
+      "freestyle": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-X.parm",
+          "models/freestyle.param"
+        ],
+        "model": "X:@ROMFS/models/freestyle.json",
+        "waf_target": "bin/arducopter"
+      },
+      "gazebo-iris": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/gazebo-iris.parm"
+        ],
+        "external": true,
+        "waf_target": "bin/arducopter"
+      },
+      "heli": {
+        "default_params_filename": "default_params/copter-heli.parm",
+        "waf_target": "bin/arducopter-heli"
+      },
+      "heli-blade360": {
+        "default_params_filename": [
+          "default_params/copter-heli.parm"
+        ],
+        "waf_target": "bin/arducopter-heli"
+      },
+      "heli-dual": {
+        "default_params_filename": [
+          "default_params/copter-heli.parm",
+          "default_params/copter-heli-dual.parm"
+        ],
+        "waf_target": "bin/arducopter-heli"
+      },
+      "heli-gas": {
+        "default_params_filename": [
+          "default_params/copter-heli.parm",
+          "default_params/copter-heli-gas.parm"
+        ],
+        "waf_target": "bin/arducopter-heli"
+      },
+      "hexa": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-hexa.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "hexa-cwx": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-hexa.parm",
+          "default_params/copter-hexa-cwx.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "hexa-dji": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-hexa.parm",
+          "default_params/copter-hexa-dji.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "hexadeca-octa": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-hexadeca_octa.parm"
+        ],
+        "frame_example_script": "MotorMatrix_hexadeca_octa.lua",
+        "waf_target": "bin/arducopter"
+      },
+      "hexadeca-octa-cwx": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-hexadeca_octa.parm",
+          "default_params/copter-hexadeca_octa_cwx.parm"
+        ],
+        "frame_example_script": "MotorMatrix_hexadeca_octa_cw_x.lua",
+        "waf_target": "bin/arducopter"
+      },
+      "hexax": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-hexa.parm",
+          "default_params/copter-X.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "octa": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-octa.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "octa-cwx": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-octa.parm",
+          "default_params/copter-octa-cwx.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "octa-dji": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-octa.parm",
+          "default_params/copter-octa-dji.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "octa-quad": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-octaquad.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "octa-quad-cwx": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-octaquad.parm",
+          "default_params/copter-octaquad-cwx.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "quad": {
+        "default_params_filename": "default_params/copter.parm",
+        "model": "+",
+        "waf_target": "bin/arducopter"
+      },
+      "quad-can": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/quad-can.parm"
+        ],
+        "periph_params_filename": [
+          "default_params/periph.parm",
+          "default_params/quad-periph.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "scrimmage-copter": {
+        "default_params_filename": "default_params/copter.parm",
+        "external": true,
+        "waf_target": "bin/arducopter"
+      },
+      "singlecopter": {
+        "default_params_filename": "default_params/copter-single.parm",
+        "waf_target": "bin/arducopter"
+      },
+      "tri": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-tri.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      },
+      "y6": {
+        "default_params_filename": [
+          "default_params/copter.parm",
+          "default_params/copter-y6.parm"
+        ],
+        "waf_target": "bin/arducopter"
+      }
+    }
+  },
+  "ArduPlane": {
+    "default_frame": "plane",
+    "frames": {
+      "CRRCSim": {
+        "default_params_filename": "models/plane.parm",
+        "external": true,
+        "waf_target": "bin/arduplane"
+      },
+      "calibration": {
+        "external": true,
+        "extra_mavlink_cmds": "module load sitl_calibration;"
+      },
+      "firefly": {
+        "default_params_filename": [
+          "default_params/quadplane.parm",
+          "default_params/firefly.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "gazebo-zephyr": {
+        "default_params_filename": "default_params/gazebo-zephyr.parm",
+        "external": true,
+        "waf_target": "bin/arduplane"
+      },
+      "glider": {
+        "default_params_filename": "default_params/glider.parm",
+        "waf_target": "bin/arduplane"
+      },
+      "jsbsim": {
+        "default_params_filename": "default_params/plane-jsbsim.parm",
+        "external": true,
+        "waf_target": "bin/arduplane"
+      },
+      "last_letter": {
+        "default_params_filename": "models/plane.parm",
+        "external": true,
+        "waf_target": "bin/arduplane"
+      },
+      "plane": {
+        "default_params_filename": "models/plane.parm",
+        "waf_target": "bin/arduplane"
+      },
+      "plane-3d": {
+        "default_params_filename": [],
+        "waf_target": "bin/arduplane"
+      },
+      "plane-dspoilers": {
+        "default_params_filename": [
+          "models/plane.parm",
+          "default_params/plane-dspoilers.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "plane-elevon": {
+        "default_params_filename": [
+          "models/plane.parm",
+          "default_params/plane-elevons.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "plane-ice": {
+        "default_params_filename": [
+          "models/plane.parm",
+          "default_params/plane-ice.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "plane-jet": {
+        "default_params_filename": [
+          "models/plane.parm",
+          "default_params/plane-jet.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "plane-redundant": {
+        "default_params_filename": [
+          "models/plane.parm",
+          "default_params/plane-redundant.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "plane-soaring": {
+        "default_params_filename": [
+          "models/plane.parm",
+          "default_params/plane-soaring.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "plane-tailsitter": {
+        "default_params_filename": "default_params/plane-tailsitter.parm",
+        "waf_target": "bin/arduplane"
+      },
+      "plane-vtail": {
+        "default_params_filename": [
+          "models/plane.parm",
+          "default_params/plane-vtail.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "quadplane": {
+        "default_params_filename": "default_params/quadplane.parm",
+        "waf_target": "bin/arduplane"
+      },
+      "quadplane-can": {
+        "default_params_filename": [
+          "default_params/quadplane.parm",
+          "default_params/quadplane-can.parm"
+        ],
+        "periph_params_filename": [
+          "default_params/periph.parm",
+          "default_params/quadplane-periph.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "quadplane-cl84": {
+        "default_params_filename": [
+          "default_params/quadplane.parm",
+          "default_params/quadplane-cl84.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "quadplane-copter_tailsitter": {
+        "default_params_filename": [
+          "default_params/quadplane.parm",
+          "default_params/quadplane-copter_tailsitter.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "quadplane-ice": {
+        "default_params_filename": [
+          "default_params/quadplane.parm",
+          "default_params/plane-ice.parm",
+          "default_params/quadplane-ice.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "quadplane-tilt": {
+        "default_params_filename": [
+          "default_params/quadplane.parm",
+          "default_params/quadplane-tilt.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "quadplane-tilthvec": {
+        "default_params_filename": [
+          "models/plane.parm",
+          "default_params/quadplane-tilthvec.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "quadplane-tilttri": {
+        "default_params_filename": [
+          "default_params/quadplane.parm",
+          "default_params/quadplane-tilttri.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "quadplane-tilttrivec": {
+        "default_params_filename": [
+          "default_params/quadplane.parm",
+          "default_params/quadplane-tilttrivec.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "quadplane-tri": {
+        "default_params_filename": [
+          "default_params/quadplane.parm",
+          "default_params/quadplane-tri.parm"
+        ],
+        "waf_target": "bin/arduplane"
+      },
+      "scrimmage-plane": {
+        "default_params_filename": "models/plane.parm",
+        "external": true,
+        "waf_target": "bin/arduplane"
+      },
+      "stratoblimp": {
+        "default_params_filename": "default_params/stratoblimp.parm",
+        "waf_target": "bin/arduplane"
+      }
+    }
+  },
+  "ArduSub": {
+    "default_frame": "vectored",
+    "frames": {
+      "gazebo-bluerov2": {
+        "default_params_filename": "default_params/sub.parm",
+        "waf_target": "bin/ardusub"
+      },
+      "vectored": {
+        "default_params_filename": "default_params/sub.parm",
+        "waf_target": "bin/ardusub"
+      },
+      "vectored_6dof": {
+        "default_params_filename": "default_params/sub-6dof.parm",
+        "waf_target": "bin/ardusub"
+      }
+    }
+  },
+  "Blimp": {
+    "default_frame": "Blimp",
+    "frames": {
+      "Blimp": {
+        "default_params_filename": "default_params/blimp.parm",
+        "waf_target": "bin/blimp"
+      }
+    }
+  },
+  "Helicopter": {
+    "default_frame": "heli",
+    "frames": {
+      "heli": {
+        "default_params_filename": "default_params/copter-heli.parm",
+        "waf_target": "bin/arducopter-heli"
+      },
+      "heli-blade360": {
+        "default_params_filename": [
+          "default_params/copter-heli.parm"
+        ],
+        "waf_target": "bin/arducopter-heli"
+      },
+      "heli-dual": {
+        "default_params_filename": [
+          "default_params/copter-heli.parm",
+          "default_params/copter-heli-dual.parm"
+        ],
+        "waf_target": "bin/arducopter-heli"
+      },
+      "heli-gas": {
+        "default_params_filename": [
+          "default_params/copter-heli.parm",
+          "default_params/copter-heli-gas.parm"
+        ],
+        "waf_target": "bin/arducopter-heli"
+      }
+    }
+  },
+  "Rover": {
+    "default_frame": "rover",
+    "frames": {
+      "airsim-rover": {
+        "default_params_filename": [
+          "default_params/rover.parm",
+          "default_params/airsim-rover.parm"
+        ],
+        "waf_target": "bin/ardurover"
+      },
+      "balancebot": {
+        "default_params_filename": [
+          "default_params/rover.parm",
+          "default_params/rover-skid.parm",
+          "default_params/balancebot.parm"
+        ],
+        "waf_target": "bin/ardurover"
+      },
+      "calibration": {
+        "extra_mavlink_cmds": "module load sitl_calibration;"
+      },
+      "gazebo-rover": {
+        "default_params_filename": [
+          "default_params/rover.parm",
+          "default_params/rover-skid.parm"
+        ],
+        "waf_target": "bin/ardurover"
+      },
+      "motorboat": {
+        "default_params_filename": [
+          "default_params/rover.parm",
+          "default_params/motorboat.parm"
+        ],
+        "waf_target": "bin/ardurover"
+      },
+      "motorboat-skid": {
+        "default_params_filename": [
+          "default_params/rover.parm",
+          "default_params/motorboat.parm",
+          "default_params/rover-skid.parm"
+        ],
+        "waf_target": "bin/ardurover"
+      },
+      "rover": {
+        "default_params_filename": "default_params/rover.parm",
+        "waf_target": "bin/ardurover"
+      },
+      "rover-omni3mecanum": {
+        "default_params_filename": [
+          "default_params/rover.parm",
+          "default_params/rover-omni3mecanum.parm"
+        ],
+        "waf_target": "bin/ardurover"
+      },
+      "rover-skid": {
+        "default_params_filename": [
+          "default_params/rover.parm",
+          "default_params/rover-skid.parm"
+        ],
+        "waf_target": "bin/ardurover"
+      },
+      "rover-vectored": {
+        "default_params_filename": [
+          "default_params/rover.parm",
+          "default_params/rover-vectored.parm"
+        ],
+        "waf_target": "bin/ardurover"
+      },
+      "sailboat": {
+        "default_params_filename": [
+          "default_params/rover.parm",
+          "default_params/sailboat.parm"
+        ],
+        "waf_target": "bin/ardurover"
+      },
+      "sailboat-motor": {
+        "default_params_filename": [
+          "default_params/rover.parm",
+          "default_params/sailboat-motor.parm"
+        ],
+        "waf_target": "bin/ardurover"
+      }
+    }
+  },
+  "sitl_periph_universal": {
+    "frames": {
+      "universal": {
+        "configure_target": "sitl_periph_universal",
+        "default_params_filename": "default_params/periph.parm",
+        "waf_target": "bin/AP_Periph"
+      }
+    }
+  }
+}

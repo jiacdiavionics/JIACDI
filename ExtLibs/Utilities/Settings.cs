@@ -310,10 +310,19 @@ namespace MissionPlanner.Utilities
             return _GetRunningDirectory;
         }
 
+        private static readonly Lazy<bool> IsMonoRuntime = new Lazy<bool>(() =>
+        {
+            if (Environment.OSVersion.Platform != PlatformID.Unix)
+            {
+                return false;
+            }
+
+            return Type.GetType("Mono.Runtime", false) != null;
+        });
+
         static bool isMono()
         {
-            var t = Type.GetType("Mono.Runtime");
-            return (t != null);
+            return IsMonoRuntime.Value;
         }
 
         public static bool isUnix = Environment.OSVersion.Platform == PlatformID.Unix;

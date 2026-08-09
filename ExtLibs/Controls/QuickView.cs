@@ -73,85 +73,72 @@ namespace MissionPlanner.Controls
 
         private void OnPaintSurface(object sender, SKPaintSurfaceEventArgs e2)
         {
-            var e = new SkiaGraphics(e2.Surface);
-            e2.Surface.Canvas.Clear();
-
-            // DIMP Professional Aviation Theme - Dashboard Card Style
             var canvas = e2.Surface.Canvas;
             int w = e2.Info.Width;
             int h = e2.Info.Height;
+            canvas.Clear(SKColor.Parse("#111517"));
 
-            // Card background - dark navy
-            using (var bgPaint = new SKPaint())
+            if (w <= 2 || h <= 2)
+                return;
+
+            SKRect card = new SKRect(1, 1, w - 1, h - 1);
+            using (var cardPaint = new SKPaint { Color = SKColor.Parse("#171C1F"), Style = SKPaintStyle.Fill, IsAntialias = true })
+            using (var borderPaint = new SKPaint { Color = SKColor.Parse("#354147"), Style = SKPaintStyle.Stroke, StrokeWidth = 1, IsAntialias = true })
             {
-                bgPaint.Color = SKColor.Parse("#1A1A2E");
-                bgPaint.Style = SKPaintStyle.Fill;
-                canvas.DrawRect(0, 0, w, h, bgPaint);
+                canvas.DrawRoundRect(card, 6, 6, cardPaint);
+                canvas.DrawRoundRect(card, 6, 6, borderPaint);
             }
 
-            // Card border - subtle blue accent
-            using (var borderPaint = new SKPaint())
+            Color accentColor = numberColor.IsEmpty ? Color.FromArgb(62, 190, 235) : numberColor;
+            using (var accentPaint = new SKPaint
             {
-                borderPaint.Color = SKColor.Parse("#3A3A56");
-                borderPaint.Style = SKPaintStyle.Stroke;
-                borderPaint.StrokeWidth = 1;
-                canvas.DrawRect(0.5f, 0.5f, w - 1, h - 1, borderPaint);
+                Color = new SKColor(accentColor.R, accentColor.G, accentColor.B, 210),
+                Style = SKPaintStyle.Fill,
+                IsAntialias = true
+            })
+            {
+                canvas.DrawRoundRect(new SKRect(1, 12, 4, Math.Max(13, h - 12)), 2, 2, accentPaint);
             }
 
-            // Top accent line for selected/active state
-            using (var accentPaint = new SKPaint())
+            float labelSize = Math.Max(10f, Math.Min(15f, h * 0.12f));
+            using (var labelTypeface = SKTypeface.FromFamilyName("Segoe UI Variable Text", SKTypefaceStyle.Normal))
+            using (var labelPaint = new SKPaint
             {
-                accentPaint.Color = SKColor.Parse("#007ACC");
-                accentPaint.Style = SKPaintStyle.Fill;
-                canvas.DrawRect(0, 0, w, 2, accentPaint);
+                Color = SKColor.Parse("#9FACB3"),
+                TextSize = labelSize,
+                IsAntialias = true,
+                Typeface = labelTypeface
+            })
+            {
+                string label = desc ?? string.Empty;
+                float labelWidth = labelPaint.MeasureText(label);
+                float labelBaseline = Math.Max(labelSize + 7, h * 0.22f);
+                canvas.DrawText(label, Math.Max(9, (w - labelWidth) / 2f), labelBaseline, labelPaint);
             }
 
-            int y = 0;
+            string value = number.ToString(numberformat);
+            float valueSize = Math.Max(18f, h * 0.44f);
+            using (var valueTypeface = SKTypeface.FromFamilyName("Segoe UI Variable Text", SKTypefaceStyle.Bold))
+            using (var valuePaint = new SKPaint
             {
-                // Label text - muted gray
-                Size extent = e.MeasureString(desc, this.Font).ToSize();
-                var mid = extent.Width / 2;
-                
-                using (var textPaint = new SKPaint())
+                Color = new SKColor(accentColor.R, accentColor.G, accentColor.B, accentColor.A),
+                TextSize = valueSize,
+                IsAntialias = true,
+                Typeface = valueTypeface
+            })
+            {
+                float availableWidth = Math.Max(1, w - 24);
+                float measured = valuePaint.MeasureText(value);
+                if (measured > availableWidth)
                 {
-                    textPaint.Color = SKColor.Parse("#9090A0");
-                    textPaint.TextSize = this.Font.Size * 0.9f;
-                    textPaint.IsAntialias = true;
-                    e.DrawString(desc, new Font(this.Font.FontFamily, this.Font.Size * 0.9f, this.Font.Style), 
-                        new SolidBrush(Color.FromArgb(0x90, 0x90, 0xA0)), this.Width / 2 - mid, 8);
+                    valuePaint.TextSize = Math.Max(12f, valuePaint.TextSize * (availableWidth / measured));
+                    measured = valuePaint.MeasureText(value);
                 }
 
-                y = extent.Height;
-            }
-            //
-            {
-                var numb = number.ToString(numberformat);
-
-                Size extent = e.MeasureString("0".PadLeft(numb.Length+1,'0'), new Font(this.Font.FontFamily, (float)newSize, this.Font.Style)).ToSize();
-
-                float hRatio = (this.Height - y) / (float)(extent.Height);
-                float wRatio = this.Width / (float)extent.Width;
-                float ratio = (hRatio < wRatio) ? hRatio : wRatio;
-
-                newSize = (newSize * ratio);
-
-                if (newSize < 8 || newSize > 999999)
-                    newSize = 8;
-
-                extent = e.MeasureString(numb, new Font(this.Font.FontFamily, (float)newSize, this.Font.Style)).ToSize();
-
-                // Use the numberColor for the value
-                using (var numPaint = new SKPaint())
-                {
-                    numPaint.Color = new SKColor(numberColor.R, numberColor.G, numberColor.B, numberColor.A);
-                    numPaint.TextSize = newSize;
-                    numPaint.IsAntialias = true;
-                    numPaint.Typeface = SKTypeface.FromFamilyName(this.Font.FontFamily.Name, SKTypefaceStyle.Bold);
-                    
-                    float x = (w - extent.Width) / 2;
-                    float yPos = y + ((h - y) / 2 + extent.Height / 2);
-                    canvas.DrawText(numb, x, yPos, numPaint);
-                }
+                SKFontMetrics metrics = valuePaint.FontMetrics;
+                float contentTop = Math.Max(labelSize + 10, h * 0.25f);
+                float baseline = contentTop + ((h - contentTop - (metrics.Descent + metrics.Ascent)) / 2f);
+                canvas.DrawText(value, (w - measured) / 2f, baseline, valuePaint);
             }
         }
 
@@ -175,8 +162,6 @@ namespace MissionPlanner.Controls
             if (this.Visible && this.ThisReallyVisible())
                 base.OnInvalidated(e);
         }
-
-        float newSize = 8;
 
         protected override void OnResize(EventArgs e)
         {

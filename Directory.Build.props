@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'MissionPlanner'">
+    <BaseIntermediateOutputPath>obj3\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>obj3\</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+</Project>
